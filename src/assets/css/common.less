@@ -1,0 +1,138 @@
+@import './variable';
+
+// font-size-12: 0.24rem;
+// font-size-14: 0.28rem;
+// font-size-15: 0.3rem;
+// font-size-16: 0.32rem;
+// font-size-18: 0.36rem;
+// font-size-20: 0.40rem;
+// font-size-22: 0.44rem;
+/* 初始化CSS */
+html,
+body {
+    height: 100%;
+    background: #eee;
+    overflow-x: auto;
+    font-family: "Microsoft YaHei";
+    font-size: 0.32rem;
+    color: #333;
+    box-sizing: border-box;
+}
+
+html,
+body,
+ul,
+li,
+ol,
+dl,
+dd,
+dt,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fieldset,
+legend,
+img {
+    margin: 0;
+    padding: 0;
+}
+
+b,
+strong,
+i,
+em,
+del,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 100%;
+    font-weight: normal;
+    font-style: normal
+}
+
+fieldset,
+img {
+    border: none;
+}
+
+img {
+    display: block;
+}
+
+button {
+    border: none;
+    box-shadow: 0.05rem 0.1rem 0.2rem #ccc;
+}
+
+address,
+caption,
+cite,
+code,
+dfn,
+th,
+var {
+    font-style: normal;
+    font-weight: normal;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+select,
+input,
+textarea {
+    margin: 0;
+    vertical-align: middle;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+a {
+    color: #333;
+    text-decoration: none;
+}
+
+
+
+
+
+// 公共样式
+.container {
+    min-height: 100%;
+}
+
+.iconfont {
+    font-size: 0.44rem;
+}
+
+@background: -webkit-linear-gradient(left, #ad6cef, #846ff0);
+/* Safari 5.1 - 6.0 */
+@background: -o-linear-gradient(right, #ad6cef, #846ff0);
+/* Opera 11.1 - 12.0 */
+@background: -moz-linear-gradient(right, #ad6cef, #846ff0);
+/* Firefox 3.6 - 15 */
+@background: linear-gradient(to right, #ad6cef, #846ff0);
+
+.themeBg {
+    background: @background;
+}

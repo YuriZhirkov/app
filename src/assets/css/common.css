@@ -1,0 +1,223 @@
+/* 初始化CSS */
+html,
+body {
+  height: 100%;
+  background: #f1f1f1;
+  overflow-x: auto;
+  font-family: "Microsoft YaHei";
+  font-size: 0.32rem;
+  color: #333;
+  box-sizing: border-box;
+}
+html,
+body,
+ul,
+li,
+ol,
+dl,
+dd,
+dt,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fieldset,
+legend,
+img {
+  margin: 0;
+  padding: 0;
+}
+b,
+strong,
+i,
+em,
+del{
+  font-size: 100%;
+  font-weight: normal;
+  font-style: normal;
+}
+fieldset,
+img {
+  border: none;
+}
+img {
+  display: block;
+}
+button {
+  border: none;
+  /* box-shadow: 0.05rem 0.1rem 0.2rem #ccc; */
+}
+address,
+caption,
+cite,
+code,
+dfn,
+th,
+var {
+  font-style: normal;
+  font-weight: normal;
+}
+ul,
+ol {
+  list-style: none;
+}
+select,
+input,
+textarea {
+  margin: 0;
+  vertical-align: middle;
+}
+table {
+  border-collapse: collapse;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+a {
+  /* color: #333; */
+  text-decoration: none;
+}
+.container {
+  min-height: 100%;
+}
+.iconfont {
+  font-size: 0.44rem;
+}
+.nowrap{
+     white-space:nowrap;
+
+     overflow:hidden;
+
+     text-overflow:ellipsis;
+}
+/* Safari 5.1 - 6.0 */
+/* Opera 11.1 - 12.0 */
+/* Firefox 3.6 - 15 */
+.themeBg {
+  background: linear-gradient(to right, #ad6cef, #846ff0);
+}
+.relative{
+  position: relative;
+}
+.bold{
+  font-weight: bold;
+}
+.w90{
+  width: 90%;
+  margin: auto;
+}
+.w92{
+  width: 92%;
+  margin: auto;
+}
+.w95{
+  width: 95%;
+  margin: auto;
+}
+.w100{
+  width: 100%;
+  margin: auto;
+}
+.flex{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flexe{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.flexa{
+  display: flex;
+  align-items: center;
+}
+.flexc{
+  display: flex;
+  justify-content: center;
+}
+.flexs{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.fbig{
+  font-size: .3rem;
+}
+.fmiddle{
+  font-size: .25rem;
+}
+.fsmall{
+  font-size: .2rem;
+}
+.grey{
+  color: #989898;
+}
+div{
+  line-height: 2;
+}
+.blue{
+  color: #3297FD;
+}
+ 
+strong{
+  font-weight: bold;
+}
+.red{
+  color: #FF2d66;
+}
+.h100{
+  height: 100%;
+}
+.place{
+  width: 100%;
+}
+.yellow{
+  color: #fac200;
+}
+.greey{
+  color: #44d762;
+}
+.absolute{
+  position: absolute;
+}
+.bgf{
+  background: #FFFFFF;
+}
+.flexwrap{
+  flex-wrap: wrap;
+}
+.flexwrap{
+  flex-wrap: wrap;
+}
+h1{
+  font-size: .5rem;
+}
+h2{
+  font-size: .45rem;
+}
+h3{
+  font-size: .4rem;
+}
+h4{
+  font-size: .35rem;
+}
+h5{
+  font-size: .3rem;
+}
+h6{
+  font-size: .25rem;
+}
+b{
+  font-weight: bold;
+}
+/deep/ input{
+  color: #000000;
+}
