@@ -28,7 +28,7 @@
      </router-link>
      <div class="flex b-info fsmall">
        认证即同意
-       <strong>雨过天晴</strong>
+       <strong>语过添晴</strong>
        <span class="blue">用户协议</span>
        和
        <span  class="blue">隐私政策</span>

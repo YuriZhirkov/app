@@ -1,4 +1,4 @@
-# luckiness
+# sns
 
 > A Vue.js project
 

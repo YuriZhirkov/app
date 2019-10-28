@@ -388,6 +388,32 @@ export default {
       })
     },
 
+     identityAuthenticationHint() {
+     this.get(
+        "user/baseInfo/identityAuthentication/hint",
+         {
+          userId: this.userId
+         },
+     res => {
+        console.log("res", res);
+        if (res.errCode == 200) {
+          let status = res.data.substr(0, 2);
+          if (status == "00" || status == "02") {
+             let noAuth = res.data.substr(3);
+             this.$dialog.toast({
+             mes: noAuth,
+             timeout: 2000,
+              callback: () => {
+                this.$router.push({
+                   path: "/personal/authIdentity"
+                });
+              }
+             });
+           }
+         }
+       }
+      );
+    },
     getCommentUserInfo(list){
       const self = this
       if(!list) return
@@ -443,6 +469,8 @@ export default {
          self.getDynamic()
        }
      })
+
+     this.identityAuthenticationHint();
 
   }
 };
