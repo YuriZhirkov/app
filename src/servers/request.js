@@ -15,7 +15,7 @@
 // // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 // axios.defaults.headers['Content-Type'] = 'application/json';
 // // axios.defaults.baseURL = process.env.baseURL;
-// // axios.defaults.baseURL = "http://www.ygtqzhang.cn:8852/";
+// // axios.defaults.baseURL = "http://www.ygtqzhang.cn:80/";
 
 // //对外接口
 // export function request({ methods, url, params }) {

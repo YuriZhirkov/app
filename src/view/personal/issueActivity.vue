@@ -157,7 +157,7 @@ const options = {
           sizeLimit:1024 * 1024 *10,
           // 上传参数,默认把图片转为base64而不上传
           upload: {
-              url: 'http://www.ygtqzhang.cn:8852/file/upload',
+              url: 'http://www.ygtqzhang.cn:80/file/upload',
               headers: {},
               params: {},
               fieldName:'file'

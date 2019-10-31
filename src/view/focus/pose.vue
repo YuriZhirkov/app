@@ -55,7 +55,7 @@ const options = {
           // 上传参数,默认把图片转为base64而不上传
           // upload config,default null and convert image to base64
           upload: {
-              url: 'http://www.ygtqzhang.cn:8852/file/upload',
+              url: 'http://www.ygtqzhang.cn:80/file/upload',
               // headers: {},
               // params: {},
               fieldName:'file'

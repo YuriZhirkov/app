@@ -37,7 +37,7 @@
         <span class="line"></span>
       </p>
         <div class="logWrap">
-          <img class="iconfont iconwode" :src="wximg" alt="">
+          <img class="iconfont iconwode" :src="wximg" alt="" @click='loginToWeiXin'>
         </div>
 
     </div>
@@ -138,6 +138,19 @@ export default {
         self.setUserId(e.data)
 
         self.$router.push("/plaza/dynamic?login=1");
+      })
+
+    },
+    loginToWeiXin() {
+        const self = this
+        this.get('wxAuth/wxLogin',null,function(e){
+        self.$dialog.toast({mes:e.errCode,icon:'error'})
+        self.$dialog.toast({mes:e.data,icon:'error'})
+        if(e.errCode != 200){
+          self.$dialog.toast({mes:e.errMsg,icon:'error'})
+          return
+        }
+        return
       })
 
     },

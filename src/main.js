@@ -147,14 +147,14 @@ router.beforeEach((to, from, next) => {
   next();
 })
 // 这是外网的域名
-//Vue.prototype.host = 'http://www.ygtqzhang.cn:8852/'
+Vue.prototype.host = 'http://www.ygtqzhang.cn:80/'
 // 这是外网的ip
-//Vue.prototype.host = 'http://106.52.78.128:8852/'
+//Vue.prototype.host = 'http://106.52.78.128:80/'
 // 这是内网的IP
-//Vue.prototype.host = 'http://172.16.0.14:8852/'
+//Vue.prototype.host = 'http://172.16.0.14:80/'
 // 这是内网
-Vue.prototype.host = 'http://127.0.0.1:8852/'
-//Vue.prototype.host = 'http://localhost:8852/'
+//Vue.prototype.host = 'http://127.0.0.1:80/'
+//Vue.prototype.host = 'http://localhost:80/'
 Vue.prototype.dateFormat = function(fmt,y) {
   const d = new Date();
   const year = d.getFullYear();
