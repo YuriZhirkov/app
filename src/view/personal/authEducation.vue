@@ -16,8 +16,8 @@
                     <span v-if="info.educationalBackground">{{info.educationalBackground}}</span>
                 </div>
                 <yd-cell-item>
-                    <span slot="left">证书编号：</span>
-                    <yd-input slot="right" type="text" v-model="info.educationalNum" placeholder="请输入证书编号"></yd-input>
+                    <span slot="left">学历证书编号：</span>
+                    <yd-input slot="right" type="text" v-model="info.educationalNum" placeholder="请输入学历证书编号"></yd-input>
                 </yd-cell-item>
             </template>
         </div>
@@ -29,7 +29,7 @@
                     <input type="file" name="" @change="frontUpload($event)"  ref="frontInput"/>
                     <img v-if="cover1" :src="cover1" id="fistImg" class="uploadImg">
                 </dd>
-                <dt>证书照片</dt>
+                <dt>学历证书照片</dt>
             </dl>
         </div>
         <div class="trip fsmall">
@@ -55,7 +55,7 @@ export default {
   computed: {...mapState(['userId'])},
   data() {
     return {
-      info:{educationalBackground:'',schoolName:'',educationalNum:'',educationalUrls:''},
+      info:{educationalBackground:'',schoolName:'',educationalNum:'',educationalUrl:''},
       cover1:'',
       items:[
             {label: '博士',callback:()=>this.selected('博士')},
@@ -81,8 +81,8 @@ export default {
         self.info.educationalBackground = d.educationalBackground
         self.info.schoolName = d.schoolName
         self.info.educationalNum = d.educationalNum
-        self.info.educationalUrls = [d.educationalUrls]
-        self.cover1 = e.data.educationalUrls
+        self.info.educationalUrl = d.educationalUrls
+        self.cover1 = d.educationalUrls
 
       })
     },
@@ -92,12 +92,19 @@ export default {
       const self = this
       this.info.userId = this.userId
       this.post('user/baseInfo/educationBackgroundAuthentication',this.info,function(e){
-        if(e.errCode != 200 ){
+        let errCode = e.errCode;
+        if(errCode != 200 ){
           this.$dialog.toast({mes:e.errMsg,icon:'error'})
           return
         }
         self.$dialog.toast({mes:'提交成功 请等待审核',icon:'success'})
-        self.$router.push('/personal/personalCenter')
+        let jump = self.$route.query.jump
+        if(!!jump && jump == 1) {
+          self.$router.go(-1)
+        } else {
+          self.$router.push('/personal/personalCenter')
+        }
+       
 
       })
     },
@@ -111,11 +118,11 @@ export default {
         return
       }
       if(!this.info.educationalNum){
-        this.$dialog.toast({mes:'请输入您证书编号'})
+        this.$dialog.toast({mes:'请输入您学历证书编号'})
         return
       }
-      if(!this.info.educationalUrls[0]){
-        this.$dialog.toast({mes:'请上传证书照片'})
+      if(!this.info.educationalUrl){
+        this.$dialog.toast({mes:'请上传学历证书照片'})
         return
       }
       return true
@@ -127,21 +134,10 @@ export default {
     frontUpload(e) {
       if(!e.target.files[0]) return
       const file = e.target.files[0]
-      this.cover1 = this.getObjectURL(file)
-      this.uploadImg(file,0)
+      this.uploadImg(file)
     },
-    getObjectURL(file) {
-        var url = null ;
-        if (window.createObjectURL!=undefined) { // basic
-          url = window.createObjectURL(file) ;
-        } else if (window.URL!=undefined) { // mozilla(firefox)
-          url = window.URL.createObjectURL(file) ;
-        } else if (window.webkitURL!=undefined) { // webkit or chrome
-          url = window.webkitURL.createObjectURL(file) ;
-        }
-        return url ;
-    },
-    uploadImg(file,i){
+    
+    uploadImg(file){
       const self = this
       const fd = new FormData()
       fd.append('file', file)
@@ -151,12 +147,14 @@ export default {
           data: fd
       })
       .then(function(e){
+        
         if(e.data && e.data.errCode != 200){
           self.$dialog.toast({mes:e.data.errMsdg,icon:'erroe'})
           return
         }
-        self.info.educationalUrls = []
-        self.info.educationalUrls[i] = e.data.data
+        self.info.educationalUrl = ''
+        self.info.educationalUrl = e.data.data
+        self.cover1 = e.data.data
       })
       .catch(function(e){
       if(!e)return
@@ -164,8 +162,8 @@ export default {
           self.$dialog.toast({mes:e.data.errMsdg,icon:'erroe'})
           return
         }
-         self.info.educationalUrls = []
-        self.info.educationalUrls[i] = e.data.data
+        self.info.educationalUrl = ''
+        self.info.educationalUrl = e.data.data
       })
 
     }

@@ -44,7 +44,7 @@
         </div>
     </div>
 
-   <div class="vip w100">
+   <!-- <div class="vip w100">
       <router-link class="w100 flexs" to="/personal/member">
        <div class="w90">
          <div class="flex flex fmiddle"><i class="iconfont2 flex fbig red">&#xe622;</i>会员</div>
@@ -61,7 +61,7 @@
         <b class="iconfont iconenter fmiddle"></b>
        </div>
       </router-link>
-   </div>
+   </div> -->
 
     <ul>
 
