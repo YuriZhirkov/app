@@ -18,7 +18,15 @@ module.exports = {
         pathRewrite: {
             '^/apis': ''   //需要rewrite重写的,
         }
-      }         
+      },
+      '/weiapi': {
+        // 测试环境
+        target: 'https://open.weixin.qq.com/',  // 接口域名
+        changeOrigin: true,  //是否跨域
+        pathRewrite: {
+            '^/weiapi': ''   //需要rewrite重写的,
+        }
+      }             
     },
 
     // Various Dev Server settings
