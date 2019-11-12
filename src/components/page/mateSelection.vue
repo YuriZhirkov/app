@@ -269,7 +269,8 @@ export default {
         }
         // self.$emit('mateSelectionDone')
         self.$dialog.toast({mes:'保存择偶标准成功',icon:'success'})
-        self.$router.go(-1)
+        //personalDetail
+        self.$router.push("/personal/personalDetail");
       })
     },
     chooseData(){

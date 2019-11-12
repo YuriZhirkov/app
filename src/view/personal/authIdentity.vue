@@ -24,6 +24,27 @@
             <span slot="left">QQ</span>
             <yd-input slot="right" type="number" v-model="info.qq" placeholder="请输入QQ号"></yd-input>
           </yd-cell-item>
+          <yd-cell-item  v-model="isShowPhone">
+                <span slot="left">手机号：</span>
+                <yd-input
+                  slot="right"
+                  v-model="info.phone"
+                  required
+                  regex="mobile"
+                  placeholder="请输入手机号码"
+                ></yd-input>
+          </yd-cell-item>
+          <yd-cell-item v-model="isShowPhone">
+                <span
+                  @click="getPhoneValidateCode"
+                  slot="right"
+                >{{countCode != 60 ? '重新发送'+countCode+'秒':'验证码'}}</span>
+                <yd-input slot="left" 
+                  :show-error-icon="false"
+                  :show-success-icon="false"
+                  regex="^\d{5,12}$"
+                  v-model="info.validateCode" placeholder="校验码"></yd-input>
+          </yd-cell-item>
           <yd-cell-item>
             <span slot="left">身份证号</span>
             <yd-input slot="right" v-model="info.idCare" placeholder="请输入身份证号"></yd-input>
@@ -32,6 +53,7 @@
             <span slot="left">出生日期</span>
             <yd-datetime :start-year="1970" type="date" v-model="info.dateOfBirth" slot="right"></yd-datetime>
           </yd-cell-item>
+          
         </template>
       </div>
       <div class="fileBox">
@@ -78,8 +100,16 @@ export default {
       code: "",
       cover1: "",
       cover2: "",
-      info: { dateOfBirth: "1990-10-10", idCareUrl: [] }
-
+      info: {
+        dateOfBirth: "1990-10-10",
+        idCareUrl: [],
+        validateCode: "",
+        phone: ""
+      },
+      flag: 0,
+      msg: "",
+      countCode: 60,
+      isShowPhone: 0
     };
   },
   watch: {},
@@ -87,8 +117,10 @@ export default {
     submit() {
       const self = this;
       let arr = [];
-      arr.push(this.cover1)
-      arr.push(this.cover2)
+      arr.push(this.cover1);
+      arr.push(this.cover2);
+
+      this.info.idCareUrl = arr;
       if (!this.chooseData()) return;
       const data = {
         userId: this.userId,
@@ -96,13 +128,15 @@ export default {
         gender: this.info.gender,
         idCare: this.info.idCare,
         idCareUrl: arr,
-        // phone:this.info.phone,
+        phone: this.info.phone,
+        validateCode: this.info.validateCode,
         dateOfBirth: this.info.dateOfBirth,
         weChat: this.info.weChat,
+        flag: this.isShowPhone,
         qq: this.info.qq
       };
       this.post("user/baseInfo/identityAuthentication", data, function(e) {
-        console.log(e.errCode)
+        
         if (e.errCode != 200) {
           self.$dialog.toast({ mes: e.errMsg, icon: "error" });
           return;
@@ -110,10 +144,56 @@ export default {
         self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
         // setTimeout(function(){
         // this.educationBackgroundAuthenticationHint();
-        self.$router.go(-1);
-        
+        //判断一下jump 是否为1
+        // jump = 1 调用用 educationBackgroundAuthenticationHint
+
+        let jump = self.$route.query.jump;
+        let msg = self.msg;
+       
+        if (!!jump && jump == 1) {
+          if (self.flag == 1) {
+            self.$dialog.toast({ mes: msg, icon: "info" });
+            self.$router.push({
+              path: "/personal/authEducation",
+              query: { jump: 1 }
+            });
+          } else {
+            self.$router.push("/personal/personalDetail");
+          }
+        } else {
+          // 否则调用
+          self.$router.go(-1);
+        }
+
         // },3000)
         // self.$router.push('/personal/authEducation')
+      });
+    },
+    getPhoneValidateCode() {
+      const self = this;
+      let phone = self.info.phone;
+      if (!/^1[3456789]\d{9}$/.test(phone)) {
+        this.$dialog.toast({ mes: "请输入正确的手机号码", icon: "error" });
+        return;
+      }
+      if (this.countCode != 60) return;
+
+      this.get("user/baseInfo/getPhoneValidateCode", { phone: phone }, function(
+        e
+      ) {
+        if (e.errCode != 200) {
+          self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+          return;
+        }
+        self.$dialog.toast({ mes: e.errMsg, icon: "success" });
+
+        const si = setInterval(function() {
+          self.countCode--;
+          if (self.countCode <= 0) {
+            clearInterval(si);
+            self.countCode = 60;
+          }
+        }, 1000);
       });
     },
     chooseData() {
@@ -141,6 +221,16 @@ export default {
         this.$dialog.toast({ mes: "请选择您的出生日期" });
         return;
       }
+      if (this.isShowPhone == 1) {
+        if (!this.info.phone) {
+          this.$dialog.toast({ mes: "请填写手机号" });
+          return;
+        }
+        if (!this.info.validateCode) {
+          this.$dialog.toast({ mes: "请填写验证码" });
+          return;
+        }
+      }
       if (!this.info.weChat) {
         this.$dialog.toast({ mes: "请填写您的微信号" });
         return;
@@ -156,7 +246,7 @@ export default {
     frontUpload(e) {
       if (!e.target.files[0]) return;
       const file = e.target.files[0];
-    
+
       this.uploadImg(file, 0);
     },
     behindUpload(e) {
@@ -177,10 +267,12 @@ export default {
             self.$dialog.toast({ mes: e.data.errMsdg, icon: "erroe" });
             return;
           }
-         if(i == 0) {
+          if (i == 0) {
+            
             self.cover1 = e.data.data;
-          } else if(i == 1) {
-              self.cover2 = e.data.data;
+          } else if (i == 1) {
+            
+            self.cover2 = e.data.data;
           }
         })
         .catch(function(e) {
@@ -189,12 +281,11 @@ export default {
             self.$dialog.toast({ mes: e.data.errMsdg, icon: "erroe" });
             return;
           }
-          if(i == 0) {
+          if (i == 0) {
             self.cover1 = e.data.data;
-          } else if(i == 1) {
-              self.cover2 = e.data.data;
+          } else if (i == 1) {
+            self.cover2 = e.data.data;
           }
-          
         });
     },
     getInfo() {
@@ -207,9 +298,11 @@ export default {
           if (e.errCode != 200) return;
           const d = e.data;
           self.info = d;
-
           const t = d.dateOfBirth;
           self.info.dateOfBirth = t.substr(0, t.indexOf("T"));
+          if (d.phone == undefined || d.phone == "" || d.phone == null) {
+            self.isShowPhone = 1;
+          }
           // console.log();
           /*
         realName:this.info.realName,
@@ -233,12 +326,32 @@ export default {
             if (d.idCareUrl) {
               let urls = d.idCareUrl + "";
               let imgUrl = urls.split(";");
-              this.cover1 = imgUrl[0]
-              this.cover2 = imgUrl[1]
+              self.cover1 = imgUrl[0];
+              self.cover2 = imgUrl[1];
             }
           } else {
-            this.cover1 = ''
-            this.cover2 = ''
+            self.cover1 = "";
+            self.cover2 = "";
+          }
+        }
+      );
+    },
+    educationBackgroundAuthenticationHint() {
+      const self = this;
+      this.get(
+        "user/baseInfo/educationBackgroundAuthentication/hint",
+        {
+          userId: this.userId
+        },
+        res => {
+          console.log("res", res);
+          if (res.errCode == 200) {
+            let status = res.data.substr(0, 2);
+            if (status == "00" || status == "02") {
+              let noAuth = res.data.substr(3);
+              self.flag = 1;
+              self.msg = noAuth;
+            }
           }
         }
       );
@@ -246,6 +359,7 @@ export default {
   },
   mounted() {
     this.getInfo();
+    this.educationBackgroundAuthenticationHint();
   },
   computed: { ...mapState(["userId"]) }
 };
@@ -299,6 +413,7 @@ export default {
         }
       }
     }
+
     .fileBox {
       display: flex;
       justify-content: space-around;

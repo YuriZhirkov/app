@@ -91,16 +91,45 @@ export default {
       wximg: wximg,
       countCode: 60,
       role: "",
-      width: "",
-      urlWei: ""
+      width: ""
     };
   },
+
   mounted() {
     // console.log(this.register);
     // this.register();
     // this.getPhoneValidateCode();
-    this.getAd();
-    this.width = document.documentElement.clientWidth + 40 + "px";
+    //this.setUserId(userId);
+    //this.$router.push("/plaza/dynamic");
+  },
+  created() {
+    const obj = this.$route.query;
+    if (obj && JSON.stringify(obj) != "{}") {
+      let errCode = obj.errCode;
+      if (errCode == 200) {
+        //微信登录成功
+        this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
+        this.setUserId(obj.userId);
+        this.$router.push("/plaza/dynamic?login=1");
+      } else {
+        if (errCode == 400) {
+          this.$dialog.toast({
+            mes: "微信登录获取用户的信息失败",
+            icon: "error"
+          });
+          return
+        } else if (errCode == 401) {
+          this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+           return
+        } else if (errCode == 402) {
+          this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+           return
+        }
+      }
+    } else {
+      this.getAd();
+      this.width = document.documentElement.clientWidth + 40 + "px";
+    }
   },
   watch: {},
   methods: {
@@ -205,99 +234,53 @@ export default {
     },
 
     getTicket() {
-      alert("进入")
       let self = this;
-      // 获取回调url中的参数code
-      let objData = this.getRequest();
-      if (objData && objData.code) {
-        let params = {
-          code: objData.code
-        };
-        //根据code向后端获取当前授权用户信息
-        axios
-          .get("http://www.ygtqzhang.cn/wxAuth/callBack")
-          .then(function(response) {
-            if (response.data && response.data.errCode != 200) {
-              let data = response.data;
-              alert(data.errCode);
-              return;
-            } else {
-              let data = response.data;
-              alert(data.errCode);
-            }
-          })
-          .catch(function(response) {
-            if (response == undefined) {
-              alert("网络或请求接口错误");
-              return;
-            }
-            if (response.data && response.data.errCode != 200) {
-              let data = response.data;
-              alert(data.errCode);
-              return;
-            } else {
-              let data = response.data;
-              alert(data.errCode);
-            }
-          });
-        return;
-      } else {
-        //此处写公众号配置的回调地址
-        let jumpToUrl = "http://www.ygtqzhang.cn/wxAuth/callBack";
-        let params = {
-          //回调url编码
-          callbackUrl: encodeURIComponent(jumpToUrl)
-        };
-        axios
-          .get("http://www.ygtqzhang.cn/wxAuth/wxLogin", {
-            //参数列表
-            params:params
-          })
-          .then(function(response) {
-            if (response.data && response.data.errCode != 200) {
-              let data = response.data;
-              alert(data.errCode);
-              return;
-            } else {
-              let data = response.data;
-              alert(data.errCode);
-              //跳转微信授权页面
-              window.location.href = data.data;
-            }
-          })
-          .catch(function(response) {
-            if (response == undefined) {
-              alert("网络或请求接口错误");
-              return;
-            }
-            if (response.data && response.data.errCode != 200) {
-              let data = response.data;
-              alert(data.errCode);
-              return;
-            } else {
-              let data = response.data;
-              alert(data.errCode);
-              //跳转微信授权页面
-              window.location.href = data.data;
-            }
-          });
-      }
-    },
-    goRoute(name) {
-      this.$router.push({ name: name });
-    },
-    getRequest() {
-      //获取回调url及参数
-      var url = location.search; //获取url中"?"符后的字串
-      var theRequest = new Object();
-      if (url.indexOf("?") != -1) {
-        var str = url.substr(1);
-        var strs = str.split("&");
-        for (var i = 0; i < strs.length; i++) {
-          theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
-        }
-      }
-      return theRequest;
+      //此处写公众号配置的回调地址
+      let jumpToUrl = "http://www.ygtqzhang.cn/wxAuth/callBack";
+      let params = {
+        //回调url编码
+        callbackUrl: encodeURIComponent(jumpToUrl)
+      };
+      axios
+        .get("http://www.ygtqzhang.cn/wxAuth/wxLogin", {
+          //参数列表
+          params: params
+        })
+        .then(function(response) {
+          if (response.data && response.data.errCode != 200) {
+            let data = response.data;
+            self.$dialog.toast({
+              mes: data.errMsg,
+              timeout: 500
+            });
+            return;
+          } else {
+            let data = response.data;
+            //跳转微信授权页面
+            window.location.href = data.data;
+          }
+        })
+        .catch(function(response) {
+          if (response == undefined) {
+            self.$dialog.toast({
+              mes: "网络或请求接口错误",
+              timeout: 500
+            });
+            return;
+          }
+          if (response.data && response.data.errCode != 200) {
+            let data = response.data;
+            self.$dialog.toast({
+              mes: data.errMsg,
+              timeout: 500
+            });
+            return;
+          } else {
+            let data = response.data;
+            //跳转微信授权页面
+            window.location.href = data.data;
+          }
+        });
     }
   }
 };

@@ -244,7 +244,9 @@ export default {
           return
         }
           self.$dialog.toast({mes:'保存成功',icon:'success'})
-          self.$router.go(-1)
+          //personalDetail
+          //self.$router.go(-1)
+          self.$router.push("/personal/personalDetail");
       })
     },
     chooseData(){

@@ -143,202 +143,278 @@ export default {
   props: {},
   components: {},
   computed: {
-    ...mapState(['userId'])
+    ...mapState(["userId"])
   },
   data() {
     return {
-      swSearch:false,
-      list:[],
+      swSearch: false,
+      list: [],
 
+      userName: "",
+      showLoading: true,
+      showComment: false,
+      commentContent: "",
+      commentInfo: [],
+      commentLens: [],
+      offset: 1,
+      flag: true,
+      selectIndex: 1,
+      firstIndex: 1,
+      ydPlaceholder: "写评论",
 
-      userName:'',
-      showLoading:true,
-      showComment:false,
-      commentContent:'',
-      commentInfo:[],
-      commentLens:[],
-      offset:1,
-      flag:true,
-      selectIndex:1,
-      firstIndex:1,
-      ydPlaceholder:'写评论',
+      showAction: false,
+      delId: "",
+      uid: "",
+      showAuthEducation: 0,
+      flagEducationB: 0,
+      msgEducationB: "",
+      showMultilnfo: 0,
+      flagMultilnfo: 0,
+      msgMultilnfo: "",
 
-      showAction:false,
-      delId:'',
-      uid:'',
-
-      dynamicIndex:'',
-      dynamicItems:[
+      dynamicIndex: "",
+      dynamicItems: [
         {
-            label: '删除动态',
-            callback:this.dynamicDel
+          label: "删除动态",
+          callback: this.dynamicDel
         }
-      ],
-
+      ]
     };
   },
   watch: {
-    selectIndex(){
-      this.getDynamic()
+    selectIndex() {
+      this.getDynamic();
     }
   },
   methods: {
-    ...mapMutations(['setUserName']),
-    twoComment(d,i,i2){
-
-      if(!d) location.reload()
-      this.commentContent = ''
-      this.commentInfo['correlationId'] = d.correlationId
-      this.commentInfo['formUserId'] = d.formUserId
-      this.commentInfo['formUserName'] = d.formUserName
-      this.commentInfo['toUserId'] = d.toUserId
-      this.commentInfo['toUserName'] = d.toUserName
-      this.commentInfo['index'] = i
-      this.commentInfo['index2'] = i2
-      this.commentInfo['type'] = 2
-      this.commentInfo['id'] = d.commentId
-      this.ydPlaceholder = '回复'+d.formUserName+':'
-      this.showComment = true
+    ...mapMutations(["setUserName"]),
+    twoComment(d, i, i2) {
+      if (!d) location.reload();
+      this.commentContent = "";
+      this.commentInfo["correlationId"] = d.correlationId;
+      this.commentInfo["formUserId"] = d.formUserId;
+      this.commentInfo["formUserName"] = d.formUserName;
+      this.commentInfo["toUserId"] = d.toUserId;
+      this.commentInfo["toUserName"] = d.toUserName;
+      this.commentInfo["index"] = i;
+      this.commentInfo["index2"] = i2;
+      this.commentInfo["type"] = 2;
+      this.commentInfo["id"] = d.commentId;
+      this.ydPlaceholder = "回复" + d.formUserName + ":";
+      this.showComment = true;
     },
-    delComment(uid,id,index,i2){
+    delComment(uid, id, index, i2) {
+      const self = this;
+      this.post(
+        "comment/delete",
+        { formUserId: uid, id: id, type: 0 },
+        function(e) {
+          if (!e) return;
+          if (e.errCode != 200) {
+            self.$dialog.toast({ mes: e.errMsg });
+            return;
+          }
+          self.$dialog.toast({ mes: "删除成功" });
 
-      const self = this
-      this.post('comment/delete',{formUserId:uid,id:id,type:0},function(e){
-        if(!e) return
-        if(e.errCode != 200){
-          self.$dialog.toast({mes:e.errMsg})
-          return
+          self.list[index].comment.splice(i2, 1);
+          self.$set(self.commentLens, index, self.commentLens[index] - 1);
+          self.showComment = false;
         }
-        self.$dialog.toast({mes:'删除成功'})
-
-        self.list[index].comment.splice(i2,1)
-        self.$set(self.commentLens,index,self.commentLens[index] - 1)
-        self.showComment = false
-
-      })
+      );
     },
-    selected(i){
-      this.selectIndex = i
+    selected(i) {
+      this.selectIndex = i;
     },
-    closeComment(){
-      this.showComment = false
+    closeComment() {
+      this.showComment = false;
     },
-    openSelect(uid,aid,index){
-      if(!uid || !aid) return
-      this.delId = aid
-      this.uid = uid
-      this.dynamicIndex = index
-      this.showAction = true
+    openSelect(uid, aid, index) {
+      if (!uid || !aid) return;
+      this.delId = aid;
+      this.uid = uid;
+      this.dynamicIndex = index;
+      this.showAction = true;
     },
-    dynamicDel(){
-      if(this.uid != this.userId){
-        alert(' 删除失败')
-        return
+    dynamicDel() {
+      if (this.uid != this.userId) {
+        alert(" 删除失败");
+        return;
       }
 
-      const self = this
-      this.post('dynamic/delete',{userId:this.userId,id:this.delId},function(e){
-        if(!e) return
-        if(e.errCode != 200){
-          self.$dialog.toast({mes:e.errMsg})
-          return
-        }
-        self.list.splice(self.dynamicIndex,1)
-        self.commentLens.splice(self.dynamicIndex,1)
-        self.$dialog.toast({mes:'已删除'})
+      const self = this;
+      this.post(
+        "dynamic/delete",
+        { userId: this.userId, id: this.delId },
+        function(e) {
+          if (!e) return;
+          if (e.errCode != 200) {
+            self.$dialog.toast({ mes: e.errMsg });
+            return;
+          }
+          self.list.splice(self.dynamicIndex, 1);
+          self.commentLens.splice(self.dynamicIndex, 1);
+          self.$dialog.toast({ mes: "已删除" });
 
-        self.delId = ''
-        self.uid = ''
-        self.dynamicIndex = ''
-      })
+          self.delId = "";
+          self.uid = "";
+          self.dynamicIndex = "";
+        }
+      );
     },
 
-    tapComment(type,dynimicId,toId,toName,i,formUserName= '',commentId){
+    tapComment(type, dynimicId, toId, toName, i, formUserName = "", commentId) {
       console.log(commentId);
 
-      const self = this
-      if(type == 0){
-        if(this.list[i].isFlag){
-          this.cancelZan(this.userId,dynimicId)
-          this.list[i].isFlag= false
-          this.list[i].likes=  this.list[i].likes -1
+      const self = this;
+      if (type == 0) {
+        if (this.list[i].isFlag) {
+          this.cancelZan(this.userId, dynimicId);
+          this.list[i].isFlag = false;
+          this.list[i].likes = this.list[i].likes - 1;
 
-          this.list.sort()
-
-        }else{
-          this.post('comment/add',{correlationId:dynimicId,formUserId:this.userId,formUserName:this.userName,toUserId:toId,toUserName:toName,commentType:0,type:0},function(){})
-          this.list[i].isFlag  = true
-          this.list[i].likes=  this.list[i].likes +1
-          this.list.sort()
+          this.list.sort();
+        } else {
+          this.post(
+            "comment/add",
+            {
+              correlationId: dynimicId,
+              formUserId: this.userId,
+              formUserName: this.userName,
+              toUserId: toId,
+              toUserName: toName,
+              commentType: 0,
+              type: 0
+            },
+            function() {}
+          );
+          this.list[i].isFlag = true;
+          this.list[i].likes = this.list[i].likes + 1;
+          this.list.sort();
         }
       }
 
-      if(type == 1){
-        this.commentContent = ''
-        this.commentInfo['correlationId'] = dynimicId
-        this.commentInfo['toUserId'] = toId
-        this.commentInfo['toUserName'] = toName
-        this.commentInfo['formUserName'] = formUserName
-        this.commentInfo['index'] = i
-        this.commentInfo['type'] = 1
-        this.commentInfo['id'] = commentId
-        this.ydPlaceholder = '评论:'
+      if (type == 1) {
+        this.commentContent = "";
+        this.commentInfo["correlationId"] = dynimicId;
+        this.commentInfo["toUserId"] = toId;
+        this.commentInfo["toUserName"] = toName;
+        this.commentInfo["formUserName"] = formUserName;
+        this.commentInfo["index"] = i;
+        this.commentInfo["type"] = 1;
+        this.commentInfo["id"] = commentId;
+        this.ydPlaceholder = "评论:";
 
-        this.showComment = true
+        this.showComment = true;
       }
     },
-    cancelZan(userid,dynimicId){
-      this.post('comment/cancel/like',{formUserId:userid,correlationId:dynimicId,type:0},function(){})
+    cancelZan(userid, dynimicId) {
+      this.post(
+        "comment/cancel/like",
+        { formUserId: userid, correlationId: dynimicId, type: 0 },
+        function() {}
+      );
     },
-    sendComment(){
-      const self = this
-      if(!this.commentInfo) location.reload()
+    sendComment() {
+      const self = this;
+      if (!this.commentInfo) location.reload();
 
-      const c = this.commentInfo
+      const c = this.commentInfo;
 
-      if(this.commentContent == ''){
-        self.$dialog.toast({mes:'写点什么吧！'})
-        return
+      if (this.commentContent == "") {
+        self.$dialog.toast({ mes: "写点什么吧！" });
+        return;
       }
 
-      if(c.type == 1){
-        this.post('comment/add',{correlationId:c.correlationId,formUserId:this.userId,toUserId:c.toUserId,toUserName:c.toUserName,commentType:1,type:0,commentContent:this.commentContent},function(e){
-          if(!e)return
-          if(e.errCode != 200){
-            self.$dialog.toast({mes:e.errMsg})
-            return
-          }
-
-          const con = self.commentContent
-            if( self.list[c['index']].comment ==null){
-              self.list[c['index']].comment = []
+      if (c.type == 1) {
+        this.post(
+          "comment/add",
+          {
+            correlationId: c.correlationId,
+            formUserId: this.userId,
+            toUserId: c.toUserId,
+            toUserName: c.toUserName,
+            commentType: 1,
+            type: 0,
+            commentContent: this.commentContent
+          },
+          function(e) {
+            if (!e) return;
+            if (e.errCode != 200) {
+              self.$dialog.toast({ mes: e.errMsg });
+              return;
             }
-            self.list[c['index']].comment.unshift({commentContent:con,formUserId:self.userId,formUserName:self.userName,correlationId:c.correlationId,type:1,toUserId:c.toUserId,toUserName:c.toUserName,id:e.data,commentId:e.data})
-            self.$set(self.commentLens,self.commentInfo['index'],self.commentLens[self.commentInfo['index']] + 1)
-            self.commentInfo = []
-            self.showComment = false
-        })
-      }else{
-        this.post('comment/add',{correlationId:c.correlationId,formUserId:this.userId,formUserName:self.userName,toUserId:c.formUserId,toUserName:c.formUserName,commentType:1,type:0,commentContent:this.commentContent},function(e){
-          if(!e)return
-          if(e.errCode != 200){
-            self.$dialog.toast({mes:e.errMsg})
-            return
-          }
-          // console.log(self.commentInfo);
 
-          const con = self.commentContent
-            if( self.list[c['index']].comment ==null){
-              self.list[c['index']].comment = []
+            const con = self.commentContent;
+            if (self.list[c["index"]].comment == null) {
+              self.list[c["index"]].comment = [];
+            }
+            self.list[c["index"]].comment.unshift({
+              commentContent: con,
+              formUserId: self.userId,
+              formUserName: self.userName,
+              correlationId: c.correlationId,
+              type: 1,
+              toUserId: c.toUserId,
+              toUserName: c.toUserName,
+              id: e.data,
+              commentId: e.data
+            });
+            self.$set(
+              self.commentLens,
+              self.commentInfo["index"],
+              self.commentLens[self.commentInfo["index"]] + 1
+            );
+            self.commentInfo = [];
+            self.showComment = false;
+          }
+        );
+      } else {
+        this.post(
+          "comment/add",
+          {
+            correlationId: c.correlationId,
+            formUserId: this.userId,
+            formUserName: self.userName,
+            toUserId: c.formUserId,
+            toUserName: c.formUserName,
+            commentType: 1,
+            type: 0,
+            commentContent: this.commentContent
+          },
+          function(e) {
+            if (!e) return;
+            if (e.errCode != 200) {
+              self.$dialog.toast({ mes: e.errMsg });
+              return;
+            }
+            // console.log(self.commentInfo);
+
+            const con = self.commentContent;
+            if (self.list[c["index"]].comment == null) {
+              self.list[c["index"]].comment = [];
             }
             // self.list[c['index']].comment.unshift({commentContent:con,formUserId:self.userId,formUserName:self.userName,correlationId:c.correlationId,type:0})
-            self.list[c['index']].comment.unshift({commentContent:con,formUserId:self.userId,formUserName:self.userName,correlationId:c.correlationId,type:1,toUserId:c.formUserId,toUserName:c.formUserName,id:e.data,commentId:e.data})
+            self.list[c["index"]].comment.unshift({
+              commentContent: con,
+              formUserId: self.userId,
+              formUserName: self.userName,
+              correlationId: c.correlationId,
+              type: 1,
+              toUserId: c.formUserId,
+              toUserName: c.formUserName,
+              id: e.data,
+              commentId: e.data
+            });
 
-
-            self.$set(self.commentLens,self.commentInfo['index'],self.commentLens[self.commentInfo['index']] + 1)
-            self.commentInfo = []
-            self.showComment = false
-        })
+            self.$set(
+              self.commentLens,
+              self.commentInfo["index"],
+              self.commentLens[self.commentInfo["index"]] + 1
+            );
+            self.commentInfo = [];
+            self.showComment = false;
+          }
+        );
       }
     },
     // openDetail(id,e){
@@ -347,295 +423,325 @@ export default {
     //       this.$router.push('/plaza/detail?aid='+id)
     //   }
     // },
-    getDynamic(){
-      const self = this
-      if(self.selectIndex != self.firstIndex){
-        self.list = []
-        self.commentLens = []
-        self.offset = 1
-        self.firstIndex = self.selectIndex
+    getDynamic() {
+      const self = this;
+      if (self.selectIndex != self.firstIndex) {
+        self.list = [];
+        self.commentLens = [];
+        self.offset = 1;
+        self.firstIndex = self.selectIndex;
       }
-      this.post('dynamic/search',{type:this.selectIndex,userId:this.userId,offset:this.offset,count:20},function(e){
-        self.flag = true
-        if(!e)return
+      this.post(
+        "dynamic/search",
+        {
+          type: this.selectIndex,
+          userId: this.userId,
+          offset: this.offset,
+          count: 20
+        },
+        function(e) {
+          self.flag = true;
+          if (!e) return;
 
-        if(e.errCode != 200){
-          self.$dialog.toast({mes:'没有更多动态'})
-          self.showLoading = false
-          return
+          if (e.errCode != 200) {
+            self.$dialog.toast({ mes: "没有更多动态" });
+            self.showLoading = false;
+            return;
+          }
+          let data = e.data;
+          self.offset++;
+
+          const len = data.length;
+          for (let i in data) {
+            let _d = {
+              commentLen: 0,
+              likes: "",
+              isFlag: "",
+              comment: [],
+              dynamic: [],
+              user: []
+            };
+            let _cl = 0;
+            if (data[i].commentOutputs) _cl = data[i].commentOutputs.length;
+            if (data[i].commentOutputs)
+              _d.commentLen = data[i].commentOutputs.length;
+
+            _d.likes = data[i].likes;
+            _d.isFlag = data[i].isFlag;
+            _d.comment = data[i].commentOutputs;
+            _d.dynamic = data[i].dynamicOutput;
+            _d.user = data[i].getUserInfoOutput;
+            self.showLoading = false;
+            self.list.push(_d);
+            self.commentLens.push(_cl);
+          }
+
+          // self.getCommentUserInfo(self.list)
         }
-        let data = e.data
-        self.offset ++
-
-        const len = data.length
-        for (let i in data) {
-          let _d = {commentLen:0,likes:'',isFlag:'',comment:[],dynamic:[],user:[]}
-          let _cl = 0
-           if(data[i].commentOutputs)_cl = data[i].commentOutputs.length
-           if(data[i].commentOutputs)_d.commentLen = data[i].commentOutputs.length
-
-           _d.likes = data[i].likes
-           _d.isFlag = data[i].isFlag
-           _d.comment = data[i].commentOutputs
-           _d.dynamic = data[i].dynamicOutput
-           _d.user = data[i].getUserInfoOutput
-           self.showLoading = false
-           self.list.push(_d)
-           self.commentLens.push(_cl)
-        }
-
-         // self.getCommentUserInfo(self.list)
-      })
+      );
     },
 
-     identityAuthenticationHint() {
-     this.get(
+    identityAuthenticationHint() {
+      const self = this;
+      this.get(
         "user/baseInfo/identityAuthentication/hint",
-         {
+        {
           userId: this.userId
-         },
-     res => {
-        console.log("res", res);
-        if (res.errCode == 200) {
-          let status = res.data.substr(0, 2);
-          if (status == "00" || status == "02") {
-             let noAuth = res.data.substr(3);
-             this.$dialog.toast({
-             mes: noAuth,
-             timeout: 2000,
-              callback: () => {
-                this.$router.push({
-                   path: "/personal/authIdentity"
-                });
-              }
-             });
-           }
-         }
-       }
+        },
+        res => {
+          
+          if (res.errCode == 200) {
+            let status = res.data.substr(0, 2);
+            if (status == "00" || status == "02") {
+              let noAuth = res.data.substr(3);
+              self.$dialog.toast({
+                mes: noAuth,
+                timeout: 2000,
+                callback: () => {
+                  self.$router.push({
+                    path: "/personal/authIdentity",
+                    query: { jump: 1 }
+                  });
+                }
+              });
+            } else {
+              self.showAuthEducation = 1;
+              self.showMultilnfo = 1;
+            }
+          }
+        }
       );
     },
     educationBackgroundAuthenticationHint() {
-     this.get(
+      const self = this;
+      this.get(
         "user/baseInfo/educationBackgroundAuthentication/hint",
-         {
+        {
           userId: this.userId
-         },
-     res => {
-        console.log("res", res);
-        if (res.errCode == 200) {
-          let status = res.data.substr(0, 2);
-          if (status == "00" || status == "02") {
-             let noAuth = res.data.substr(3);
-             this.$dialog.toast({
-             mes: noAuth,
-             timeout: 2000,
-              callback: () => {
-                this.$router.push({
-                   path: "/personal/authEducation",
-                   query: {jump: 1}
-                });
-              }
-             });
-           }
-         }
-       }
+        },
+        res => {
+          
+          if (res.errCode == 200) {
+            let status = res.data.substr(0, 2);
+            if (status == "00" || status == "02") {
+              let noAuth = res.data.substr(3);
+              self.flagEducationB = 1;
+              self.msgEducationB = noAuth;
+            }
+          }
+        }
       );
     },
+
     baseHint() {
-     this.get(
+      const self = this;
+      this.get(
         "user/extendInfo/hint",
-         {
+        {
           userId: this.userId
-         },
-     res => {
-        console.log("res", res);
-        if (res.errCode == 200) {
-          let status = res.data.substr(0, 2);
-          if (status == "01") {
-             let noAuth = res.data.substr(3);
-             this.$dialog.toast({
-             mes: noAuth,
-             timeout: 2000,
-              callback: () => {
-                this.$router.push({
-                   path: "/personal/multiInfo",
-                   query: {i:1}
-                });
-              }
-             });
-           }
-         }
-       }
+        },
+        res => {
+          console.log("res", res);
+          if (res.errCode == 200) {
+            let status = res.data.substr(0, 2);
+            if (status == "01") {
+              let noAuth = res.data.substr(3);
+              self.msgMultilnfo = noAuth;
+              self.flagMultilnfo = 1;
+            }
+          }
+        }
       );
     },
-    getCommentUserInfo(list){
-      const self = this
-      if(!list) return
+
+    getCommentUserInfo(list) {
+      const self = this;
+      if (!list) return;
       for (let i in list) {
-        if(list[i].comment != null || list[i].comment != ''){
+        if (list[i].comment != null || list[i].comment != "") {
           for (let i2 in list[i].comment) {
-            if(i2 > 4) break
-            this.post('user/baseInfo/moreInfo',{userId:list[i].comment[i2].formUserId},function(e){
-                self.$set(self.list[i].comment[i2],'user',e.data)
-            })
+            if (i2 > 4) break;
+            this.post(
+              "user/baseInfo/moreInfo",
+              { userId: list[i].comment[i2].formUserId },
+              function(e) {
+                self.$set(self.list[i].comment[i2], "user", e.data);
+              }
+            );
           }
         }
       }
     },
 
-
-    tapSearch(){
-      this.swSearch = true
+    tapSearch() {
+      this.swSearch = true;
     },
-    tapCancelSearch(){
-      this.swSearch = false
+    tapCancelSearch() {
+      this.swSearch = false;
     },
-    getUserInfo(){
-      const self = this
-      this.post('user/baseInfo/get/authentication',{visitorId:this.userId},function(e){
-        if(e.errCode != 200) return
-        self.setUserName(e.data.nickName)
-        self.userName = e.data.nickName
-      })
+    getUserInfo() {
+      const self = this;
+      this.post(
+        "user/baseInfo/get/authentication",
+        { visitorId: this.userId },
+        function(e) {
+          if (e.errCode != 200) return;
+          self.setUserName(e.data.nickName);
+          self.userName = e.data.nickName;
+        }
+      );
     }
   },
-  mounted(){
-    if(!this.userId){
-      this.$router.push('/')
+  mounted() {
+    if (!this.userId) {
+      this.$router.push("/");
+    } else {
+      this.getDynamic();
+      this.getUserInfo();
+      this.identityAuthenticationHint();
+      this.educationBackgroundAuthenticationHint();
+      if (this.showAuthEducation == 1 && this.flagEducationB == 1) {
+        this.$dialog.toast({ mes: this.msgEducationB, icon: "info" });
+        this.$router.push({
+          path: "/personal/authEducation",
+          query: { jump: 1 }
+        });
+      }
+      this.baseHint();
+      if (this.showMultilnfo == 1 && this.flagMultilnfo == 1) {
+        this.$dialog.toast({ mes: this.msgMultilnfo, icon: "info" });
+        self.$router.push({
+          path: "/personal/multiInfo",
+          query: { i: 1 }
+        });
+      }
+
+      // this.educationBackgroundAuthenticationHint();
+      // this.baseHint();
     }
 
+    const self = this;
 
-    this.getUserInfo()
-    this.getDynamic()
-    this.identityAuthenticationHint()
-    this.educationBackgroundAuthenticationHint()
-    this.baseHint()
-
-
-    const self = this
-
-    const app = document.getElementById('app')
-     app.addEventListener('scroll',function(e){
-
-       let scrollHeight = app.scrollHeight
-       let appHeight = app.clientHeight
-       let apptHeight = app.scrollTop
-       if((apptHeight+appHeight+1) > scrollHeight &&  self.flag && self.$route.path == '/plaza/dynamic'){
-         self.flag = false
-         self.getDynamic()
-       }
-     })
-
-
-
+    const app = document.getElementById("app");
+    app.addEventListener("scroll", function(e) {
+      let scrollHeight = app.scrollHeight;
+      let appHeight = app.clientHeight;
+      let apptHeight = app.scrollTop;
+      if (
+        apptHeight + appHeight + 1 > scrollHeight &&
+        self.flag &&
+        self.$route.path == "/plaza/dynamic"
+      ) {
+        self.flag = false;
+        self.getDynamic();
+      }
+    });
   }
 };
 </script>
 <style lang="less" scoped>
+.c-send .w100 {
+  min-height: 60px;
+}
+.actionBox {
+}
+.actionBox .flex {
+  width: 25%;
+}
+.s-select {
+  color: #888888;
+  width: 95%;
+  margin: auto;
+}
+.s-select span {
+  width: 20%;
+  text-align: center;
+}
+.s-active {
+  background: #866ef0;
+  color: #ffffff;
+  border-radius: 20px;
+  font-weight: bold;
+}
+.iconsousuo {
+  position: absolute;
+  right: 0;
+}
+.li-comment {
+  background: #f9f9f9;
+  border-radius: 3px;
+  padding: 0 10px;
+}
+.li-comment div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.c-i-name {
+  color: #0168c3;
+}
+.c-close {
+  position: absolute;
+  right: 2%;
+  top: 0;
+  width: 20px;
+}
+.comment {
+  position: fixed;
+  bottom: 0;
+  background: #f5f5f5;
+  z-index: 9;
+  padding: 8px 0;
+  transform: translateY(150%);
+  transition: all 0.3s;
+}
+.showComment {
+  transform: translateY(0);
+}
+.c-input {
+  width: 70%;
+  padding: 0 10px;
+  background: #ffffff;
+}
+.c-send {
+  width: 20%;
+}
 
-  .c-send .w100{
-    min-height: 60px;
-  }
-  .actionBox{
-
-  }
-  .actionBox .flex{
-    width: 25%;
-  }
-  .s-select{
-    color: #888888;
-    width: 95%;
-    margin: auto;
-  }
-  .s-select span{
-    width: 20%;
-    text-align: center;
-  }
-  .s-active{
-    background: #866ef0;
-    color: #ffffff;
-    border-radius: 20px;
-    font-weight: bold;
-  }
-  .iconsousuo{
-    position: absolute;
-    right: 0;
-  }
-  .li-comment{
-    background: #f9f9f9;
-    border-radius: 3px;
-    padding: 0 10px;
-  }
-  .li-comment div{
-    white-space:nowrap;
-    overflow:hidden;
-   text-overflow:ellipsis;
-  }
-  .c-i-name{
-    color: #0168c3;
-  }
-  .c-close{
-    position: absolute;
-    right: 2%;
-    top: 0;
-    width: 20px;
-  }
-  .comment{
-    position: fixed;
-    bottom: 0;
-    background: #F5F5F5;
-    z-index: 9;
-    padding: 8px 0;
-    transform: translateY(150%);
-    transition: all .3s;
-  }
-  .showComment{
-    transform: translateY(0);
-  }
-  .c-input{
-    width:70%;
-    padding:0 10px;
-    background: #FFFFFF;
-  }
-  .c-send{
-    width: 20%;
-  }
-
-  .loading{
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: #FFFFFF;
-    z-index: 7;
-    top: 0;
-  }
-  ._search{
-    width: 98%;
-    opacity: 0;
-    transform: translateX(100%);
-    transition: all .25s;
-  }
-  ._search-active{
-    opacity: 1;
-    transform: translateX(0);
-  }
-.search{
+.loading {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  z-index: 7;
+  top: 0;
+}
+._search {
+  width: 98%;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.25s;
+}
+._search-active {
+  opacity: 1;
+  transform: translateX(0);
+}
+.search {
   width: 90%;
   height: 35px;
   right: 1%;
-  background: #FFFFFF;
+  background: #ffffff;
   z-index: 2;
   border-radius: 20px;
 }
-.search i{
+.search i {
   color: #888888;
 }
-.search /deep/ input{
+.search /deep/ input {
   width: 100%;
   display: flex;
   align-items: center;
 }
-._search .s-exit{
+._search .s-exit {
   width: 10%;
 }
 .container {
@@ -667,7 +773,7 @@ export default {
         // font-size: 15px;
       }
       .active {
-        transition: all .25s;
+        transition: all 0.25s;
         color: #fff;
         font-weight: bolder;
       }
@@ -683,44 +789,43 @@ export default {
       flex-flow: column;
       padding: 0.3rem;
       background: #fff;
-      .wrap{
-        align-items:flex-start;
-        .i-img{
+      .wrap {
+        align-items: flex-start;
+        .i-img {
           width: 20%;
-          img{
+          img {
             width: 60px;
             height: 60px;
             object-fit: cover;
             border-radius: 50%;
           }
+        }
+        .i-body {
+          width: 80%;
+          .fourInfo {
+            i {
+              font-size: 9px;
+            }
           }
-         .i-body{
-           width: 80%;
-            .fourInfo {
-              i{
-                font-size: 9px;
+          .belowBlock {
+            .actionBox {
+              .icon80 {
+                width: 65%;
+                span {
+                  // min-width: 45px;
+                  text-align: left;
+                }
+                /deep/ i {
+                  font-size: 20px;
                 }
               }
-            .belowBlock{
-              .actionBox{
-                .icon80{width: 65%;
-                  span{
-                    // min-width: 45px;
-                    text-align: left;
-                  }
-                  /deep/ i{
-                    font-size:20px;
-                  }
-                }
-                .icon20{width: 10%;}
+              .icon20 {
+                width: 10%;
               }
             }
           }
-
-
+        }
       }
-
-
 
       .belowBlock {
         .imgBox {
@@ -764,7 +869,7 @@ export default {
     border-radius: 50%;
   }
 }
-.container ul li .belowBlock .imgBox1 img{
+.container ul li .belowBlock .imgBox1 img {
   width: 100%;
   max-height: 6rem;
 }
