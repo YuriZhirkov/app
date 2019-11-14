@@ -185,198 +185,223 @@
 
 </template>
 <script>
-import { mapActions, mapState, mapGetters } from "vuex"
-import District from 'ydui-district/dist/jd_province_city_id.js';
+import { mapActions, mapState, mapGetters } from "vuex";
+import District from "ydui-district/dist/jd_province_city_id.js";
 
 export default {
   name: "",
   data() {
     return {
-      info:[],
-      district:District,
-      marriedStatus:['保密','无婚史','离异无孩','离异有孩','丧偶无孩','丧偶有孩'],
-      housing:['保密','有房有贷','有房无贷','需要时购房','暂未购房','与父母同住'],
-      automobile:['保密','暂未购车','经济型车','中档型车','豪华型车'],
-      smoke:['保密','从不吸烟','偶尔吸烟','经常吸烟','应酬吸烟'],
-      drink:['保密','从不喝酒','偶尔喝酒','经常喝酒','应酬喝酒'],
-      playGame:['保密','从不打游戏','偶尔打游戏','经常打游戏'],
-      hopeMarriedTime:['1年内','2年内'],
-      lonelinessIndex:['偶尔想找个人聊','看电影想找个人','生病想找个人','吃饭想找个人','想结束单身'],
-      isCookDinner:['不会做','不太会','一般','还可以','满意','非常好'],
-      selectData:[],
-      selectType:'',
-      addrType:'',
-      selectShow:false,
-      addrShow:false,
-      selectok:''
+      info: [],
+      district: District,
+      marriedStatus: [
+        "保密",
+        "无婚史",
+        "离异无孩",
+        "离异有孩",
+        "丧偶无孩",
+        "丧偶有孩"
+      ],
+      housing: [
+        "保密",
+        "有房有贷",
+        "有房无贷",
+        "需要时购房",
+        "暂未购房",
+        "与父母同住"
+      ],
+      automobile: ["保密", "暂未购车", "经济型车", "中档型车", "豪华型车"],
+      smoke: ["保密", "从不吸烟", "偶尔吸烟", "经常吸烟", "应酬吸烟"],
+      drink: ["保密", "从不喝酒", "偶尔喝酒", "经常喝酒", "应酬喝酒"],
+      playGame: ["保密", "从不打游戏", "偶尔打游戏", "经常打游戏"],
+      hopeMarriedTime: ["1年内", "2年内"],
+      lonelinessIndex: [
+        "偶尔想找个人聊",
+        "看电影想找个人",
+        "生病想找个人",
+        "吃饭想找个人",
+        "想结束单身"
+      ],
+      isCookDinner: ["不会做", "不太会", "一般", "还可以", "满意", "非常好"],
+      selectData: [],
+      selectType: "",
+      addrType: "",
+      selectShow: false,
+      addrShow: false,
+      selectok: ""
     };
   },
   methods: {
-    submit(){
-      if(!this.chooseData()) return
-      const self = this
-      this.$dialog.loading.open('保存中..')
+    submit() {
+      if (!this.chooseData()) return;
+      const self = this;
+      this.$dialog.loading.open("保存中..");
       const data = {
-        userId:this.userId,
-        stature:this.info.stature,
-        weight:this.info.weight,
-        age:this.info.age,
-        gender:this.info.gender,
-        marriedStatus:this.info.marriedStatus,
-        nativePlace:this.info.nativePlace,
-        area:this.info.area,
-        company:this.info.company,
-        industry:this.info.industry,
-        salary:this.info.salary,
-        housing:this.info.housing,
-        automobile:this.info.automobile,
-        smoke:this.info.smoke,
-        drink:this.info.drink,
-        playGame:this.info.playGame,
-        hopeMarriedTime:this.info.hopeMarriedTime,
-        lonelinessIndex:this.info.lonelinessIndex,
-        isCookDinner:this.info.isCookDinner
-      }
-      this.post('user/extendInfo/editAndUpdate',data,function(e){
-        self.$dialog.loading.close()
-        if(e.errCode != 200){
-          self.$dialog.toast({mes:e.errMsg})
-          return
+        userId: this.userId,
+        stature: this.info.stature,
+        weight: this.info.weight,
+        age: this.info.age,
+        gender: this.info.gender,
+        marriedStatus: this.info.marriedStatus,
+        nativePlace: this.info.nativePlace,
+        area: this.info.area,
+        company: this.info.company,
+        industry: this.info.industry,
+        salary: this.info.salary,
+        housing: this.info.housing,
+        automobile: this.info.automobile,
+        smoke: this.info.smoke,
+        drink: this.info.drink,
+        playGame: this.info.playGame,
+        hopeMarriedTime: this.info.hopeMarriedTime,
+        lonelinessIndex: this.info.lonelinessIndex,
+        isCookDinner: this.info.isCookDinner
+      };
+      this.post("user/extendInfo/editAndUpdate", data, function(e) {
+        self.$dialog.loading.close();
+        if (e.errCode != 200) {
+          self.$dialog.toast({ mes: e.errMsg });
+          return;
         }
-          self.$dialog.toast({mes:'保存成功',icon:'success'})
-          //personalDetail
-          //self.$router.go(-1)
-          self.$router.push("/personal/personalDetail");
-      })
+        //personalDetail
+        //self.$router.go(-1)
+        self.$dialog.toast({
+          mes: "保存成功",
+          timeout: 2000,
+          callback: () => {
+            self.$router.push({
+              path: "/personal/personalDetail"
+            });
+          }
+        });
+      });
     },
-    chooseData(){
-      if(!this.info.stature){
-        this.$dialog.toast({mes:'请填写您的身高'})
-        return
+    chooseData() {
+      if (!this.info.stature) {
+        this.$dialog.toast({ mes: "请填写您的身高" });
+        return;
       }
-      if(!this.info.marriedStatus){
-        this.$dialog.toast({mes:'请选择您的婚史'})
-        return
+      // if (!this.info.marriedStatus) {
+      //   this.$dialog.toast({ mes: "请选择您的婚史" });
+      //   return;
+      // }
+      if (!this.info.nativePlace) {
+        this.$dialog.toast({ mes: "请选择您户口所在地" });
+        return;
       }
-      if(!this.info.nativePlace){
-        this.$dialog.toast({mes:'请选择您户口所在地'})
-        return
+      if (!this.info.area) {
+        this.$dialog.toast({ mes: "请选择您当前居住地" });
+        return;
       }
-      if(!this.info.area){
-        this.$dialog.toast({mes:'请选择您当前居住地'})
-        return
+      if (!this.info.housing) {
+        this.$dialog.toast({ mes: "请选择您住房状况" });
+        return;
       }
-      if(!this.info.housing){
-        this.$dialog.toast({mes:'请选择您住房状况'})
-        return
-      }
-      return true
-
+      return true;
     },
-    addrResult(e){
-      this.info[this.addrType] = e.itemName1+' '+e.itemName2
+    addrResult(e) {
+      this.info[this.addrType] = e.itemName1 + " " + e.itemName2;
     },
-    openAddr(type){
-      this.addrType = type
-      this.addrShow = true
-      this.selectShow = false
+    openAddr(type) {
+      this.addrType = type;
+      this.addrShow = true;
+      this.selectShow = false;
     },
-    openSelect(type){
-      this.selectType = type
-      this.selectData = this[type]
-      this.selectShow = true
-      this.addrShow = false
+    openSelect(type) {
+      this.selectType = type;
+      this.selectData = this[type];
+      this.selectShow = true;
+      this.addrShow = false;
     },
-    selected(data,index){
-      this.info[this.selectType] = this[this.selectType][index]
-      this.selectShow = false
+    selected(data, index) {
+      this.info[this.selectType] = this[this.selectType][index];
+      this.selectShow = false;
     },
-    getUserInfo2(){
-      const  self = this
-      this.get('user/extendInfo/get',this.userId,function(e){
-        if(e.errCode != 200){
-          return
+    getUserInfo2() {
+      const self = this;
+      this.get("user/extendInfo/get", this.userId, function(e) {
+        if (e.errCode != 200) {
+          return;
         }
-        self.info = e.data
-      })
+        self.info = e.data;
+      });
     }
   },
 
   components: {},
-  computed:{
-	  ...mapState(['userId'])
+  computed: {
+    ...mapState(["userId"])
   },
 
   mounted() {
-    this.getUserInfo2()
-    document.getElementById('app').scrollTop = 0
-  },
-
+    this.getUserInfo2();
+    document.getElementById("app").scrollTop = 0;
+  }
 };
 </script>
 <style  scoped>
-  .bottom{
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    background: #f5f5f5;
-    z-index: 8;
-  }
-  .content{
-    background: #FFFFFF;
-  }
-  .s-item{
-    min-height: 45px;
-  }
-  .s-tip{
-    line-height: 4;
-    font-size: 15px;
-  }
-  .submit{
-    margin: 20px auto;
-    height: 43px;
-    border-radius: 1rem;
-    color: #FFFFFF;
-  }
- .sex{
-   margin-left: 25px;
- }
- .b-item h4{
-   line-height: 4;
- }
- .b-item{
-   min-height: 50px;
-   width: 90%;
-   margin:auto;
-   border-bottom: 1px solid #f1f1f1;
- }
- .b-name{
-   font-size: 14px;
-   width: 30%;
- }
- .b-input{
-   width: 70%;
- }
-  ._b-input{
-    width: 100%;
-  }
-  /deep/ input{
-   color: #000000;
-   text-align: right;
-  }
-  .yd-input /deep/ input{
-    color: #f09d00;
-  }
-  .none /deep/ input{
-    color: #7b7b7b;
-  }
- ._b-input input{
-   font-size: 15px;
- }
- .b-input i{
-   font-size: 15px;
- }
- .b-item-no{
-   border: none;
- }
+.bottom {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  background: #f5f5f5;
+  z-index: 8;
+}
+.content {
+  background: #ffffff;
+}
+.s-item {
+  min-height: 45px;
+}
+.s-tip {
+  line-height: 4;
+  font-size: 15px;
+}
+.submit {
+  margin: 20px auto;
+  height: 43px;
+  border-radius: 1rem;
+  color: #ffffff;
+}
+.sex {
+  margin-left: 25px;
+}
+.b-item h4 {
+  line-height: 4;
+}
+.b-item {
+  min-height: 50px;
+  width: 90%;
+  margin: auto;
+  border-bottom: 1px solid #f1f1f1;
+}
+.b-name {
+  font-size: 14px;
+  width: 30%;
+}
+.b-input {
+  width: 70%;
+}
+._b-input {
+  width: 100%;
+}
+/deep/ input {
+  color: #000000;
+  text-align: right;
+}
+.yd-input /deep/ input {
+  color: #f09d00;
+}
+.none /deep/ input {
+  color: #7b7b7b;
+}
+._b-input input {
+  font-size: 15px;
+}
+.b-input i {
+  font-size: 15px;
+}
+.b-item-no {
+  border: none;
+}
 </style>

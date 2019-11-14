@@ -132,7 +132,7 @@ Vue.use(YDUI);
 Vue.prototype.appName = '语过添晴'
 //添加路由钩子修改每个页面标题
 router.beforeEach((to, from, next) => {
-
+  
   //如果自定义了标题就取标题，否则拿全局标题
   window.document.title = to.meta.title !== undefined ? (to.meta.title + '-' + Vue.prototype.appName) : Vue.prototype
     .appName;

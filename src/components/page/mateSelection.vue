@@ -203,205 +203,220 @@
 
 </template>
 <script>
-import { mapActions, mapState, mapGetters } from "vuex"
-import District from 'ydui-district/dist/jd_province_city_id.js';
+import { mapActions, mapState, mapGetters } from "vuex";
+import District from "ydui-district/dist/jd_province_city_id.js";
 
 export default {
   name: "",
   data() {
     return {
-      info:[],
-      district:District,
-      educationalBackground:['初中及以下','专科','本科','硕士'],
+      info: [],
+      district: District,
+      educationalBackground: ["初中及以下", "专科", "本科", "硕士"],
 
       // marriedStatus:['保密','无婚史','离异无孩','离异有孩','丧偶无孩','丧偶有孩'],
-      housing:['保密','有房有贷','有房无贷','需要时购房','暂未购房','与父母同住'],
-      automobile:['保密','暂未购车','经济型车','中档型车','豪华型车'],
+      housing: [
+        "保密",
+        "有房有贷",
+        "有房无贷",
+        "需要时购房",
+        "暂未购房",
+        "与父母同住"
+      ],
+      automobile: ["保密", "暂未购车", "经济型车", "中档型车", "豪华型车"],
       // smoke:['保密','从不吸烟','偶尔吸烟','经常吸烟','应酬吸烟'],
       // drink:['保密','从不喝酒','偶尔喝酒','经常喝酒','应酬喝酒'],
       // playGame:['保密','从不打游戏','偶尔打游戏','经常打游戏'],
       // hopeMarriedTime:['1年内','2年内'],
       // loneLinessIndex:['偶尔想找个人聊','看电影想找个人','生病想找个人','吃饭想找个人','想结束单身'],
       // isCookDinner:['不会做','不太会','一般','还可以','满意','非常好'],
-      selectData:[],
-      selectType:'',
-      addrType:'',
-      selectShow:false,
-      addrShow:false,
-      selectok:''
+      selectData: [],
+      selectType: "",
+      addrType: "",
+      selectShow: false,
+      addrShow: false,
+      selectok: ""
     };
   },
   methods: {
-    submit(){
+    submit() {
       // if(!this.chooseData()) return
-      const self = this
-      this.$dialog.loading.open('保存中..')
+      const self = this;
+      this.$dialog.loading.open("保存中..");
       const data = {
-        userId:this.userId,
-        statureMin:this.info.statureMin,
-        statureMax:this.info.statureMax,
+        userId: this.userId,
+        statureMin: this.info.statureMin,
+        statureMax: this.info.statureMax,
         // weight:this.info.weight,
-        ageMin:this.info.ageMin,
-        ageMax:this.info.ageMax,
-        educationalBackground:this.info.educationalBackground,
+        ageMin: this.info.ageMin,
+        ageMax: this.info.ageMax,
+        educationalBackground: this.info.educationalBackground,
 
         // marriedStatus:this.info.marriedStatus,
-        nativePlace:this.info.nativePlace,
-        area:this.info.area,
-        company:this.info.company,
+        nativePlace: this.info.nativePlace,
+        area: this.info.area,
+        company: this.info.company,
         // industry:this.info.industry,
-        salaryMin:this.info.salaryMin,
-        salaryMax:this.info.salaryMax,
-        housing:this.info.housing,
-        automobile:this.info.automobile,
+        salaryMin: this.info.salaryMin,
+        salaryMax: this.info.salaryMax,
+        housing: this.info.housing,
+        automobile: this.info.automobile
         // smoke:this.info.smoke,
         // drink:this.info.drink,
         // playGame:this.info.playGame,
         // hopeMarriedTime:this.info.hopeMarriedTime,
         // loneLinessIndex:this.info.loneLinessIndex,
         // isCookDinner:this.info.isCookDinner
-      }
-      this.post('user/set/mateSelection',data,function(e){
-        self.$dialog.loading.close()
-        if(e.errCode != 200 ){
-          self.$dialog.toast({mes:e.errMsg,icon:'error'})
-          return
+      };
+      this.post("user/set/mateSelection", data, function(e) {
+        self.$dialog.loading.close();
+        if (e.errCode != 200) {
+          self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+          return;
         }
         // self.$emit('mateSelectionDone')
-        self.$dialog.toast({mes:'保存择偶标准成功',icon:'success'})
+        //self.$dialog.toast({mes:'保存择偶标准成功',icon:'success'})
         //personalDetail
-        self.$router.push("/personal/personalDetail");
-      })
+        //self.$router.push("/personal/personalDetail");
+
+        self.$dialog.toast({
+          mes: "保存择偶标准成功",
+          timeout: 2000,
+          callback: () => {
+            self.$router.push({
+              path: "/personal/personalDetail"
+            });
+          }
+        });
+      });
     },
-    chooseData(){
-      if(!this.info.statureMin || !this.info.statureMax ){
-        this.$dialog.toast({mes:'请填写身高要求'})
-        return
+    chooseData() {
+      if (!this.info.statureMin || !this.info.statureMax) {
+        this.$dialog.toast({ mes: "请填写身高要求" });
+        return;
       }
       // if(!this.info.marriedStatus){
       //   this.$dialog.toast({mes:'请选择婚史要求'})
       //   return
       // }
-      if(!this.info.nativePlace){
-        this.$dialog.toast({mes:'请选择户口所在地要求'})
-        return
+      if (!this.info.nativePlace) {
+        this.$dialog.toast({ mes: "请选择户口所在地要求" });
+        return;
       }
-      if(!this.info.area){
-        this.$dialog.toast({mes:'请选择居住地要求'})
-        return
+      if (!this.info.area) {
+        this.$dialog.toast({ mes: "请选择居住地要求" });
+        return;
       }
-      if(!this.info.housing){
-        this.$dialog.toast({mes:'请选择住房状况要求'})
-        return
+      if (!this.info.housing) {
+        this.$dialog.toast({ mes: "请选择住房状况要求" });
+        return;
       }
-      return true
-
+      return true;
     },
-    addrResult(e){
-      this.info[this.addrType] = e.itemName1+' '+e.itemName2
+    addrResult(e) {
+      this.info[this.addrType] = e.itemName1 + " " + e.itemName2;
     },
-    openAddr(type){
-      this.addrType = type
-      this.addrShow = true
+    openAddr(type) {
+      this.addrType = type;
+      this.addrShow = true;
     },
-    openSelect(type){
-      this.selectType = type
-      this.selectData = this[type]
-      this.selectShow = true
+    openSelect(type) {
+      this.selectType = type;
+      this.selectData = this[type];
+      this.selectShow = true;
     },
-    selected(data,index){
+    selected(data, index) {
       // if(this.selectType == 'loneLinessIndex'){
       //   this.info[this.selectType] = index
       // }else{
-        this.info[this.selectType] = this[this.selectType][index]
+      this.info[this.selectType] = this[this.selectType][index];
       // }
-      this.selectShow = false
+      this.selectShow = false;
     },
-    getMateSelection(){
-      const  self = this
-      this.get('user/get/mateSelection/',this.userId,function(e){
-        if(e.errCode != 200){
-          self.$dialog.toast({mes:e.errMsg,icon:"error"})
-          return
+    getMateSelection() {
+      const self = this;
+      this.get("user/get/mateSelection/", this.userId, function(e) {
+        if (e.errCode != 200) {
+          self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+          return;
         }
-        self.info= e.data
-      })
-    },
+        self.info = e.data;
+      });
+    }
   },
 
   components: {},
-  computed:{
-	  ...mapState(['userId'])
+  computed: {
+    ...mapState(["userId"])
   },
 
   mounted() {
-    this.getMateSelection()
-    document.getElementById('app').scrollTop = 0
-  },
-
+    this.getMateSelection();
+    document.getElementById("app").scrollTop = 0;
+  }
 };
 </script>
 <style  scoped>
-  .bottom{
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    background: #f5f5f5;
-    z-index: 8;
-  }
+.bottom {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  background: #f5f5f5;
+  z-index: 8;
+}
 
-  .mate{
-    background: #FFFFFF;
-  }
-  .s-item{
-    min-height: 45px;
-  }
-  .s-tip{
-    line-height: 4;
-    font-size: 15px;
-  }
-  .submit{
-    margin: 20px auto;
-    height: 43px;
-    border-radius: 1rem;
-    color: #FFFFFF;
-  }
- .sex{
-   margin-right: 25px;
- }
- .b-item h4{
-   line-height: 4;
- }
- .b-item{
-   min-height: 50px;
-   width: 90%;
-   margin: auto;
-   border-bottom: 1px solid #F5F5F5;
- }
- .b-item-none{
-   border: none;
- }
- .b-name{
-   font-size: 14px;
-   width: 30%;
- }
- .b-input{
-   width: 70%;
- }
-  ._b-input{
-    width: 100%;
-  }
- ._b-input input{
-   font-size: 15px;
- }
- .b-input i{
-   font-size: 15px;
- }
- .yd-input /deep/ input{
-   color: #f09d00;
-   text-align: right;
- }
- .none /deep/ input{
-    color: #7b7b7b;
- }
+.mate {
+  background: #ffffff;
+}
+.s-item {
+  min-height: 45px;
+}
+.s-tip {
+  line-height: 4;
+  font-size: 15px;
+}
+.submit {
+  margin: 20px auto;
+  height: 43px;
+  border-radius: 1rem;
+  color: #ffffff;
+}
+.sex {
+  margin-right: 25px;
+}
+.b-item h4 {
+  line-height: 4;
+}
+.b-item {
+  min-height: 50px;
+  width: 90%;
+  margin: auto;
+  border-bottom: 1px solid #f5f5f5;
+}
+.b-item-none {
+  border: none;
+}
+.b-name {
+  font-size: 14px;
+  width: 30%;
+}
+.b-input {
+  width: 70%;
+}
+._b-input {
+  width: 100%;
+}
+._b-input input {
+  font-size: 15px;
+}
+.b-input i {
+  font-size: 15px;
+}
+.yd-input /deep/ input {
+  color: #f09d00;
+  text-align: right;
+}
+.none /deep/ input {
+  color: #7b7b7b;
+}
 </style>

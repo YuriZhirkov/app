@@ -24,7 +24,7 @@
             <span slot="left">QQ</span>
             <yd-input slot="right" type="number" v-model="info.qq" placeholder="请输入QQ号"></yd-input>
           </yd-cell-item>
-          <yd-cell-item  v-model="isShowPhone">
+          <yd-cell-item  v-if="isShowPhone">
                 <span slot="left">手机号：</span>
                 <yd-input
                   slot="right"
@@ -34,7 +34,7 @@
                   placeholder="请输入手机号码"
                 ></yd-input>
           </yd-cell-item>
-          <yd-cell-item v-model="isShowPhone">
+          <yd-cell-item v-if="isShowPhone">
                 <span
                   @click="getPhoneValidateCode"
                   slot="right"
@@ -136,12 +136,11 @@ export default {
         qq: this.info.qq
       };
       this.post("user/baseInfo/identityAuthentication", data, function(e) {
-        
         if (e.errCode != 200) {
           self.$dialog.toast({ mes: e.errMsg, icon: "error" });
           return;
         }
-        self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
+        // self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
         // setTimeout(function(){
         // this.educationBackgroundAuthenticationHint();
         //判断一下jump 是否为1
@@ -149,16 +148,27 @@ export default {
 
         let jump = self.$route.query.jump;
         let msg = self.msg;
-       
+        console.log("submit-jump");
+        console.log(jump);
+        console.log("submit-msg");
+        console.log(msg);
+        console.log("submit-self.flag");
+        console.log(self.flag);
+
         if (!!jump && jump == 1) {
           if (self.flag == 1) {
-            self.$dialog.toast({ mes: msg, icon: "info" });
-            self.$router.push({
-              path: "/personal/authEducation",
-              query: { jump: 1 }
+            self.$dialog.toast({
+              mes: msg,
+              timeout: 1000,
+              callback: () => {
+                self.$router.push({
+                  path: "/personal/authEducation",
+                  query: { jump: 1 }
+                });
+              }
             });
           } else {
-            self.$router.push("/personal/personalDetail");
+            router.push("/personal/personalDetail");
           }
         } else {
           // 否则调用
@@ -268,10 +278,8 @@ export default {
             return;
           }
           if (i == 0) {
-            
             self.cover1 = e.data.data;
           } else if (i == 1) {
-            
             self.cover2 = e.data.data;
           }
         })
@@ -290,19 +298,26 @@ export default {
     },
     getInfo() {
       const self = this;
+      
       this.post(
         "user/baseInfo/get/authentication",
         { visitorId: this.userId },
         e => {
           if (!e) return;
           if (e.errCode != 200) return;
+          
           const d = e.data;
           self.info = d;
+
+           
+           debugger;
+
           const t = d.dateOfBirth;
-          self.info.dateOfBirth = t.substr(0, t.indexOf("T"));
+          self.info.dateOfBirth = t;
+       
           if (d.phone == undefined || d.phone == "" || d.phone == null) {
             self.isShowPhone = 1;
-          }
+          } 
           // console.log();
           /*
         realName:this.info.realName,

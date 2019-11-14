@@ -105,28 +105,35 @@ export default {
         "user/baseInfo/educationBackgroundAuthentication",
         this.info,
         function(e) {
-          
           if (e.errCode != 200) {
             self.$dialog.toast({ mes: e.errMsg, icon: "error" });
             return;
           }
           self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
-          
+
+
+          debugger;
           let jump = self.$route.query.jump;
           let msg = self.msg;
           if (!!jump && jump == 1) {
             if (self.flag == 1) {
-              self.$dialog.toast({ mes: msg, icon: "info" });
-
-              self.$router.push({
-                path: "/personal/multiInfo",
-                query: { i: 1 }
+              self.$dialog.toast({
+                mes: msg,
+                timeout: 1000,
+                callback: () => {
+                  self.$router.push({
+                    path: "/personal/multiInfo",
+                    query: { i: 1 }
+                  });
+                }
               });
+
+              
             } else {
               self.$router.push("/personal/personalDetail");
             }
           } else {
-            self.$router.push("/personal/personalDetail");
+            self.$router.go(-1);
           }
         }
       );
@@ -195,7 +202,6 @@ export default {
           userId: this.userId
         },
         res => {
-          
           if (res.errCode == 200) {
             let status = res.data.substr(0, 2);
             if (status == "01") {

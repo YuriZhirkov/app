@@ -165,12 +165,6 @@ export default {
       showAction: false,
       delId: "",
       uid: "",
-      showAuthEducation: 0,
-      flagEducationB: 0,
-      msgEducationB: "",
-      showMultilnfo: 0,
-      flagMultilnfo: 0,
-      msgMultilnfo: "",
 
       dynamicIndex: "",
       dynamicItems: [
@@ -489,24 +483,20 @@ export default {
           userId: this.userId
         },
         res => {
-          
           if (res.errCode == 200) {
             let status = res.data.substr(0, 2);
             if (status == "00" || status == "02") {
               let noAuth = res.data.substr(3);
               self.$dialog.toast({
                 mes: noAuth,
-                timeout: 2000,
+                timeout: 1500,
                 callback: () => {
                   self.$router.push({
-                    path: "/personal/authIdentity",
-                    query: { jump: 1 }
+                    path: "/personal/authIdentity"
+            
                   });
                 }
               });
-            } else {
-              self.showAuthEducation = 1;
-              self.showMultilnfo = 1;
             }
           }
         }
@@ -520,39 +510,46 @@ export default {
           userId: this.userId
         },
         res => {
-          
           if (res.errCode == 200) {
             let status = res.data.substr(0, 2);
             if (status == "00" || status == "02") {
               let noAuth = res.data.substr(3);
-              self.flagEducationB = 1;
-              self.msgEducationB = noAuth;
+              self.$dialog.toast({
+                mes: noAuth,
+                timeout: 2500,
+                callback: () => {
+                    self.$router.push({
+                      path: "/personal/authEducation",
+                      query: { jump: 1 }
+                  });
+                }
+              });
             }
           }
         }
       );
     },
 
-    baseHint() {
-      const self = this;
-      this.get(
-        "user/extendInfo/hint",
-        {
-          userId: this.userId
-        },
-        res => {
-          console.log("res", res);
-          if (res.errCode == 200) {
-            let status = res.data.substr(0, 2);
-            if (status == "01") {
-              let noAuth = res.data.substr(3);
-              self.msgMultilnfo = noAuth;
-              self.flagMultilnfo = 1;
-            }
-          }
-        }
-      );
-    },
+    // baseHint() {
+    //   const self = this;
+    //   this.get(
+    //     "user/extendInfo/hint",
+    //     {
+    //       userId: this.userId
+    //     },
+    //     res => {
+    //       console.log("res", res);
+    //       if (res.errCode == 200) {
+    //         let status = res.data.substr(0, 2);
+    //         if (status == "01") {
+    //           let noAuth = res.data.substr(3);
+    //           self.msgMultilnfo = noAuth;
+    //           self.flagMultilnfo = 1;
+    //         }
+    //       }
+    //     }
+    //   );
+    // },
 
     getCommentUserInfo(list) {
       const self = this;
@@ -592,29 +589,23 @@ export default {
       );
     }
   },
+
   mounted() {
     if (!this.userId) {
       this.$router.push("/");
     } else {
-      this.getDynamic();
       this.getUserInfo();
+      this.getDynamic();
       this.identityAuthenticationHint();
       this.educationBackgroundAuthenticationHint();
-      if (this.showAuthEducation == 1 && this.flagEducationB == 1) {
-        this.$dialog.toast({ mes: this.msgEducationB, icon: "info" });
-        this.$router.push({
-          path: "/personal/authEducation",
-          query: { jump: 1 }
-        });
-      }
-      this.baseHint();
-      if (this.showMultilnfo == 1 && this.flagMultilnfo == 1) {
-        this.$dialog.toast({ mes: this.msgMultilnfo, icon: "info" });
-        self.$router.push({
-          path: "/personal/multiInfo",
-          query: { i: 1 }
-        });
-      }
+      // this.baseHint();
+      // if (this.showMultilnfo == 1 && this.flagMultilnfo == 1) {
+      //   this.$dialog.toast({ mes: this.msgMultilnfo, icon: "info" });
+      //   self.$router.push({
+      //     path: "/personal/multiInfo",
+      //     query: { i: 1 }
+      //   });
+      // }
 
       // this.educationBackgroundAuthenticationHint();
       // this.baseHint();
