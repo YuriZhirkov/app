@@ -309,9 +309,6 @@ export default {
           const d = e.data;
           self.info = d;
 
-           
-           debugger;
-
           const t = d.dateOfBirth;
           self.info.dateOfBirth = t;
        

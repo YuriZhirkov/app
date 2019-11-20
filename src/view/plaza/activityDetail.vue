@@ -74,7 +74,10 @@
             <div class="rightBottom themeBg h100 flex bold fbig">
                 <div @click="join" class="w100 h100 flex" v-if="!info.isJoin">马上预订</div>
                 <div class="w100 h100 flex" v-if="info.isJoin">已加入</div>
+               
             </div>
+             <div class="fenxiang" @click="weiXinShare(info.activity.id)">分享</div>
+              
         </div>
    </div>
 </template>
@@ -118,6 +121,19 @@ export default {
         }
         self.$dialog.toast({mes:'活动删除成功',icon:'success'})
         self.$router.go(-1)
+      })
+    },
+    weiXinShare(aid){
+      const self = this
+      //微信分享
+      this.post('activity/delete',{activityId:aid},function(e){
+        //if(e.errCode != 200){
+          //self.$dialog.toast({mes:e.errMsg,icon:'error'})
+          //return
+        //}
+        //self.$dialog.toast({mes:'活动删除成功',icon:'success'})
+        //self.$router.go(-1)
+        console.log("微信分享");
       })
     },
     join(){
@@ -177,6 +193,14 @@ export default {
   .slides{
     max-height: 6rem;
     position: relative;
+  }
+  .fenxiang{
+    width: 3rem;
+    background-color:#fff;
+    text-align: center;
+    font-weight: bold;
+    background:linear-gradient(to right, #ad6cef, #846ff0);
+    line-height: 3.2;
   }
   .slides /deep/ img{
     width: 100%;

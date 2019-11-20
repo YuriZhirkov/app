@@ -281,10 +281,10 @@ export default {
         this.$dialog.toast({ mes: "请填写您的身高" });
         return;
       }
-      // if (!this.info.marriedStatus) {
-      //   this.$dialog.toast({ mes: "请选择您的婚史" });
-      //   return;
-      // }
+      if (!this.info.marriedStatus) {
+        this.$dialog.toast({ mes: "请选择您的婚史" });
+        return;
+      }
       if (!this.info.nativePlace) {
         this.$dialog.toast({ mes: "请选择您户口所在地" });
         return;

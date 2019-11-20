@@ -110,9 +110,6 @@ export default {
             return;
           }
           self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
-
-
-          debugger;
           let jump = self.$route.query.jump;
           let msg = self.msg;
           if (!!jump && jump == 1) {
