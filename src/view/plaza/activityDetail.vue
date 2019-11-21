@@ -178,7 +178,7 @@ export default {
           
           //自定义“分享给朋友”及“分享到QQ”按钮的分享内容
           wx.updateAppMessageShareData({
-              title: activity.activityTheme, // 分享标题
+              title: "测试微信分享", // 分享标题
               desc: activity.activityDetails, // 分享描述
               link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
@@ -197,7 +197,7 @@ export default {
           });
           // 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容
           wx.updateTimelineShareData({ 
-            title: activity.activityTheme,, // 分享标题
+            title: "测试微信分享", // 分享标题
             link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
             imgUrl: self.slides[0], // 分享图标
             success: function success(res) {
