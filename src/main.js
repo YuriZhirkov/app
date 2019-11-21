@@ -147,7 +147,7 @@ router.beforeEach((to, from, next) => {
   next();
 })
 // 这是外网的域名
-Vue.prototype.host = 'https://www.ygtqzhang.cn/'
+Vue.prototype.host = 'http://www.ygtqzhang.cn/'
 // 这是外网的ip
 //Vue.prototype.host = 'http://106.52.78.128:80/'
 // 这是内网的IP
