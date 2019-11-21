@@ -132,54 +132,80 @@ export default {
       　　　pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
       　}
       　return pwd;
-	}
+	  },
     weiXinShare(aid){
      
-      const self = this
-      let activity = info.activity;
+      const self = this;
+      let activity = self.info.activity;
+      console.log("activity="+self.info.activity);
       //生成随机字符串
-      let nonceStr = this.randomString(10);
+      let nonceStr = self.randomString(10);
+      console.log("nonceStr====="+nonceStr);
       //生成时间戳
-      let timestamp = parseInt(new Date().getTime()/1000) + ''
+      let timestamp = parseInt(new Date().getTime()/1000) + '';
+      console.log("timestamp====="+timestamp);
 
-      //let url = encodeURIComponent(window.location.href.split('#')[0]);
-      console.log("url="+window.location.href.split('#')[0]);
-      let url =   window.location.href.split('#')[0];
-      
+      let url = window.location.href;
+      console.log("url="+window.location.href);
+      //let url =   window.location.href.split('#')[0];
+      let urlEncode = encodeURIComponent(window.location.href);
+      console.log("urlEncode="+urlEncode);
       //微信分享
-      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,url:url},function(e){
+      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,url:urlEncode},function(e){
+        console.log("e====="+e);
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
           return
         }
 
+        console.log("e.data="+e.data);
         let date = e.data;
         let signature = date.signature;
         console.log("signature="+signature);
         
+
+        console.log("self.slides[0]="+self.slides[0]);
         
         //self.$dialog.toast({mes:'活动删除成功',icon:'success'})
         //console.log("微信分享");
         wx.config({
-            debug: true,
-            appId: 'wxebd08b5782d5a00d', // 和获取Ticke的必须一样------必填，公众号的唯一标识
-            timestamp:timestamp, // 必填，生成签名的时间戳
-            nonceStr: nonceStr, // 必填，生成签名的随机串
-            signature: signature,// 必填，签名，见附录1
-            //需要分享的列表项:发送给朋友，分享到朋友圈，分享到QQ，分享到QQ空间
-            jsApiList: [
-                'updateAppMessageShareData','updateTimelineShareData'
-            ]
-        });
+              debug: true,
+              appId: 'wxebd08b5782d5a00d', // 和获取Ticke的必须一样------必填，公众号的唯一标识
+              timestamp:timestamp, // 必填，生成签名的时间戳
+              nonceStr: nonceStr, // 必填，生成签名的随机串
+              signature: signature,// 必填，签名，见附录1
+              //需要分享的列表项:发送给朋友，分享到朋友圈，分享到QQ，分享到QQ空间
+              jsApiList: [
+                  'updateAppMessageShareData','updateTimelineShareData'
+              ]
+          });
 
         wx.ready(function(){
-          // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
-          //则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+            // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
+            //则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
           
-          //自定义“分享给朋友”及“分享到QQ”按钮的分享内容
-          wx.updateAppMessageShareData({
+            //自定义“分享给朋友”及“分享到QQ”按钮的分享内容
+            wx.updateAppMessageShareData({
+                title: "测试微信分享", // 分享标题
+                desc: activity.activityDetails, // 分享描述
+                link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                imgUrl: self.slides[0], // 分享图标
+                success: function success(res) {
+                  console.log('分享成功=='+JSON.stringify(res));
+                  self.$dialog.toast({mes:'分享成功',icon:'success'})
+                },
+                cancel: function cancel(res) {
+                  console.log('分享取消=='+JSON.stringify(res));
+                  self.$dialog.toast({mes:'分享取消',icon:'error'})
+                },
+                fail: function fail(res) {
+                  console.log('分享失败=='+JSON.stringify(res));
+                  self.$dialog.toast({mes:'分享失败',icon:'error'})
+                }
+            });
+            // 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容
+            wx.updateTimelineShareData({ 
               title: "测试微信分享", // 分享标题
-              desc: activity.activityDetails, // 分享描述
               link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
               success: function success(res) {
@@ -194,30 +220,14 @@ export default {
                 console.log('分享失败=='+JSON.stringify(res));
                 self.$dialog.toast({mes:'分享失败',icon:'error'})
               }
-          });
-          // 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容
-          wx.updateTimelineShareData({ 
-            title: "测试微信分享", // 分享标题
-            link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-            imgUrl: self.slides[0], // 分享图标
-            success: function success(res) {
-              console.log('分享成功=='+JSON.stringify(res));
-              self.$dialog.toast({mes:'分享成功',icon:'success'})
-            },
-            cancel: function cancel(res) {
-              console.log('分享取消=='+JSON.stringify(res));
-              self.$dialog.toast({mes:'分享取消',icon:'error'})
-            },
-            fail: function fail(res) {
-              console.log('分享失败=='+JSON.stringify(res));
-              self.$dialog.toast({mes:'分享失败',icon:'error'})
-            }
-          })
-      });
-      wx.error(function(res){
-           // config信息验证失败会执行error函数，
-           //如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
-           console.log('微信验证失败=='+JSON.stringify(res));
+            })
+        });
+        wx.error(function(res){
+            // config信息验证失败会执行error函数，
+            //如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+            console.log('微信验证失败=='+JSON.stringify(res));
+        });
+      
       });
     },
     join(){
