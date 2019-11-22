@@ -146,13 +146,13 @@ export default {
       let timestamp = parseInt(new Date().getTime()/1000) + '';
       console.log("timestamp====="+timestamp);
 
-      let url = window.location.href;
+      let url = encodeURIComponent(window.location.href);
       console.log("url="+window.location.href);
       //let url =   window.location.href.split('#')[0];
       let urlEncode = window.location.href;
       console.log("urlEncode="+urlEncode);
       //微信分享
-      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,url:urlEncode},function(e){
+      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,url:url},function(e){
         console.log("e====="+e);
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
