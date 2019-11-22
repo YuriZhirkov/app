@@ -137,7 +137,8 @@ export default {
      
       const self = this;
       let activity = self.info.activity;
-      console.log("activity="+self.info.activity);
+      console.log("activity=");
+      console.log(self.info.activity);
       //生成随机字符串
       let nonceStr = self.randomString(10);
       console.log("nonceStr====="+nonceStr);
@@ -148,7 +149,7 @@ export default {
       let url = window.location.href;
       console.log("url="+window.location.href);
       //let url =   window.location.href.split('#')[0];
-      let urlEncode = encodeURIComponent(window.location.href);
+      let urlEncode = window.location.href;
       console.log("urlEncode="+urlEncode);
       //微信分享
       this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,url:urlEncode},function(e){
@@ -158,7 +159,8 @@ export default {
           return
         }
 
-        console.log("e.data="+e.data);
+        console.log("e.data=");
+        console.log(e.data);
         let date = e.data;
         let signature = date.signature;
         console.log("signature="+signature);
@@ -176,7 +178,7 @@ export default {
               signature: signature,// 必填，签名，见附录1
               //需要分享的列表项:发送给朋友，分享到朋友圈，分享到QQ，分享到QQ空间
               jsApiList: [
-                  'updateAppMessageShareData','updateTimelineShareData'
+                  'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareQZone'
               ]
           });
 
@@ -185,26 +187,44 @@ export default {
             //则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
           
             //自定义“分享给朋友”及“分享到QQ”按钮的分享内容
-            wx.updateAppMessageShareData({
-                title: "测试微信分享", // 分享标题
-                desc: activity.activityDetails, // 分享描述
-                link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-                imgUrl: self.slides[0], // 分享图标
-                success: function success(res) {
-                  console.log('分享成功=='+JSON.stringify(res));
-                  self.$dialog.toast({mes:'分享成功',icon:'success'})
-                },
-                cancel: function cancel(res) {
-                  console.log('分享取消=='+JSON.stringify(res));
-                  self.$dialog.toast({mes:'分享取消',icon:'error'})
-                },
-                fail: function fail(res) {
-                  console.log('分享失败=='+JSON.stringify(res));
-                  self.$dialog.toast({mes:'分享失败',icon:'error'})
-                }
-            });
+            // wx.updateAppMessageShareData({
+            //     title: "测试微信分享", // 分享标题
+            //     desc: activity.activityDetails, // 分享描述
+            //     link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            //     imgUrl: self.slides[0], // 分享图标
+            //     success: function success(res) {
+            //       console.log('分享成功=='+JSON.stringify(res));
+            //       self.$dialog.toast({mes:'分享成功',icon:'success'})
+            //     },
+            //     cancel: function cancel(res) {
+            //       console.log('分享取消=='+JSON.stringify(res));
+            //       self.$dialog.toast({mes:'分享取消',icon:'error'})
+            //     },
+            //     fail: function fail(res) {
+            //       console.log('分享失败=='+JSON.stringify(res));
+            //       self.$dialog.toast({mes:'分享失败',icon:'error'})
+            //     }
+            // });
             // 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容
-            wx.updateTimelineShareData({ 
+            // wx.updateTimelineShareData({ 
+            //   title: "测试微信分享", // 分享标题
+            //   link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            //   imgUrl: self.slides[0], // 分享图标
+            //   success: function success(res) {
+            //     console.log('分享成功=='+JSON.stringify(res));
+            //     self.$dialog.toast({mes:'分享成功',icon:'success'})
+            //   },
+            //   cancel: function cancel(res) {
+            //     console.log('分享取消=='+JSON.stringify(res));
+            //     self.$dialog.toast({mes:'分享取消',icon:'error'})
+            //   },
+            //   fail: function fail(res) {
+            //     console.log('分享失败=='+JSON.stringify(res));
+            //     self.$dialog.toast({mes:'分享失败',icon:'error'})
+            //   }
+            // })
+            //获取“分享到朋友圈”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareTimeline({
               title: "测试微信分享", // 分享标题
               link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
@@ -220,7 +240,65 @@ export default {
                 console.log('分享失败=='+JSON.stringify(res));
                 self.$dialog.toast({mes:'分享失败',icon:'error'})
               }
-            })
+            });
+            //获取“分享给朋友”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareAppMessage({
+              title: "测试微信分享", // 分享标题
+              desc: activity.activityDetails, // 分享描述
+              link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: self.slides[0], // 分享图标
+              success: function success(res) {
+                console.log('分享成功=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享成功',icon:'success'})
+              },
+              cancel: function cancel(res) {
+                console.log('分享取消=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享取消',icon:'error'})
+              },
+              fail: function fail(res) {
+                console.log('分享失败=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享失败',icon:'error'})
+              }
+            });
+            //获取“分享到QQ”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareQQ({
+              title: "测试微信分享", // 分享标题
+              desc: activity.activityDetails, // 分享描述
+              link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: self.slides[0], // 分享图标
+              success: function success(res) {
+                console.log('分享成功=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享成功',icon:'success'})
+              },
+              cancel: function cancel(res) {
+                console.log('分享取消=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享取消',icon:'error'})
+              },
+              fail: function fail(res) {
+                console.log('分享失败=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享失败',icon:'error'})
+              }
+            });
+            //获取“分享到QQ空间”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareQZone({
+              title: "测试微信分享", // 分享标题
+              desc: activity.activityDetails, // 分享描述
+              link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: self.slides[0], // 分享图标
+              success: function success(res) {
+                console.log('分享成功=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享成功',icon:'success'})
+              },
+              cancel: function cancel(res) {
+                console.log('分享取消=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享取消',icon:'error'})
+              },
+              fail: function fail(res) {
+                console.log('分享失败=='+JSON.stringify(res));
+                self.$dialog.toast({mes:'分享失败',icon:'error'})
+              }
+            });
+            
         });
         wx.error(function(res){
             // config信息验证失败会执行error函数，
