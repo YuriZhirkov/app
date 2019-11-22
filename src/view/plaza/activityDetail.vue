@@ -137,6 +137,7 @@ export default {
      
       const self = this;
       let activity = self.info.activity;
+      // let aid = self.aid.
       console.log("activity=");
       console.log(self.info.activity);
       //生成随机字符串
@@ -146,13 +147,13 @@ export default {
       let timestamp = parseInt(new Date().getTime()/1000) + '';
       console.log("timestamp====="+timestamp);
 
-      let url = encodeURIComponent(window.location.href);
-      console.log("url="+window.location.href);
+      // let url = encodeURIComponent(window.location.href);
+      // console.log("url="+url);
       //let url =   window.location.href.split('#')[0];
       let urlEncode = window.location.href;
       console.log("urlEncode="+urlEncode);
       //微信分享
-      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,url:url},function(e){
+      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,id:aid,flag:1},function(e){
         console.log("e====="+e);
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
