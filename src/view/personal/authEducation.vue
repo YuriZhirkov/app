@@ -69,14 +69,12 @@ export default {
         { label: "大专", callback: () => this.selected("大专") },
         { label: "高中及以下", callback: () => this.selected("高中及以下") }
       ],
-      show1: false,
-      flag: 0,
-      msg: ""
+      show1: false
     };
   },
   mounted() {
     this.getInfo();
-    this.baseHint();
+    //this.baseHint();
   },
   watch: {},
   methods: {
@@ -111,24 +109,8 @@ export default {
           }
           self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
           let jump = self.$route.query.jump;
-          let msg = self.msg;
           if (!!jump && jump == 1) {
-            if (self.flag == 1) {
-              self.$dialog.toast({
-                mes: msg,
-                timeout: 1000,
-                callback: () => {
-                  self.$router.push({
-                    path: "/personal/multiInfo",
-                    query: { i: 1 }
-                  });
-                }
-              });
-
-              
-            } else {
-              self.$router.push("/personal/personalDetail");
-            }
+            self.$router.push("/plaza/dynamic?login=1");
           } else {
             self.$router.go(-1);
           }
@@ -191,25 +173,25 @@ export default {
           self.info.educationalUrl = e.data.data;
         });
     },
-    baseHint() {
-      const self = this;
-      this.get(
-        "user/extendInfo/hint",
-        {
-          userId: this.userId
-        },
-        res => {
-          if (res.errCode == 200) {
-            let status = res.data.substr(0, 2);
-            if (status == "01") {
-              let noAuth = res.data.substr(3);
-              self.msg = noAuth;
-              self.flag = 1;
-            }
-          }
-        }
-      );
-    }
+    // baseHint() {
+    //   const self = this;
+    //   this.get(
+    //     "user/extendInfo/hint",
+    //     {
+    //       userId: this.userId
+    //     },
+    //     res => {
+    //       if (res.errCode == 200) {
+    //         let status = res.data.substr(0, 2);
+    //         if (status == "01") {
+    //           let noAuth = res.data.substr(3);
+    //           self.msg = noAuth;
+    //           self.flag = 1;
+    //         }
+    //       }
+    //     }
+    //   );
+    // }
   }
 };
 </script>

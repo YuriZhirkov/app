@@ -165,6 +165,7 @@ export default {
       showAction: false,
       delId: "",
       uid: "",
+      identityAuthenticationMsg:"",
 
       dynamicIndex: "",
       dynamicItems: [
@@ -487,48 +488,49 @@ export default {
             let status = res.data.substr(0, 2);
             if (status == "00" || status == "02") {
               let noAuth = res.data.substr(3);
-              self.$dialog.toast({
-                mes: noAuth,
-                timeout: 1500,
-                callback: () => {
-                  self.$router.push({
-                    path: "/personal/authIdentity"
+              self.identityAuthenticationMsg = noAuth;
+              // self.$dialog.toast({
+              //   mes: noAuth,
+              //   timeout: 1000,
+              //   callback: () => {
+              //     self.$router.push({
+              //       path: "/personal/authIdentity"
             
-                  });
-                }
-              });
+              //     });
+              //   }
+              // });
             }
           }
         }
       );
     },
-    educationBackgroundAuthenticationHint() {
-      const self = this;
-      this.get(
-        "user/baseInfo/educationBackgroundAuthentication/hint",
-        {
-          userId: this.userId
-        },
-        res => {
-          if (res.errCode == 200) {
-            let status = res.data.substr(0, 2);
-            if (status == "00" || status == "02") {
-              let noAuth = res.data.substr(3);
-              self.$dialog.toast({
-                mes: noAuth,
-                timeout: 2500,
-                callback: () => {
-                    self.$router.push({
-                      path: "/personal/authEducation",
-                      query: { jump: 1 }
-                  });
-                }
-              });
-            }
-          }
-        }
-      );
-    },
+    // educationBackgroundAuthenticationHint() {
+    //   const self = this;
+    //   this.get(
+    //     "user/baseInfo/educationBackgroundAuthentication/hint",
+    //     {
+    //       userId: this.userId
+    //     },
+    //     res => {
+    //       if (res.errCode == 200) {
+    //         let status = res.data.substr(0, 2);
+    //         if (status == "00" || status == "02") {
+    //           let noAuth = res.data.substr(3);
+    //           self.$dialog.toast({
+    //             mes: noAuth,
+    //             timeout: 2500,
+    //             callback: () => {
+    //                 self.$router.push({
+    //                   path: "/personal/authEducation",
+    //                   query: { jump: 1 }
+    //               });
+    //             }
+    //           });
+    //         }
+    //       }
+    //     }
+    //   );
+    // },
 
     // baseHint() {
     //   const self = this;
@@ -596,8 +598,17 @@ export default {
     } else {
       this.getUserInfo();
       this.getDynamic();
+      //这个认证放在一个对话框中
       this.identityAuthenticationHint();
-      this.educationBackgroundAuthenticationHint();
+
+      this.$dialog.confirm({
+                    title: '选填标题',
+                    mes: '我有一个小毛驴我从来也不骑！',
+                    opts: () => {
+                        this.$dialog.toast({mes: '你点了确定', timeout: 1000});
+                    }
+                });
+      // this.educationBackgroundAuthenticationHint();
       // this.baseHint();
       // if (this.showMultilnfo == 1 && this.flagMultilnfo == 1) {
       //   this.$dialog.toast({ mes: this.msgMultilnfo, icon: "info" });

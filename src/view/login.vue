@@ -103,14 +103,38 @@ export default {
     //this.$router.push("/plaza/dynamic");
   },
   created() {
+    let self = this;
     const obj = this.$route.query;
     if (obj && JSON.stringify(obj) != "{}") {
       let errCode = obj.errCode;
       if (errCode == 200) {
         //微信登录成功
         this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
+        let userInfo = obj.info;
         this.setUserId(obj.userId);
-        this.$router.push("/plaza/dynamic?login=1");
+        if(userInfo=='full') {
+             self.$router.push("/plaza/dynamic?login=1");
+        } else {
+            //对userInfo进行解释
+            let mgs = self.getUserInfoMsg(userInfo);
+            self.$dialog.toast({
+                mes: msg,
+                timeout: 1000,
+                callback: () => {
+                  self.$router.push({
+                    path: "/personal/multiInfo",
+                    query: { i: 1 }
+                  });
+                }
+             });
+        }
+        //if obj.info = full 跳到 /plaza/dynamic?login=1
+        //if  obj.info != full 跳到 /personal/multiInfo
+        //  self.$router.push({
+        //             path: "/personal/multiInfo",
+        //             query: { i: 1 }
+        //           });
+        //this.$router.push("/plaza/dynamic?login=1");
       } else {
         if (errCode == 400) {
           this.$dialog.toast({
@@ -182,14 +206,72 @@ export default {
             self.$dialog.toast({ mes: e.errMsg, icon: "error" });
             return;
           }
-          self.setUserId(e.data);
+          let data = e.data;
 
-          self.$router.push("/plaza/dynamic?login=1");
+          self.setUserId(data.userId);
+          let userInfo = data.info;
+
+          if(userInfo=='full') {
+             self.$router.push("/plaza/dynamic?login=1");
+          } else {
+             let mgs = self.getUserInfoMsg(userInfo);
+              //对userInfo进行解释
+              self.$dialog.toast({
+                mes: msg,
+                timeout: 1000,
+                callback: () => {
+                  self.$router.push({
+                    path: "/personal/multiInfo",
+                    query: { i: 1 }
+                  });
+                }
+              });
+          }
+
+
+        //if obj.info = full 跳到 /plaza/dynamic?login=1
+        //if  obj.info != full 跳到 /personal/multiInfo
+        //  self.$router.push({
+        //             path: "/personal/multiInfo",
+        //             query: { i: 1 }
+        //           });
+          
         }
       );
     },
     loginToWeiXin() {
       this.getTicket();
+    },
+    getUserInfoMsg(userInfo) {
+       //blank age gender
+       var msg = "";
+       switch (userInfo) {
+        case "blank":
+          msg = "您的基本信息为空，请补充完成";
+          break;
+        case "age":
+          msg = "您的年纪信息为空，请补充完成";
+          break;
+        case "gender":
+          msg = "您的性别信息为空，请补充完成";
+          break;
+        case "stature":
+          msg = "您的身高信息为空，请补充完成";
+          break;
+        case "marriedStatus":
+          msg = "您的婚姻状态信息为空，请补充完成";
+          break;
+        case "nativePlace":
+          msg = "您的老家地址信息为空，请补充完成";
+          break;
+        case  "area":
+          msg = "您的居住地信息为空，请补充完成";
+          break;
+        case  "salary":
+          msg = "您的月薪信息为空，请补充完成";
+          break;
+      }
+      return msg;
     },
     register() {
       register({

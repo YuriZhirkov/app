@@ -148,13 +148,6 @@ export default {
 
         let jump = self.$route.query.jump;
         let msg = self.msg;
-        console.log("submit-jump");
-        console.log(jump);
-        console.log("submit-msg");
-        console.log(msg);
-        console.log("submit-self.flag");
-        console.log(self.flag);
-
         if (!!jump && jump == 1) {
           if (self.flag == 1) {
             self.$dialog.toast({
@@ -168,7 +161,7 @@ export default {
               }
             });
           } else {
-            router.push("/personal/personalDetail");
+            self.$router.push("/plaza/dynamic?login=1");
           }
         } else {
           // 否则调用
