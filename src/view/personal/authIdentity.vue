@@ -140,7 +140,7 @@ export default {
           self.$dialog.toast({ mes: e.errMsg, icon: "error" });
           return;
         }
-        // self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
+        self.$dialog.toast({ mes: "提交成功 请等待审核", icon: "success" });
         // setTimeout(function(){
         // this.educationBackgroundAuthenticationHint();
         //判断一下jump 是否为1

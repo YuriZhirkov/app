@@ -265,13 +265,19 @@ export default {
         }
         //personalDetail
         //self.$router.go(-1)
+        let  jump =  self.$route.query.jump;
         self.$dialog.toast({
           mes: "保存成功",
           timeout: 2000,
           callback: () => {
-            self.$router.push({
-              path: "/personal/personalDetail"
-            });
+            if(!!jump && jump == 1) {
+              self.$router.push("/plaza/dynamic?login=1");
+            } else {
+              self.$router.push({
+                path: "/personal/personalDetail"
+              });
+            }
+
           }
         });
       });

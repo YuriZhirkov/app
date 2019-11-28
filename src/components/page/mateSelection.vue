@@ -278,14 +278,18 @@ export default {
         //self.$dialog.toast({mes:'保存择偶标准成功',icon:'success'})
         //personalDetail
         //self.$router.push("/personal/personalDetail");
-
+        let  jump =  self.$route.query.jump;
         self.$dialog.toast({
           mes: "保存择偶标准成功",
           timeout: 2000,
           callback: () => {
-            self.$router.push({
-              path: "/personal/personalDetail"
-            });
+            if(!!jump && jump == 1) {
+              self.$router.push("/plaza/dynamic?login=1");
+            } else {
+              self.$router.push({
+                path: "/personal/personalDetail"
+              });
+            }
           }
         });
       });
@@ -295,10 +299,10 @@ export default {
         this.$dialog.toast({ mes: "请填写身高要求" });
         return;
       }
-      // if(!this.info.marriedStatus){
-      //   this.$dialog.toast({mes:'请选择婚史要求'})
-      //   return
-      // }
+      if(!this.info.marriedStatus){
+        this.$dialog.toast({mes:'请选择婚史要求'})
+        return
+      }
       if (!this.info.nativePlace) {
         this.$dialog.toast({ mes: "请选择户口所在地要求" });
         return;

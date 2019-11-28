@@ -116,7 +116,7 @@ export default {
              self.$router.push("/plaza/dynamic?login=1");
         } else {
             //对userInfo进行解释
-            let mgs = self.getUserInfoMsg(userInfo);
+            let msg = self.getUserInfoMsg(userInfo);
             self.$dialog.toast({
                 mes: msg,
                 timeout: 1000,
@@ -214,7 +214,7 @@ export default {
           if(userInfo=='full') {
              self.$router.push("/plaza/dynamic?login=1");
           } else {
-             let mgs = self.getUserInfoMsg(userInfo);
+             let msg = self.getUserInfoMsg(userInfo);
               //对userInfo进行解释
               self.$dialog.toast({
                 mes: msg,
@@ -222,7 +222,7 @@ export default {
                 callback: () => {
                   self.$router.push({
                     path: "/personal/multiInfo",
-                    query: { i: 1 }
+                    query: { i: 1,jump: 1 }
                   });
                 }
               });

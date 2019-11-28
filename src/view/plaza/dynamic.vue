@@ -166,7 +166,7 @@ export default {
       delId: "",
       uid: "",
       identityAuthenticationMsg:"",
-
+      identityAuthenticationflag:null,
       dynamicIndex: "",
       dynamicItems: [
         {
@@ -485,22 +485,30 @@ export default {
         },
         res => {
           if (res.errCode == 200) {
+            console.log("res.data");
+            console.log(res.data);
             let status = res.data.substr(0, 2);
             if (status == "00" || status == "02") {
               let noAuth = res.data.substr(3);
-              self.identityAuthenticationMsg = noAuth;
-              // self.$dialog.toast({
-              //   mes: noAuth,
-              //   timeout: 1000,
-              //   callback: () => {
-              //     self.$router.push({
-              //       path: "/personal/authIdentity"
-            
-              //     });
-              //   }
-              // });
-            }
-          }
+              console.log("noAuth");
+              console.log(noAuth);
+              self.$dialog.confirm({
+                title: '身份认证',
+                mes: noAuth,
+                opts: () => {
+                    self.$dialog.toast({mes: '去认证',timeout: 1000,
+                        callback: () => {
+                            self.$router.push({
+                              path: "/personal/authIdentity",
+                              query: { jump: 1 }
+                            });
+                        }
+                    });
+                }
+              });
+
+            } 
+          } 
         }
       );
     },
@@ -591,8 +599,9 @@ export default {
       );
     }
   },
-
+  
   mounted() {
+    const self = this;
     if (!this.userId) {
       this.$router.push("/");
     } else {
@@ -600,14 +609,6 @@ export default {
       this.getDynamic();
       //这个认证放在一个对话框中
       this.identityAuthenticationHint();
-
-      this.$dialog.confirm({
-                    title: '选填标题',
-                    mes: '我有一个小毛驴我从来也不骑！',
-                    opts: () => {
-                        this.$dialog.toast({mes: '你点了确定', timeout: 1000});
-                    }
-                });
       // this.educationBackgroundAuthenticationHint();
       // this.baseHint();
       // if (this.showMultilnfo == 1 && this.flagMultilnfo == 1) {
@@ -621,8 +622,6 @@ export default {
       // this.educationBackgroundAuthenticationHint();
       // this.baseHint();
     }
-
-    const self = this;
 
     const app = document.getElementById("app");
     app.addEventListener("scroll", function(e) {
