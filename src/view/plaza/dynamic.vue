@@ -616,8 +616,8 @@ export default {
       this.getUserInfo();
       this.getDynamic();
       //这个认证放在一个对话框中
-      this.identityAuthenticationHint();
-      this.baseHint();
+      // this.identityAuthenticationHint();
+      // this.baseHint();
       
     }
 

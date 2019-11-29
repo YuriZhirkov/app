@@ -22,7 +22,7 @@
         </div>
 
 
-        <div class="item flexa relative">
+        <!-- <div class="item flexa relative">
           <div class="i-img flex relative">
             <router-link :to="{path:'/personal/anotherPage',query:{uid:'1169883516792475649'}}">
               <div class="absolute flex fsmall dot dot2">5</div>
@@ -38,9 +38,9 @@
           <div class="i-othe absolute">
             <span class="fsmall grey fsmall">3天前</span>
           </div>
-        </div>
+        </div> -->
 
-        <div class="item flexa relative">
+        <!-- <div class="item flexa relative">
           <div class="i-img flex relative">
             <img src="@/assets/images/lj.png" alt="">
           </div>
@@ -51,14 +51,14 @@
           <div class="i-othe absolute">
             <span class="fsmall grey fsmall">3天前</span>
           </div>
-        </div>
+        </div> -->
 
 
 
 
-        <router-link to='#'>
+        <!-- <router-link to='#'>
             <div class="publishBtn flex themeBg fmiddle">客服</div>
-        </router-link>
+        </router-link> -->
         <footComponent></footComponent>
     </div>
 </template>
