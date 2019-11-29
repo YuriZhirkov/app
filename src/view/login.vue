@@ -112,22 +112,22 @@ export default {
         this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
         let userInfo = obj.info;
         this.setUserId(obj.userId);
-        if(userInfo=='full') {
-             self.$router.push("/plaza/dynamic?login=1");
-        } else {
-            //对userInfo进行解释
-            let msg = self.getUserInfoMsg(userInfo);
-            self.$dialog.toast({
-                mes: msg,
-                timeout: 1000,
-                callback: () => {
-                  self.$router.push({
-                    path: "/personal/multiInfo",
-                    query: { i: 1 }
-                  });
-                }
-             });
-        }
+        //if(userInfo=='full') {
+        self.$router.push("/plaza/dynamic?login=1");
+        // } else {
+        //     //对userInfo进行解释
+        //     let msg = self.getUserInfoMsg(userInfo);
+        //     self.$dialog.toast({
+        //         mes: msg,
+        //         timeout: 1000,
+        //         callback: () => {
+        //           self.$router.push({
+        //             path: "/personal/multiInfo",
+        //             query: { i: 1 }
+        //           });
+        //         }
+        //      });
+        // }
         //if obj.info = full 跳到 /plaza/dynamic?login=1
         //if  obj.info != full 跳到 /personal/multiInfo
         //  self.$router.push({
@@ -209,24 +209,24 @@ export default {
           let data = e.data;
 
           self.setUserId(data.userId);
-          let userInfo = data.info;
+          //let userInfo = data.info;
 
-          if(userInfo=='full') {
-             self.$router.push("/plaza/dynamic?login=1");
-          } else {
-             let msg = self.getUserInfoMsg(userInfo);
-              //对userInfo进行解释
-              self.$dialog.toast({
-                mes: msg,
-                timeout: 1000,
-                callback: () => {
-                  self.$router.push({
-                    path: "/personal/multiInfo",
-                    query: { i: 1,jump: 1 }
-                  });
-                }
-              });
-          }
+          //if(userInfo=='full') {
+          self.$router.push("/plaza/dynamic?login=1");
+          // } else {
+          //    let msg = self.getUserInfoMsg(userInfo);
+          //     //对userInfo进行解释
+          //     self.$dialog.toast({
+          //       mes: msg,
+          //       timeout: 1000,
+          //       callback: () => {
+          //         self.$router.push({
+          //           path: "/personal/multiInfo",
+          //           query: { i: 1,jump: 1 }
+          //         });
+          //       }
+          //     });
+          // }
 
 
         //if obj.info = full 跳到 /plaza/dynamic?login=1

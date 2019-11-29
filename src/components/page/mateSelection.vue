@@ -278,18 +278,11 @@ export default {
         //self.$dialog.toast({mes:'保存择偶标准成功',icon:'success'})
         //personalDetail
         //self.$router.push("/personal/personalDetail");
-        let  jump =  self.$route.query.jump;
         self.$dialog.toast({
           mes: "保存择偶标准成功",
-          timeout: 2000,
+          timeout: 1000,
           callback: () => {
-            if(!!jump && jump == 1) {
-              self.$router.push("/plaza/dynamic?login=1");
-            } else {
-              self.$router.push({
-                path: "/personal/personalDetail"
-              });
-            }
+              self.$router.go(-1);
           }
         });
       });

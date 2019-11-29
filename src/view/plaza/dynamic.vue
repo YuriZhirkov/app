@@ -165,8 +165,7 @@ export default {
       showAction: false,
       delId: "",
       uid: "",
-      identityAuthenticationMsg:"",
-      identityAuthenticationflag:null,
+      idFlag:0,
       dynamicIndex: "",
       dynamicItems: [
         {
@@ -485,13 +484,9 @@ export default {
         },
         res => {
           if (res.errCode == 200) {
-            console.log("res.data");
-            console.log(res.data);
             let status = res.data.substr(0, 2);
             if (status == "00" || status == "02") {
               let noAuth = res.data.substr(3);
-              console.log("noAuth");
-              console.log(noAuth);
               self.$dialog.confirm({
                 title: '身份认证',
                 mes: noAuth,
@@ -540,26 +535,38 @@ export default {
     //   );
     // },
 
-    // baseHint() {
-    //   const self = this;
-    //   this.get(
-    //     "user/extendInfo/hint",
-    //     {
-    //       userId: this.userId
-    //     },
-    //     res => {
-    //       console.log("res", res);
-    //       if (res.errCode == 200) {
-    //         let status = res.data.substr(0, 2);
-    //         if (status == "01") {
-    //           let noAuth = res.data.substr(3);
-    //           self.msgMultilnfo = noAuth;
-    //           self.flagMultilnfo = 1;
-    //         }
-    //       }
-    //     }
-    //   );
-    // },
+    baseHint() {
+      const self = this;
+      this.get(
+        "user/extendInfo/hint",
+        {
+          userId: this.userId
+        },
+        function(e) {
+          if (e.errCode == 200) {
+            let status = e.data.substr(0, 2);
+            if (status == "01" && self.idFlag !=0) {
+              let noAuth = e.data.substr(3);
+              
+              self.$dialog.confirm({
+                title: '基本信息缺失',
+                mes: noAuth,
+                opts: () => {
+                    self.$dialog.toast({mes: '去补充',timeout: 1000,
+                        callback: () => {
+                            self.$router.push({
+                              path: "/personal/multiInfo",
+                              query: { i: 1 }
+                            });
+                        }
+                    });
+                }
+              });
+            }
+          }
+        }
+      );
+    },
 
     getCommentUserInfo(list) {
       const self = this;
@@ -595,6 +602,7 @@ export default {
           if (e.errCode != 200) return;
           self.setUserName(e.data.nickName);
           self.userName = e.data.nickName;
+          self.idFlag = e.data.idFlag;
         }
       );
     }
@@ -608,19 +616,9 @@ export default {
       this.getUserInfo();
       this.getDynamic();
       //这个认证放在一个对话框中
+      this.baseHint();
       this.identityAuthenticationHint();
-      // this.educationBackgroundAuthenticationHint();
-      // this.baseHint();
-      // if (this.showMultilnfo == 1 && this.flagMultilnfo == 1) {
-      //   this.$dialog.toast({ mes: this.msgMultilnfo, icon: "info" });
-      //   self.$router.push({
-      //     path: "/personal/multiInfo",
-      //     query: { i: 1 }
-      //   });
-      // }
-
-      // this.educationBackgroundAuthenticationHint();
-      // this.baseHint();
+      
     }
 
     const app = document.getElementById("app");
