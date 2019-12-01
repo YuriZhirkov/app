@@ -76,7 +76,7 @@
                 <div class="w100 h100 flex" v-if="info.isJoin">已加入</div>
                
             </div>
-             <!-- <div class="fenxiang" @click="weiXinShare(info.activity.id)">分享</div> -->
+             <div class="fenxiang" @click="weiXinShare(info.activity.id)">分享</div>
               
         </div>
    </div>
