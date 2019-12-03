@@ -153,7 +153,7 @@ export default {
       let urlEncode = window.location.href;
       console.log("urlEncode="+urlEncode);
       //微信分享
-      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,id:aid,flag:1},function(e){
+      this.post('weiXinShare/getSignature',{timestamp:timestamp,nonceStr:nonceStr,url:urlEncode},function(e){
         console.log("e====="+e);
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
