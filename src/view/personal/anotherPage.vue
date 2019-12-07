@@ -224,19 +224,78 @@ export default {
         self.fans = e.data
       })
     },
+    getDescTitle(){
+      const self = this;
+      let info = self.info;
+      console.log("desc0");
+      console.log(info);
+      let info2 = self.info2;
+      console.log(info2);
+      let title = "个人交友信息";
+      let desc = "";
+       console.log("desc1");
+       console.log(info.nickName);
+      //昵称|              性别 |       年纪 |      身高      | 居住地
+      //info.nickName  info2.gender info2.age info2.stature info2.area
+      if(info.nickName) {
+        desc = desc + info.nickName +' | '
+        console.log(desc);
+      }
+
+      if(!!info2.gender) {
+        desc = desc + info2.gender +' | '
+        console.log(desc);
+      }
+
+      if(!!info2.age) {
+        desc = desc + info2.age +' | '
+
+        console.log(desc);
+      }
+      if(!!info2.stature) {
+        desc = desc + info2.stature +' | '
+        console.log(desc);
+      }
+      if(!!info2.area) {
+        desc = desc + info2.area
+        console.log(desc);
+      }
+      console.log(desc);
+    },
     weiXinShare(){
      
       const self = this;
-      let info = self.info2;
+      let info = self.info;
+      let info2 = self.info2;
       let title = "个人交友信息";
-      if(!!info)
-      let 
+      let desc = "";
+      //昵称|              性别 |       年纪 |      身高      | 居住地
+      //info.nickName  info2.gender info2.age info2.stature info2.area
+      if(!!info.nickName) {
+        desc = desc + info.nickName +' | '
+      }
+
+      if(!!info2.gender) {
+        desc = desc + info2.gender +' | '
+      }
+
+      if(!!info2.age) {
+        desc = desc + info2.age +' | '
+      }
+      if(!!info2.stature) {
+        desc = desc + info2.stature +' | '
+      }
+      if(!!info2.area) {
+        desc = desc + info2.area
+      }
+     
       // let url = encodeURIComponent(window.location.href);
       let urlEncode = window.location.href;
       //微信分享
       this.post('weiXinShare/getSignature',
       {url:urlEncode},
       function(e){
+        console.log(e);
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
           return
@@ -311,7 +370,7 @@ export default {
             //获取“分享到朋友圈”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareTimeline({
               title: title, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
               success: function success(res) {
@@ -327,7 +386,7 @@ export default {
             //获取“分享给朋友”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareAppMessage({
               title: title, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
               success: function success(res) {
@@ -343,7 +402,7 @@ export default {
             //获取“分享到QQ”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareQQ({
               title: title, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
               success: function success(res) {
@@ -359,7 +418,7 @@ export default {
             //获取“分享到QQ空间”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareQZone({
               title: title, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
               success: function success(res) {
@@ -387,8 +446,6 @@ export default {
     const touid = this.$route.query.uid
     if(!touid){
       this.$router.back(-1)
-
-      console.log('他人id不存在/personal/anotherPage');
     }
     this.touid = touid
     this.getUserInfo(touid)
@@ -396,7 +453,8 @@ export default {
     this.getDynamic(touid)
     this.getFans()
     this.isLike()
-    this.weiXinShare()
+    this.getDescTitle()
+    //this.weiXinShare()
 
 
   },
