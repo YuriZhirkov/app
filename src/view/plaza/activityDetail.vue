@@ -204,7 +204,7 @@ export default {
             // });
             //获取“分享到朋友圈”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareTimeline({
-              title: activityTheme.activityTheme, // 分享标题
+              title: activity.activityTheme, // 分享标题
               desc: activity.activityDetails, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
@@ -220,7 +220,7 @@ export default {
             });
             //获取“分享给朋友”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareAppMessage({
-              title: activityTheme.activityTheme, // 分享标题
+              title: activity.activityTheme, // 分享标题
               desc: activity.activityDetails, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
@@ -236,7 +236,7 @@ export default {
             });
             //获取“分享到QQ”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareQQ({
-              title: activityTheme.activityTheme, // 分享标题
+              title: activity.activityTheme, // 分享标题
               desc: activity.activityDetails, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
@@ -252,7 +252,7 @@ export default {
             });
             //获取“分享到QQ空间”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareQZone({
-              title: activityTheme.activityTheme, // 分享标题
+              title: activity.activityTheme, // 分享标题
               desc: activity.activityDetails, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: self.slides[0], // 分享图标
