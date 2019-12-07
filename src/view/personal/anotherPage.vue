@@ -223,6 +223,164 @@ export default {
         if(e.errCode!=200) return
         self.fans = e.data
       })
+    },
+    weiXinShare(){
+     
+      const self = this;
+      let info = self.info2;
+      let title = "个人交友信息";
+      if(!!info)
+      let 
+      // let url = encodeURIComponent(window.location.href);
+      let urlEncode = window.location.href;
+      //微信分享
+      this.post('weiXinShare/getSignature',
+      {url:urlEncode},
+      function(e){
+        if(e.errCode != 200){
+          self.$dialog.toast({mes:e.errMsg,icon:'error'})
+          return
+        }
+
+
+        let date = e.data;
+        let signature = date.signature;
+        
+        let nonceStr = date.nonceStr;
+         let timestamp = date.timestamp;
+        console.log("signature="+signature);
+        if(signature == null || signature ==''){
+            self.$dialog.toast({mes:"分享失败",icon:'error'})
+            return
+        }
+        wx.config({
+              debug: false,
+              appId: 'wxebd08b5782d5a00d', // 和获取Ticke的必须一样------必填，公众号的唯一标识
+              timestamp:timestamp, // 必填，生成签名的时间戳
+              nonceStr: nonceStr, // 必填，生成签名的随机串
+              signature: signature,// 必填，签名，见附录1
+              //需要分享的列表项:发送给朋友，分享到朋友圈，分享到QQ，分享到QQ空间
+              jsApiList: [
+                  'onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareQZone'
+                  //'updateAppMessageShareData','updateTimelineShareData'
+              ]
+          });
+
+        wx.ready(function(){
+            // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
+            //则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+          
+            //自定义“分享给朋友”及“分享到QQ”按钮的分享内容
+            // wx.updateAppMessageShareData({
+            //     title: "测试微信分享", // 分享标题
+            //     //desc: activity.activityDetails, // 分享描述
+            //     desc: "分享描述", // 分享描述
+            //     link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            //     // imgUrl: self.slides[0], // 分享图标
+            //     success: function success(res) {
+            //       console.log('分享成功=='+JSON.stringify(res));
+            //       self.$dialog.toast({mes:JSON.stringify(res),icon:'success'})
+            //     },
+            //     cancel: function cancel(res) {
+            //       console.log('分享取消=='+JSON.stringify(res));
+            //       self.$dialog.toast({mes:JSON.stringify(res),icon:'error'})
+            //     },
+            //     fail: function fail(res) {
+            //       console.log('分享失败=='+JSON.stringify(res));
+            //       self.$dialog.toast({mes:JSON.stringify(res),icon:'error'})
+            //     }
+            // });
+            // 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容
+            // wx.updateTimelineShareData({ 
+            //   title: "测试微信分享", // 分享标题
+            //   link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            //   // imgUrl: self.slides[0], // 分享图标
+            //   success: function success(res) {
+            //     console.log('分享成功=='+JSON.stringify(res));
+            //     self.$dialog.toast({mes:JSON.stringify(res),icon:'success'})
+            //   },
+            //   cancel: function cancel(res) {
+            //     console.log('分享取消=='+JSON.stringify(res));
+            //     self.$dialog.toast({mes:JSON.stringify(res),icon:'error'})
+            //   },
+            //   fail: function fail(res) {
+            //     console.log('分享失败=='+JSON.stringify(res));
+            //     self.$dialog.toast({mes:JSON.stringify(res),icon:'error'})
+            //   }
+            // });
+            //获取“分享到朋友圈”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareTimeline({
+              title: title, // 分享标题
+              desc: activity.activityDetails, // 分享描述
+              link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: self.slides[0], // 分享图标
+              success: function success(res) {
+                self.$dialog.toast({mes:'分享成功',icon:'success'})
+              },
+              cancel: function cancel(res) {
+                self.$dialog.toast({mes:'分享取消',icon:'error'})
+              },
+              fail: function fail(res) {
+                self.$dialog.toast({mes:'分享失败',icon:'error'})
+              }
+            });
+            //获取“分享给朋友”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareAppMessage({
+              title: title, // 分享标题
+              desc: activity.activityDetails, // 分享描述
+              link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: self.slides[0], // 分享图标
+              success: function success(res) {
+                self.$dialog.toast({mes:'分享成功',icon:'success'})
+              },
+              cancel: function cancel(res) {
+                self.$dialog.toast({mes:'分享取消',icon:'error'})
+              },
+              fail: function fail(res) {
+                self.$dialog.toast({mes:'分享失败',icon:'error'})
+              }
+            });
+            //获取“分享到QQ”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareQQ({
+              title: title, // 分享标题
+              desc: activity.activityDetails, // 分享描述
+              link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: self.slides[0], // 分享图标
+              success: function success(res) {
+                self.$dialog.toast({mes:'分享成功',icon:'success'})
+              },
+              cancel: function cancel(res) {
+                self.$dialog.toast({mes:'分享取消',icon:'error'})
+              },
+              fail: function fail(res) {
+                self.$dialog.toast({mes:'分享失败',icon:'error'})
+              }
+            });
+            //获取“分享到QQ空间”按钮点击状态及自定义分享内容接口（即将废弃）
+            wx.onMenuShareQZone({
+              title: title, // 分享标题
+              desc: activity.activityDetails, // 分享描述
+              link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: self.slides[0], // 分享图标
+              success: function success(res) {
+                self.$dialog.toast({mes:'分享成功',icon:'success'})
+              },
+              cancel: function cancel(res) {
+                self.$dialog.toast({mes:'分享取消',icon:'error'})
+              },
+              fail: function fail(res) {
+                self.$dialog.toast({mes:'分享失败',icon:'error'})
+              }
+            });
+            
+        });
+        wx.error(function(res){
+            // config信息验证失败会执行error函数，
+            //如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+            self.$dialog.toast({mes:'微信验证失败',icon:'error'})
+        });
+      
+      });
     }
   },
   mounted() {
@@ -238,7 +396,7 @@ export default {
     this.getDynamic(touid)
     this.getFans()
     this.isLike()
-
+    this.weiXinShare()
 
 
   },
