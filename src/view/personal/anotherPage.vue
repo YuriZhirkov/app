@@ -224,76 +224,15 @@ export default {
         self.fans = e.data
       })
     },
-    getDescTitle(){
-      const self = this;
-      let info = self.info;
-      console.log("desc0");
-      console.log(info);
-      let info2 = self.info2;
-      console.log(info2);
-      let title = "个人交友信息";
-      let desc = "";
-       console.log("desc1");
-       console.log(info.nickName);
-      //昵称|              性别 |       年纪 |      身高      | 居住地
-      //info.nickName  info2.gender info2.age info2.stature info2.area
-      if(info.nickName) {
-        desc = desc + info.nickName +' | '
-        console.log(desc);
-      }
-
-      if(!!info2.gender) {
-        desc = desc + info2.gender +' | '
-        console.log(desc);
-      }
-
-      if(!!info2.age) {
-        desc = desc + info2.age +' | '
-
-        console.log(desc);
-      }
-      if(!!info2.stature) {
-        desc = desc + info2.stature +' | '
-        console.log(desc);
-      }
-      if(!!info2.area) {
-        desc = desc + info2.area
-        console.log(desc);
-      }
-      console.log(desc);
-    },
-    weiXinShare(){
+    weiXinShare(userId){
      
       const self = this;
-      let info = self.info;
-      let info2 = self.info2;
-      let title = "个人交友信息";
-      let desc = "";
-      //昵称|              性别 |       年纪 |      身高      | 居住地
-      //info.nickName  info2.gender info2.age info2.stature info2.area
-      if(!!info.nickName) {
-        desc = desc + info.nickName +' | '
-      }
-
-      if(!!info2.gender) {
-        desc = desc + info2.gender +' | '
-      }
-
-      if(!!info2.age) {
-        desc = desc + info2.age +' | '
-      }
-      if(!!info2.stature) {
-        desc = desc + info2.stature +' | '
-      }
-      if(!!info2.area) {
-        desc = desc + info2.area
-      }
      
       // let url = encodeURIComponent(window.location.href);
       let urlEncode = window.location.href;
       //微信分享
       this.post('weiXinShare/getSignature',
-      {url:urlEncode},
+      {url:urlEncode,flag:2,id:userId},
       function(e){
         console.log(e);
         if(e.errCode != 200){
@@ -304,7 +243,9 @@ export default {
 
         let date = e.data;
         let signature = date.signature;
-        
+        let title = date.title;
+        let desc = date.desc;
+        let imgUrl = data.picture;
         let nonceStr = date.nonceStr;
          let timestamp = date.timestamp;
         console.log("signature="+signature);
@@ -372,7 +313,7 @@ export default {
               title: title, // 分享标题
               desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
@@ -388,7 +329,7 @@ export default {
               title: title, // 分享标题
               desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
@@ -404,7 +345,7 @@ export default {
               title: title, // 分享标题
               desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
@@ -420,7 +361,7 @@ export default {
               title: title, // 分享标题
               desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
@@ -453,8 +394,7 @@ export default {
     this.getDynamic(touid)
     this.getFans()
     this.isLike()
-    this.getDescTitle()
-    //this.weiXinShare()
+    this.weiXinShare(touid)
 
 
   },

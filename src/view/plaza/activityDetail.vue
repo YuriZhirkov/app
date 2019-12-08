@@ -124,12 +124,11 @@ export default {
     weiXinShare(aid){
      
       const self = this;
-      let activity = self.info.activity;
       // let url = encodeURIComponent(window.location.href);
       let urlEncode = window.location.href;
       //微信分享
       this.post('weiXinShare/getSignature',
-      {url:urlEncode},
+      {url:urlEncode,flag:1,id:aid},
       function(e){
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
@@ -139,7 +138,9 @@ export default {
 
         let date = e.data;
         let signature = date.signature;
-        
+        let title = date.title;
+        let desc = date.desc;
+        let imgUrl = data.picture;
         let nonceStr = date.nonceStr;
          let timestamp = date.timestamp;
         console.log("signature="+signature);
@@ -204,10 +205,10 @@ export default {
             // });
             //获取“分享到朋友圈”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareTimeline({
-              title: activity.activityTheme, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              title: title, // 分享标题
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
@@ -220,10 +221,10 @@ export default {
             });
             //获取“分享给朋友”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareAppMessage({
-              title: activity.activityTheme, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              title: title, // 分享标题
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
@@ -236,10 +237,10 @@ export default {
             });
             //获取“分享到QQ”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareQQ({
-              title: activity.activityTheme, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              title: title, // 分享标题
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
@@ -252,10 +253,10 @@ export default {
             });
             //获取“分享到QQ空间”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareQZone({
-              title: activity.activityTheme, // 分享标题
-              desc: activity.activityDetails, // 分享描述
+              title: title, // 分享标题
+              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-              imgUrl: self.slides[0], // 分享图标
+              imgUrl: imgUrl, // 分享图标
               success: function success(res) {
                 self.$dialog.toast({mes:'分享成功',icon:'success'})
               },
