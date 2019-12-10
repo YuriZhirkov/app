@@ -135,8 +135,9 @@ export default {
           return
         }
 
-
         let date = e.data;
+        console.log("e.data=");
+        console.log(e.data);
         let signature = date.signature;
         let title = date.title;
         let desc = date.desc;
@@ -206,7 +207,6 @@ export default {
             //获取“分享到朋友圈”按钮点击状态及自定义分享内容接口（即将废弃）
             wx.onMenuShareTimeline({
               title: title, // 分享标题
-              desc: desc, // 分享描述
               link: urlEncode, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: imgUrl, // 分享图标
               success: function success(res) {
