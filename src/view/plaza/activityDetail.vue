@@ -135,16 +135,13 @@ export default {
           return
         }
 
-        let date = e.data;
-        console.log("e.data=");
-        console.log(e.data);
-        let signature = date.signature;
-        let title = date.title;
-        let desc = date.desc;
+        let data = e.data;
+        let signature = data.signature;
+        let title = data.title;
+        let desc = data.desc;
         let imgUrl = data.picture;
-        let nonceStr = date.nonceStr;
-         let timestamp = date.timestamp;
-        console.log("signature="+signature);
+        let nonceStr = data.nonceStr;
+         let timestamp = data.timestamp;
         if(signature == null || signature ==''){
             self.$dialog.toast({mes:"分享失败",icon:'error'})
             return
@@ -165,7 +162,6 @@ export default {
         wx.ready(function(){
             // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
             //则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
-          
             //自定义“分享给朋友”及“分享到QQ”按钮的分享内容
             // wx.updateAppMessageShareData({
             //     title: "测试微信分享", // 分享标题

@@ -111,7 +111,7 @@
 import { mapState, mapMutations } from "vuex";
 import 'swiper/dist/css/swiper.css'
 import  { swiper, swiperSlide } from 'vue-awesome-swiper'
-
+import wx from 'weixin-js-sdk'
 export default {
   name: "anotherPage",
   props: {},
@@ -227,29 +227,24 @@ export default {
     weiXinShare(userId){
      
       const self = this;
-     
       // let url = encodeURIComponent(window.location.href);
       let urlEncode = window.location.href;
       //微信分享
       this.post('weiXinShare/getSignature',
       {url:urlEncode,flag:2,id:userId},
       function(e){
-        console.log(e);
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
           return
         }
 
-
-        let date = e.data;
-        console.log("e.data=");
-        console.log(e.data);
-        let signature = date.signature;
-        let title = date.title;
-        let desc = date.desc;
+        let data = e.data;
+        let signature = data.signature;
+        let title = data.title;
+        let desc = data.desc;
         let imgUrl = data.picture;
-        let nonceStr = date.nonceStr;
-         let timestamp = date.timestamp;
+        let nonceStr = data.nonceStr;
+         let timestamp = data.timestamp;
         console.log("signature="+signature);
         if(signature == null || signature ==''){
             self.$dialog.toast({mes:"分享失败",icon:'error'})
@@ -382,7 +377,7 @@ export default {
         });
       
       });
-    }
+    },
   },
   mounted() {
     const touid = this.$route.query.uid
