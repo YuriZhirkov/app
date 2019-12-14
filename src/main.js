@@ -4,7 +4,7 @@ import router from './router'
 
 import fastClick from 'fastclick'
 
-import store from './store'
+import store from './store/index'
 
  
 
@@ -322,6 +322,17 @@ Vue.filter('datemm', function(dataStr) {
 Vue.filter('datedd', function(dataStr,pattern = 'D') {
     return moment(dataStr).format(pattern)
 })
+
+
+// 注册腾讯IM聊天所需要的组件
+import tim from './tim'
+import TIM from 'tim-js-sdk'
+
+// 设置全局变量熟悉
+window.tim = tim
+window.TIM = TIM
+Vue.prototype.tim = tim
+Vue.prototype.TIM = TIM
 
 /* eslint-disable no-new */
 new Vue({

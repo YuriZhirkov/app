@@ -326,6 +326,21 @@ export default new Router({
                 // title: '我的相册'
             },
             component: resolve => require(['../view/personal/photoAlbum'], resolve)
-        }
+        },
+        { // 聊天信息
+            path: '/wechat/dialogue',
+              name: "",
+              components: {
+                "default": resolve => require(["../view/message/index.vue"], resolve),
+                "subPage": resolve => require(["../components/wechat/dialogue.vue"], resolve)
+              }
+        },
+        // { // 聊天详情
+        //     path: '/wechat/dialogue/dialogue-info',
+        //     name: "",
+        //     components: {
+        //         "subPage": resolve => require(["../components/dialogue-info.vue"], resolve)
+        //     }
+        // },
     ]
 })

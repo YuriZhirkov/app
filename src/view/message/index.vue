@@ -5,7 +5,7 @@
           <!-- <span slot="right" class="rightSolt">1354</span> -->
         </topComponent>
 
-        <div class="item flexa relative">
+        <!-- <div class="item flexa relative">
           <div class="i-img flex relative">
             <div class="absolute dot"></div>
             <div class="i-img-icon  bgblue  flex">
@@ -19,7 +19,9 @@
           <div class="i-othe absolute">
             <i class="iconfont2">&#xe6d2;</i>
           </div>
-        </div>
+        </div> -->
+
+        <weChat></weChat>
 
 
         <!-- <div class="item flexa relative">
@@ -64,10 +66,13 @@
 </template>
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
+import weChat from '../../components/wechat/wechat'
 export default {
   name: "index",
   props: {},
-  components: {},
+  components: {
+    weChat
+  },
   computed: {
     ...mapGetters([])
   },
@@ -79,6 +84,22 @@ export default {
   methods: {}
 };
 </script>
+<style>
+    /*将公用的样式统一在此导入*/
+    
+    @import "../../assets/css/base.css";
+    @import "../../assets/css/wechatcommon.css";
+    @import "../../assets/css/wx-header.css";
+    /*阿里 fonticon*/
+    
+    @import "../../assets/css/lib/iconfont.css";
+    /*过渡效果需要的动画库*/
+    
+    @import "../../assets/css/lib/animate.css";
+    /*weui 样式库 非常适合高仿微信*/
+    
+    @import "../../assets/css/lib/weui.min.css";
+</style>
 <style scoped>
   .publishBtn{
     position: fixed;

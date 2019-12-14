@@ -198,6 +198,8 @@ export default {
         this.$dialog.toast({ mes: "请输入收到的验证码" });
         return;
       }
+      // this.$store.dispatch('login', this.phoneNum)
+
       this.post(
         "user/baseInfo/register",
         { phone: this.phoneNum, role: 1, validateCode: this.verifyCode },

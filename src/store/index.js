@@ -1,5 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import conversation from './modules/conversation'
+import group from './modules/group'
+import user from './modules/user'
+import friend from './modules/friend'
+import blacklist from './modules/blacklist'
 import { state } from './state.js'
 
 Vue.use(Vuex)
@@ -39,5 +44,12 @@ export default new Vuex.Store({
     },
    getters:{
 
-   }
+   },
+   modules: {
+    conversation,
+    group,
+    friend,
+    blacklist,
+    user
+  }
 })

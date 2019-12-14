@@ -7,7 +7,7 @@
     <div class="imgBanner">
       <swiper ref="mySwiper"  :options="swiperOption">
           <!-- slides -->
-          <swiper-slide v-for="(d,i) in swiperData">
+          <swiper-slide v-for="(d,i) in swiperData" :key="i">
             <img :src="d" alt="">
           </swiper-slide>
           <!-- Optional controls -->

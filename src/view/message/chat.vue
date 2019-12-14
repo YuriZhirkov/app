@@ -8,7 +8,7 @@
         <div class="chat relative" :style="{height:chatHeight,'scrollTop':chatScrollTop}">
           <yd-pullrefresh :callback="loadList" ref="pullrefreshDemo">
              <ul>
-                <li v-for="item, key in messages" :key="key">
+                <li v-for="(item, key) in messages" :key="key">
                   <div class="flexa m-i" v-if="item.type == 1">
                     <div class="m-img"><img src="@/assets/images/headIcon.jpg" alt=""></div>
                     <div class="m-msg m-msg-left fmiddle">{{item.text}}</div>

@@ -5,7 +5,7 @@
             <div class="slides">
         <swiper ref="mySwiper"  :options="swiperOption">
             <!-- slides -->
-              <swiper-slide v-for="(d,i) in slides">
+              <swiper-slide v-for="(d,i) in slides" :key="i">
                 <img :src="d" alt="">
               </swiper-slide>
             <!-- Optional controls -->
@@ -55,7 +55,7 @@
             </div>
             <div class="fmiddle"  v-if="!users.usersLen">暂无人预定</div>
             <div class="collectPeoples">
-                <img v-for="(d,i) in users.users" :src="d.headUrl">
+                <img v-for="(d,i) in users.users" :src="d.headUrl" :key="i">
             </div>
         </div>
         <div class="place"></div>
