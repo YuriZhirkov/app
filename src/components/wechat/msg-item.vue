@@ -12,7 +12,7 @@
                 <!--如果是私聊，只显示一个头像； 如果是群聊，则显示多个头像，flex 控制样式-->
                 <div class="header" :class="[item.type=='GROUP'?'multi-header':'']">
                     <!-- <img v-for="userInfo in item.userProfile" :src="userInfo.avatar"> -->
-                    <img v-if="item.type =='C2C'" :src="item.userProfile.avatar">
+                    <img v-if="item.type =='C2C'" :src="userAvatar">
                     <img v-else-if="item.type =='GROUP'"  v-for="(userInfo,index) in item.groupMemberList" :src="userInfo.avatar" :key="index">
                     <img v-if="item.type ==TIM.TYPES.CONV_SYSTEM" :src="require('../../assets/images/system.png')">
                 </div>
@@ -53,13 +53,20 @@
                     mid: '', // 消息id
                     name: '', // 用户昵称或id
                     group_num: 1, // 群聊人数
-                    avatar: '', // 用户头像
-                    userId: ''  // 用户id
+                    avatar: 'https://imgcache.qq.com/open/qcloud/video/act/webim-avatar/avatar-2.png', // 用户头像
+                    userId: '',  // 用户id
                 },
                 // isSDKReady : this.$store.state.isSDKReady
             }
         },
         computed: {
+            userAvatar() {
+                if(!this.item.userProfile.avatar) {
+                    return this.routerParam.avatar
+                } else {
+                    return this.item.userProfile.avatar
+                }
+            },
             date: function() {
                 if (
                     !this.item.lastMessage ||
@@ -92,7 +99,7 @@
                     mmm.mid = obj.conversationID
                     mmm.name = obj.userProfile.nick||(obj.userID)
                     mmm.group_num = 1
-                    mmm.avatar = obj.userProfile.avatar
+                    mmm.avatar = obj.userProfile.avatar ? obj.userProfile.avatar : this.routerParam.avatar
                     mmm.userId = obj.userProfile.userID
                     mmm.currentConversationType = 'C2C'
                 } else if(this.item.type === TIM.TYPES.CONV_SYSTEM) {

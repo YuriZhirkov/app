@@ -3,7 +3,8 @@ const user = {
   state: {
     currentUserProfile: {},
     isLogin: false,
-    isSDKReady: false // TIM SDK 是否 ready
+    isSDKReady: false, // TIM SDK 是否 ready
+    avatar : 'https://imgcache.qq.com/open/qcloud/video/act/webim-avatar/avatar-2.png'
   },
   mutations: {
     updateCurrentUserProfile(state, userProfile) {
@@ -32,9 +33,9 @@ const user = {
         })
         .then((data) => {
           context.commit('toggleIsLogin', true)
-          context.commit('startComputeCurrent')
-          window.$message({ type: 'success', message: '登录成功' })
-          return Promise.resolve()
+          // context.commit('startComputeCurrent')
+          // window.$message({ type: 'success', message: '登录成功' })
+          // return Promise.resolve()
         })
     },
     logout(context) {

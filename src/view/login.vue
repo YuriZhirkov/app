@@ -73,6 +73,7 @@ import { register, getPhoneValidateCode } from "@/servers/baseInfo";
 import bgimg from "@/assets/images/bg1.jpg";
 import wximg from "@/assets/images/wx.png";
 import axios from "axios";
+import { resolve } from 'url';
 
 export default {
   name: "login",
@@ -188,7 +189,10 @@ export default {
       //   },3000)
       // })
     },
-    loginTo() {
+    funcAsync : async function () {
+      return await  axios.post(this.host + "user/baseInfo/register", { phone: this.phoneNum, role: 1, validateCode: this.verifyCode } )
+    },
+    async loginTo() {
       const self = this;
       if (!/^1[3456789]\d{9}$/.test(this.phoneNum)) {
         this.$dialog.toast({ mes: "请输入正确的手机号码", icon: "error" });
@@ -198,48 +202,64 @@ export default {
         this.$dialog.toast({ mes: "请输入收到的验证码" });
         return;
       }
-      // this.$store.dispatch('login', this.phoneNum)
 
-      this.post(
-        "user/baseInfo/register",
-        { phone: this.phoneNum, role: 1, validateCode: this.verifyCode },
-        function(e) {
-          if (e.errCode != 200) {
-            self.$dialog.toast({ mes: e.errMsg, icon: "error" });
-            return;
-          }
-          let data = e.data;
+      let e =   await this.funcAsync()
+      console.log(e, "*******")
 
-          self.setUserId(data.userId);
-          //let userInfo = data.info;
+      // 登录成功标识
+      this.$store.commit('toggleIsSDKReady', true)
 
-          //if(userInfo=='full') {
-          self.$router.push("/plaza/dynamic?login=1");
-          // } else {
-          //    let msg = self.getUserInfoMsg(userInfo);
-          //     //对userInfo进行解释
-          //     self.$dialog.toast({
-          //       mes: msg,
-          //       timeout: 1000,
-          //       callback: () => {
-          //         self.$router.push({
-          //           path: "/personal/multiInfo",
-          //           query: { i: 1,jump: 1 }
-          //         });
-          //       }
-          //     });
-          // }
+      // this.$store.dispatch('login', e.data.data.userId)
+      if (e.data.errCode != 200) {
+        self.$dialog.toast({ mes: e.data.errMsg, icon: "error" });
+        return;
+      }
+
+      self.setUserId(e.data.data.userId);
+      self.$router.push("/plaza/dynamic?login=1");
+      // return
+      // // this.$store.dispatch('login', this.phoneNum)
+
+      // this.post(
+      //   "user/baseInfo/register",
+      //   { phone: this.phoneNum, role: 1, validateCode: this.verifyCode },
+      //   function(e) {
+      //     if (e.errCode != 200) {
+      //       self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+      //       return;
+      //     }
+      //     let data = e.data;
+
+      //     self.setUserId(data.userId);
+      //     //let userInfo = data.info;
+
+      //     //if(userInfo=='full') {
+      //     self.$router.push("/plaza/dynamic?login=1");
+      //     // } else {
+      //     //    let msg = self.getUserInfoMsg(userInfo);
+      //     //     //对userInfo进行解释
+      //     //     self.$dialog.toast({
+      //     //       mes: msg,
+      //     //       timeout: 1000,
+      //     //       callback: () => {
+      //     //         self.$router.push({
+      //     //           path: "/personal/multiInfo",
+      //     //           query: { i: 1,jump: 1 }
+      //     //         });
+      //     //       }
+      //     //     });
+      //     // }
 
 
-        //if obj.info = full 跳到 /plaza/dynamic?login=1
-        //if  obj.info != full 跳到 /personal/multiInfo
-        //  self.$router.push({
-        //             path: "/personal/multiInfo",
-        //             query: { i: 1 }
-        //           });
+      //   //if obj.info = full 跳到 /plaza/dynamic?login=1
+      //   //if  obj.info != full 跳到 /personal/multiInfo
+      //   //  self.$router.push({
+      //   //             path: "/personal/multiInfo",
+      //   //             query: { i: 1 }
+      //   //           });
           
-        }
-      );
+      //   }
+      // );
     },
     loginToWeiXin() {
       this.getTicket();

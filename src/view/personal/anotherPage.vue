@@ -70,6 +70,7 @@
           <span v-if="info.role == 2">红娘</span>
           <span v-if="info.role == 4">运营</span>
           <span v-if="info.role == 5">开发人员</span>
+          <span  @click="handleSendMessage">发起聊天</span>
       </div>
     </div>
 
@@ -378,6 +379,21 @@ export default {
       
       });
     },
+    /**
+     * 发起聊天
+     */
+    async handleSendMessage() {
+      // let res = await this.$store.dispatch('checkoutConversation', `C2C${this.userId}`)
+      let parasms = {
+         mid : `C2C${this.touid}`,
+         name : this.info.nickName,
+         group_num : 1,
+         avatar : 'https://imgcache.qq.com/open/qcloud/video/act/webim-avatar/avatar-2.png',
+         userId : this.touid,
+         currentConversationType : 'C2C'
+      }
+      this.$router.push({path:"/wechat/dialogue", query: parasms})
+    }
   },
   mounted() {
     const touid = this.$route.query.uid

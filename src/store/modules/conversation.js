@@ -131,10 +131,7 @@ const conversationModules = {
      */
     getMessageList(context, conversationID) {
       if (context.state.isCompleted) {
-        context.commit('showMessage', {
-          message: '已经没有更多的历史消息了哦',
-          type: 'info'
-        })
+        // this.$dialog.toast({ mes: "没有更多消息了" });
         return
       }
       const { nextReqMessageID, currentMessageList } = context.state

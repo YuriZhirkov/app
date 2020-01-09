@@ -10,6 +10,7 @@
 <script>
     import msgItem from "../wechat/msg-item"
     import { mapState } from 'vuex'
+    import axios from "axios"
     export default {
         components: {
             msgItem
@@ -25,32 +26,63 @@
                 currentUserProfile: state => state.user.currentUserProfile,
                 currentConversation: state => state.conversation.currentConversation,
                 isLogin: state => state.user.isLogin,
-                isSDKReady: state => state.user.isSDKReady
+                isSDKReady: state => state.user.isSDKReady,
+                userId: state => state.userId
             }),
         },
         // 页面挂着完毕时候调用
         mounted() {
-            this.tim.login({
-                userID: "user2",
-                userSig: window.genTestUserSig('user2').userSig
-            })
-            .then((e) => {
-                console.log(e, "******** 登录成功 ********")
-            })
-            .catch(imError => {
-                if (imError.code === 2000) {
-                    alert(imError.message + ', 请检查是否正确填写了 SDKAPPID')
-                } else {
-                    console.log(imError.message)
-                }
-            })
-
-            this.initListener()
             
+            // this.tim.login({
+            //     userID: this.userId,
+            //     userSig: window.genTestUserSig(this.userId).userSig
+            // })
+            // .then((e) => {
+            //     console.log(e, "******** 登录成功 ********")
+            // })
+            // .catch(imError => {
+            //     if (imError.code === 2000) {
+            //         alert(imError.message + ', 请检查是否正确填写了 SDKAPPID')
+            //     } else {
+            //         console.log(imError.message)
+            //     }
+            // })
+            
+            // // this.updateMyProfile() 修改当前登录的用信息
+           
+
+            // this.initListener()
+            // alert(this.conversationList) 
         },
         methods: {
-             initListener() {
-                 // 登录成功后会触发 SDK_READY 事件，该事件触发后，可正常使用 SDK 接口
+            /**
+             * 获取用户信息
+             */
+            getUserInfo : async function () {
+                return await  axios.post(this.host + "user/baseInfo/get/authentication", {'visitorId':this.userId})
+            },
+            /**
+             * 修改用户信息，同步
+             */
+            async updateMyProfile() {
+                let res = await this.getUserInfo()
+                console.log(res, '用户信息')
+                let obj = res.data.data
+                const options = {
+                    avatar: 'https://imgcache.qq.com/open/qcloud/video/act/webim-avatar/avatar-2.png',
+                    gender: 'Gender_Type_Male',
+                    nick: obj.nickName
+                }
+                this.tim.updateMyProfile(options)
+                    .then((e) => {
+                        console.log(e, '修改用户信息')
+                    })
+                    .catch(imError => {
+                        console.log(imError)
+                    })
+            },
+            initListener() {
+                // 登录成功后会触发 SDK_READY 事件，该事件触发后，可正常使用 SDK 接口
                 this.tim.on(this.TIM.EVENT.SDK_READY, this.onReadyStateUpdate, this)
                 // SDK NOT READT
                 this.tim.on(this.TIM.EVENT.SDK_NOT_READY, this.onReadyStateUpdate, this)
@@ -62,7 +94,6 @@
                 this.tim.on(this.TIM.EVENT.CONVERSATION_LIST_UPDATED, event => {
                     console.log(event.data, '会话列表数据')
                     this.$store.commit('updateConversationList', event.data)
-                    console.log(this.conversationList, "OOOOOOOOOOOOOOOOOOOOOO") 
                 })
 
                 // 群组列表更新

@@ -143,7 +143,9 @@ export default {
   props: {},
   components: {},
   computed: {
-    ...mapState(["userId"])
+    ...mapState(["userId"],{
+      userId: state => state.userId
+    })
   },
   data() {
     return {
@@ -605,7 +607,7 @@ export default {
           self.idFlag = e.data.idFlag;
         }
       );
-    }
+    },
   },
   
   mounted() {

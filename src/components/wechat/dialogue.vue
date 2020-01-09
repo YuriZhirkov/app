@@ -6,8 +6,8 @@
                 <router-link :to="{path:'/wechat/dialogue/dialogue-detail',query: { msgInfo: msgInfo}}" tag="span" class="iconfont icon-chat-friends" v-show="$route.query.group_num==1"></router-link>
             </div>
             <div class="center">
-                <router-link to="/message" tag="div" class="iconfont icon-return-arrow">
-                    <span>消息</span>
+                <router-link to tag="div" class="iconfont icon-return-arrow">
+                    <span @click="$router.back(-1)">消息</span>
                 </router-link>
                 <span>{{pageName}}</span>
                 <span class="parentheses" v-show='$route.query.group_num&&$route.query.group_num!=1'>{{$route.query.group_num}}</span>
@@ -142,7 +142,7 @@
                 currentUserProfile: state => state.user.currentUserProfile,
                 currentConversation: state => state.conversation.currentConversation,
                 isLogin: state => state.user.isLogin,
-                isSDKReady: state => state.user.isSDKReady
+                isSDKReady: state => state.user.isSDKReady,
             }),
             msgInfo() {
                 // for (var i in this.$store.state.msgList.baseMsg) {
@@ -310,6 +310,9 @@
              * 监听滚动条
              */
             onScroll({ target: { scrollTop } }) {
+                if(scrollTop == 0) {
+                    this.$store.dispatch('getMessageList', this.currentConversation.conversationID)
+                }
                 let messageListNode = this.$refs['message-list']
                 if (!messageListNode) {
                     return
@@ -386,6 +389,9 @@
             // this.$store.commit('updateConversationID', this.$route.query.mid)
             console.log(this.currentMessageList, '当前会话')
             // console.log(this.$store.state.currentConversation.conversationID, 'conversationID')
+            if(!this.currentUserProfile.avatar) {
+                this.currentUserProfile.avatar = this.$store.state.user.avatar
+            } 
             console.log(this.currentUserProfile, '当前用户数据')
         },
     }
