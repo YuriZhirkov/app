@@ -71,7 +71,7 @@
                     />
                 </div>
                 <span class="expression iconfont icon-dialogue-smile" @click="smile"></span>
-                <span class="more iconfont icon-dialogue-jia"></span>
+                <span class="weui-btn weui-btn_mini weui-btn_primary" style="margin: auto;margin-right: 7px;" @click="handleEnter">发送</span>
                 
                 <div class="recording" style="display: none;" id="recording">
                     <div class="recording-voice" style="display: none;" id="recording-voice">
@@ -253,7 +253,8 @@
             },
             // 点击空白区域，菜单被隐藏
             MenuOutsideClick(e) {
-                
+                // 关闭表情菜单
+                this.emoji = true
                 var container = document.querySelectorAll('.text'),
                     msgMore = document.getElementById('msg-more')
                 if (e.target.className === 'text') {
@@ -293,7 +294,7 @@
                 let toAccount = this.$route.query.userId
                 if (this.messageContent === '' || this.messageContent.trim().length === 0) {
                     this.messageContent = ''
-                    alert('不能发送空消息哦！')
+                    this.$dialog.toast({mes:'不能发送空消息哦！',icon:'error'})
                     return
                 }
                 const message = this.tim.createTextMessage({

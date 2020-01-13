@@ -115,19 +115,19 @@
 
                     // 遍历会话列表据，有群聊的会话，将群成员信息添加上去 
                     let conversationList = this.conversationList
-                    // conversationList.forEach(element => {
-                    //     if(element.type == "GROUP") {
-                    //          // 获取群人员信息
-                    //         tim.getGroupMemberList({
-                    //             groupID: element.groupProfile.groupID,
-                    //             offset: 0,
-                    //             count: 30
-                    //         }).then((imResponse) => {
-                    //             element.groupMemberList = imResponse.data.memberList
-                    //         })
-                    //     }
-                    // })
-                    // console.log(conversationList, ')))))))))))))))))))))')
+                    conversationList.forEach(element => {
+                        if(element.type == "GROUP") {
+                             // 获取群人员信息
+                            tim.getGroupMemberList({
+                                groupID: element.groupProfile.groupID,
+                                offset: 0,
+                                count: 30
+                            }).then((imResponse) => {
+                                element.groupMemberList = imResponse.data.memberList
+                            })
+                        }
+                    })
+                    console.log(conversationList, ')))))))))))))))))))))')
                 }
             },
             /**

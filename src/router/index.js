@@ -335,12 +335,12 @@ export default new Router({
                 "subPage": resolve => require(["../components/wechat/dialogue.vue"], resolve)
               }
         },
-        // { // 聊天详情
-        //     path: '/wechat/dialogue/dialogue-info',
-        //     name: "",
-        //     components: {
-        //         "subPage": resolve => require(["../components/dialogue-info.vue"], resolve)
-        //     }
-        // },
+        { // 聊天详情
+            path: '/wechat/dialogue/dialogue-info',
+            name: "",
+            components: {
+                "subPage": resolve => require(["../components/wechat/dialogue-info.vue"], resolve)
+            }
+        },
     ]
 })
