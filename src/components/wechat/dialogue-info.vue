@@ -96,7 +96,7 @@
                 currentMemberList:[],
                 currentMemberID: '',
                 count: 30, // 显示的群成员数量
-                gid : this.$route.query.groupId,
+                gId : this.$route.query.groupId,
                 userID: 'wh01'
             }
         },
@@ -195,8 +195,6 @@
                     })
             },
             addGroupMember() {
-                debugger
-                // const groupID = this.currentConversation.conversationID.replace('GROUP', '')
                 this.tim
                     .addGroupMember({
                         groupID : this.gId,
@@ -205,21 +203,21 @@
                     .then((imResponse) => {
                         const { successUserIDList, failureUserIDList, existedUserIDList } = imResponse.data
                         if (successUserIDList.length > 0) {
-                            alert('加群成功')
+                            this.$dialog.toast({mes:'加群成功',icon:'success'})
                             this.tim.getGroupMemberProfile({groupID, userIDList: successUserIDList})
                             .then(({ data: { memberList }}) => {
-                            this.$store.commit('updateCurrentMemberList', memberList)
+                                this.$store.commit('updateCurrentMemberList', memberList)
                             })
                         }
                         if (failureUserIDList.length > 0) {
-                            alert(`群成员：${failureUserIDList.join(',')}，添加失败！`)
+                            this.$dialog.toast({mes:`群成员：${failureUserIDList.join(',')}，添加失败！`,icon:'error'})
                         }
                         if (existedUserIDList.length > 0) {
-                            alert(`群成员：${existedUserIDList.join(',')}，已在群中`)
+                            this.$dialog.toast({mes:`群成员：${existedUserIDList.join(',')}，已在群中`})
                         }
                     })
                     .catch(error => {
-                        alert(error)
+                        this.$dialog.toast({mes: error,icon:'error'})
                     })   
             }
         }
