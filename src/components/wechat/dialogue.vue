@@ -3,7 +3,7 @@
         <header id="wx-header">
             <div class="other">
                 <router-link :to="{path:'/wechat/dialogue/dialogue-info',query: { groupName: $route.query.name, groupId: $route.query.userId}}" tag="span" class="iconfont icon-chat-group" v-show="$route.query.currentConversationType=='GROUP'"></router-link>
-                <router-link :to="{path:'/wechat/dialogue/dialogue-detail',query: { msgInfo: msgInfo}}" tag="span" class="iconfont icon-chat-friends" v-show="$route.query.group_num==1"></router-link>
+                <span class="iconfont icon-chat-friends" v-show="$route.query.group_num==1"></span>
             </div>
             <div class="center">
                 <router-link to tag="div" class="iconfont icon-return-arrow">
@@ -23,7 +23,7 @@
                 <!-- 系统消息提醒  -->
                 <div v-else-if="item.type==='TIMGroupSystemNoticeElem'">
                    <!-- 别人发进来的消息放在左边 -->
-                    <div v-if="item.flow=='in'">
+                    <div v-if="item.flow=='in'"  class="position-left">
                         <img :src="require('../../assets/images/system.png')" class="header" >
                         <p class="text"  v-text="sysText(item)"></p>
                     </div>
@@ -32,7 +32,7 @@
                 <!-- 普通消息 -->
                 <div v-else-if="item.type==='TIMTextElem'">
                     <!-- 别人发进来的消息放在左边 -->
-                    <div v-if="item.flow=='in'">
+                    <div v-if="item.flow=='in'" class="position-left">
                         <img v-if="$route.query.currentConversationType == 'GROUP'" :src="item.avatar" class="header" >
                         <img v-else-if="$route.query.currentConversationType == 'C2C'" :src="$route.query.avatar" class="header" >
                         <img v-else-if="$route.query.currentConversationType == TIM.TYPES.CONV_SYSTEM" :src="require('../../assets/images/system.png')" class="header" >
@@ -40,7 +40,7 @@
                         <p class="text" v-else v-html="contentList(item.payload)"></p>
                     </div>
                     <!-- 自己发的的消息放在右边 -->
-                    <div v-else>
+                    <div v-else  class="position-right">
                         <p class="textRight" v-html="contentList(item.payload)"></p>
                         <img  :src="currentUserProfile.avatar" class="header" >
                     </div>
