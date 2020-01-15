@@ -113,6 +113,10 @@ export default {
         this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
         let userInfo = obj.info;
         this.setUserId(obj.userId);
+
+        // 登录成功标识,设置tim登录
+        this.$store.commit('toggleIsSDKReady', true)
+        
         //if(userInfo=='full') {
         self.$router.push("/plaza/dynamic?login=1");
         // } else {
@@ -204,9 +208,8 @@ export default {
       }
 
       let e =   await this.funcAsync()
-      console.log(e, "*******")
 
-      // 登录成功标识
+      // 登录成功标识,设置tim登录
       this.$store.commit('toggleIsSDKReady', true)
 
       // this.$store.dispatch('login', e.data.data.userId)

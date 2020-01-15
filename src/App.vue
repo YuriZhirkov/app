@@ -56,7 +56,6 @@ export default {
       },
       getSearchKey: {
           handler(newValue,oldValue){  //当词条改变时执行事件
-              
               console.log('new',newValue)
               console.log('old',oldValue)
               if(newValue) {
@@ -69,7 +68,7 @@ export default {
                 })
                 .catch(imError => {
                     if (imError.code === 2000) {
-                        alert(imError.message + ', 请检查是否正确填写了 SDKAPPID')
+                        this.$dialog.toast({mes:imError.message + ', 请检查是否正确填写了 SDKAPPID',icon:'error'})
                     } else {
                         console.log(imError.message)
                     }
@@ -97,6 +96,33 @@ export default {
    
   },
   methods: {
+    /**
+     * 获取用户信息
+     */
+    getUserInfo : async function () {
+        return await  axios.post(this.host + "user/baseInfo/get/authentication", {'visitorId':this.userId})
+    },
+    /**
+     * 修改用户信息，同步
+     */
+    async updateMyProfile() {
+        let res = await this.getUserInfo()
+        console.log(res, '用户信息')
+        let obj = res.data.data
+        let headUrl = obj.headUrl ? obj.headUrl : 'https://imgcache.qq.com/open/qcloud/video/act/webim-avatar/avatar-2.png'
+        const options = {
+            avatar: headUrl,
+            gender: 'Gender_Type_Unknown',
+            nick: obj.nickName
+        }
+        this.tim.updateMyProfile(options)
+            .then((e) => {
+                console.log(e, '修改用户信息')
+            })
+            .catch(imError => {
+                console.log(imError)
+            })
+    },
     initListener() {
         // 登录成功后会触发 SDK_READY 事件，该事件触发后，可正常使用 SDK 接口
         this.tim.on(this.TIM.EVENT.SDK_READY, this.onReadyStateUpdate, this)
@@ -143,7 +169,8 @@ export default {
                     })
                 }
             })
-            // console.log(conversationList, ')))))))))))))))))))))')
+            // 修改用户头像
+            this.updateMyProfile()
         }
     },
     /**
