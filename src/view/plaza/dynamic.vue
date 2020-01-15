@@ -72,12 +72,12 @@
                                 {{commentLens[i]?commentLens[i]:''}}
                             </div>
                           <!-- </router-link> -->
-                          <div class="flex">
+                          <!-- <div class="flex">
                             <i class="iconfont2">&#xe610;</i>
-                          </div>
-                          <div v-if="userId == d.user.userId" class="flex icon20 bold grey" @click="openSelect(d.user.userId,d.dynamic.id,i)">
+                          </div> -->
+                          <!-- <div v-if="userId == d.user.userId" class="flex icon20 bold grey" @click="openSelect(d.user.userId,d.dynamic.id,i)">
                             <i class="iconfont2">&#xe60c;</i>
-                          </div>
+                          </div> -->
                         </div>
                       </div>
                       <!-- comment -->
@@ -131,11 +131,29 @@
             <div class="w100 c-close fmiddle grey" @click="closeComment"><i class="iconfont2">&#xe656;</i></div>
         </div>
 
-
+        <!-- 这是一个弹出框 用户 绑定 手机号-->
+        <yd-popup v-model="isShowPhone" position="center" width="90%">
+            <div style="background-color:#fff;">
+                <yd-cell-item>
+                    <span slot="left">手机号：</span>
+                    <yd-input slot="right" v-model="phoneNum" required regex="mobile" placeholder="请输入手机号码"></yd-input>
+                </yd-cell-item>
+                <yd-cell-item class="verifyWrap">
+                    <span @click="getPhoneValidateCode" slot="right">{{countCode != 60 ? '重新发送'+countCode+'秒':'验证码'}}</span>
+                    <yd-input slot="left" :show-error-icon="false" :show-success-icon="false" v-model="verifyCode" regex="^\d{5,12}$" 
+                    placeholder="校验码"></yd-input>
+                </yd-cell-item>
+                <div style="text-align: center;">
+                  <yd-button type="primary" style="margin-left:10px" @click.native="cancel" >取消</yd-button>
+                  <yd-button type="primary"   style="margin-right:10px" @click.native="bindingPhone">绑定</yd-button>
+                </div>
+            </div>
+        </yd-popup> 
     </div>
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
+import { register, getPhoneValidateCode } from "@/servers/baseInfo";
 // import { testServer } from "@/servers/plaza";
 // import topComponent from ""
 export default {
@@ -174,7 +192,11 @@ export default {
           label: "删除动态",
           callback: this.dynamicDel
         }
-      ]
+      ],
+      isShowPhone: false,
+      phoneNum: "",
+      countCode: 60,
+      verifyCode: ""
     };
   },
   watch: {
@@ -183,7 +205,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["setUserName"]),
+    ...mapMutations(["setUserName","setUserId"]),
     twoComment(d, i, i2) {
       if (!d) location.reload();
       this.commentContent = "";
@@ -326,12 +348,13 @@ export default {
           "comment/add",
           {
             correlationId: c.correlationId,
-            formUserId: this.userId,
+            formUserId: self.userId,
+            formUserName: self.userName,
             toUserId: c.toUserId,
             toUserName: c.toUserName,
             commentType: 1,
             type: 0,
-            commentContent: this.commentContent
+            commentContent: self.commentContent
           },
           function(e) {
             if (!e) return;
@@ -349,7 +372,7 @@ export default {
               formUserId: self.userId,
               formUserName: self.userName,
               correlationId: c.correlationId,
-              type: 1,
+              type: 0,
               toUserId: c.toUserId,
               toUserName: c.toUserName,
               id: e.data,
@@ -369,13 +392,13 @@ export default {
           "comment/add",
           {
             correlationId: c.correlationId,
-            formUserId: this.userId,
+            formUserId: self.userId,
             formUserName: self.userName,
             toUserId: c.formUserId,
             toUserName: c.formUserName,
             commentType: 1,
             type: 0,
-            commentContent: this.commentContent
+            commentContent: self.commentContent
           },
           function(e) {
             if (!e) return;
@@ -395,7 +418,7 @@ export default {
               formUserId: self.userId,
               formUserName: self.userName,
               correlationId: c.correlationId,
-              type: 1,
+              type: 0,
               toUserId: c.formUserId,
               toUserName: c.formUserName,
               id: e.data,
@@ -595,23 +618,120 @@ export default {
     tapCancelSearch() {
       this.swSearch = false;
     },
-    getUserInfo() {
-      const self = this;
-      this.post(
-        "user/baseInfo/get/authentication",
-        { visitorId: this.userId },
-        function(e) {
-          if (e.errCode != 200) return;
-          self.setUserName(e.data.nickName);
-          self.userName = e.data.nickName;
-          self.idFlag = e.data.idFlag;
+    // 获取用户的信息，判断用户信息中是否存在手机号或者openId
+    //1. 如果手机号为空则绑定手机号,跳出一个对话框提示用户绑定
+    //2. 如果openId为空则获取到openId,
+    //使用window.location.href = 
+    //http://www.ygtqzhang.cn/weChat/authorize?returnUrl=http://www.ygtqzhang.cn:8090/plaza/dynamic?login=1&userId=325642568258263868
+
+      getUserInfo() {
+        const self = this;
+        this.post(
+          "user/baseInfo/get/authentication",
+          { visitorId: this.userId },
+          function(e) {
+            if (e.errCode != 200) return;
+            let dataRet = e.data;
+            self.setUserName(dataRet.nickName);
+            self.userName = dataRet.nickName;
+            self.idFlag = dataRet.idFlag;
+            //打印用户的信息
+            console.log("dataRet=");
+            console.log(dataRet);
+            if (dataRet.phone == undefined || dataRet.phone == "" || dataRet.phone == null) {
+                console.log("dataRet.phone=");
+                console.log(dataRet.phone);
+                self.isShowPhone = true;
+            }
+
+            if (dataRet.weChatId == undefined || dataRet.weChatId == "" || dataRet.weChatId == null) {
+                 debugger;
+                let queryUserId = self.$route.query.userId;
+                if(queryUserId == null || queryUserId == undefined || queryUserId == "") {  
+                    console.log("dataRet.weChatId=");
+                    console.log(dataRet.weChatId);
+                    console.log("self.userId=");
+                    console.log(self.userId);
+                    let url = 'http://www.ygtqzhang.cn/weChat/authorize'+
+                            '?returnUrl=http://www.ygtqzhang.cn:8090/plaza/dynamic?login=1'
+                            + self.userId;
+                    location.href = url;
+                }
+
+            }
+          }
+        );
+      },
+      getPhoneValidateCode() {
+        const self = this;
+        if (!/^1[3456789]\d{9}$/.test(this.phoneNum)) {
+          this.$dialog.toast({ mes: "请输入正确的手机号码", icon: "error" });
+          return;
         }
-      );
-    },
+        if (this.countCode != 60) return;
+        this.get("user/baseInfo/getPhoneValidateCode",{ phone: this.phoneNum },
+            function(e) {
+                console.log("e=");
+                console.log(e);
+                if (e.errCode != 200) {
+                  self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+                  return;
+                }
+                self.$dialog.toast({ mes: e.errMsg, icon: "success" });
+                const si = setInterval(function() {
+                  self.countCode--;
+                  if (self.countCode <= 0) {
+                    clearInterval(si);
+                    self.countCode = 60;
+                  }
+                }, 1000);
+              }
+        );
+      },
+      bindingPhone() {
+        const self = this;
+        self.isShowPhone = false;
+        if (!/^1[3456789]\d{9}$/.test(this.phoneNum)) {
+          this.$dialog.toast({ mes: "请输入正确的手机号码", icon: "error" });
+          return;
+        }
+        if (this.verifyCode == "") {
+          this.$dialog.toast({ mes: "请输入收到的验证码" });
+          return;
+        }
+        this.post(
+          "user/baseInfo/bindingPhone",
+          { userId: this.userId,phone: this.phoneNum, validateCode: this.verifyCode },
+          function(e) {
+            console.log("e=");
+            console.log(e);
+            if (e.errCode != 200) {
+              self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+              return;
+            }
+            self.$dialog.toast({ mes: e.errMsg, icon: "success" });
+            return;
+            
+
+          }
+        );
+      },
+      cancel(){
+         const self = this;
+         self.isShowPhone=false;
+      },
   },
-  
   mounted() {
     const self = this;
+    //获取 http://www.ygtqzhang.cn:8090/plaza/dynamic?login=1&userId='+ this.userId 中用户id
+    console.log("self.$route.query=");
+    console.log(self.$route.query);
+    let queryUserId = self.$route.query.userId;;
+    if(queryUserId != null && queryUserId != undefined && queryUserId != "") {
+         console.log(queryUserId);
+         //this.userId=queryUserId;
+         self.setUserId(queryUserId);
+    }
     if (!this.userId) {
       this.$router.push("/");
     } else {

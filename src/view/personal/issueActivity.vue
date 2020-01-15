@@ -16,7 +16,7 @@
               <span class="fsmall w100 flex">活动封面</span>
             </div>
             <div class="flexa i-img-wrap">
-              <div class="i-img"  v-for="(d,i) in imgs">
+              <div class="i-img"  v-for="(d,i) in imgs" :key="i">
                 <img  :src="d" alt="">
               </div>
             </div>
@@ -56,20 +56,20 @@
      <div class="item flexs">
        <div class="i-name flexs fmiddle">活动开始时间</div>
        <div class="i-input flex fmiddle">
-          <yd-datetime v-model="info.activityStartTime"></yd-datetime>
+          <yd-datetime type="datetime" v-model="info.activityStartTime"></yd-datetime>
        </div>
      </div>
 
      <div class="item flexs">
        <div class="i-name flexs fmiddle">活动结束时间</div>
        <div class="i-input flex fmiddle">
-          <yd-datetime v-model="info.activityEndTime"></yd-datetime>
+          <yd-datetime type="datetime" v-model="info.activityEndTime"></yd-datetime>
        </div>
      </div>
      <div class="item _item flexs">
        <div class="i-name flexs fmiddle">发布时地址</div>
        <div class="i-input flexs fmiddle" @click="addressShow1 = true">
-         <yd-input disabled v-model="info.activityAddress1" placeholder='发布地址选择'></yd-input>
+         <yd-input disabled v-model="info.publishAddress" placeholder='发布地址选择'></yd-input>
           <yd-cityselect v-model="addressShow1" :callback="address1" :items="district1"></yd-cityselect>
        </div>
      </div>
@@ -256,6 +256,7 @@ export default {
         activityStartTime:new Date(this.info.activityStartTime+':00'),
         activityEndTime:new Date(this.info.activityEndTime+':00'),
         activityAddress:this.info.activityAddress+' '+(this.info.site ? this.info.site:''),
+        publishAddress:this.info.publishAddress+' '+(this.info.site ? this.info.site:''),
         activityBriefIntroduction:this.info.activityBriefIntroduction,
         activityTips:this.info.activityTips,
         activityFeature:this.info.activityFeature,
@@ -300,7 +301,7 @@ export default {
         this.$dialog.toast({mes:'请选择活动地址'})
         return
       }
-      if(!this.info.activityAddress1){
+      if(!this.info.publishAddress){
         this.$dialog.toast({mes:'请选择活动发布地址'})
         return
       }
@@ -308,14 +309,14 @@ export default {
         this.$dialog.toast({mes:'请填写活动详情'})
         return
       }
-      if(!this.info.activitySpecification){
-        this.$dialog.toast({mes:'请填写活动说明'})
-        return
-      }
-      if(!this.info.activityTips){
-        this.$dialog.toast({mes:'请填写活动提示'})
-        return
-      }
+      // if(!this.info.activitySpecification){
+      //   this.$dialog.toast({mes:'请填写活动说明'})
+      //   return
+      // }
+      // if(!this.info.activityTips){
+      //   this.$dialog.toast({mes:'请填写活动提示'})
+      //   return
+      // }
       return  true
 
     },
@@ -333,7 +334,7 @@ export default {
       this.addressShow1 = true
     },
     address1(e){
-     this.info.activityAddress1 = e.itemName1 +' '+ e.itemName2
+     this.info.publishAddress = e.itemName1 +' '+ e.itemName2 +' '+  e.itemName3
     },
     imgChange(e){
       if(!e.target.files) return

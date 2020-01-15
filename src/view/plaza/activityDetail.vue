@@ -20,7 +20,7 @@
             <p class="activityPrice red" v-if="info.activity.activityCost">¥{{info.activity.activityCost}}</p>
             <p class="fmiddle grey">
                 <i class="iconfont2">&#xe781;</i>
-                {{info.activity.activityStartTime|dateformat}}至{{info.activity.createTime|dateformat}}
+                {{info.activity.activityStartTime|dateformat}}至{{info.activity.activityEndTime|dateformat}}
             </p>
             <div class="flexs">
               <p class="fmiddle grey">
@@ -43,7 +43,7 @@
         <div class="reserveInfo">
             <h1>预定需知</h1>
             <div class="orderContent fmiddle">
-                <span>{{info.activity.activityBriefIntroduction}}</span>
+                <span>{{info.activity.activitySpecification}}</span>
             </div>
         </div>
         <div class="collectInfo">
@@ -58,6 +58,38 @@
                 <img v-for="(d,i) in users.users" :src="d.headUrl" :key="i">
             </div>
         </div>
+
+        <!-- 这个是用户的评论 开始-->
+        <div class="actionBox flexs">
+          <div class="flexs w100 grey">   
+            <!-- type, dynimicId, toId, toName, i, formUserName = "", commentId -->
+            <div class="fmiddle flex" :class="{red:info.isLike}" @click="tapComment(0,aid,'','','','')">
+              <i class="iconfont2" v-if="info.isLike==0" >&#xe600;</i>
+              <i class="iconfont2 red"  v-if="info.isLike==1" >&#xe600;</i>
+              {{info.likeNum ? info.likeNum : ''}}
+            </div>
+            <div class="flex fmiddle" @click="tapComment(1,aid,info.user.userId,info.user.nickName,'','')">
+              <i class="iconfont2">&#xe665;</i>
+                <!-- 评论的长度 -->
+                {{commentNum?commentNum:''}}
+            </div>
+          </div>
+        </div>
+        <!-- comment -->
+        <!-- <router-link :to="{path:'/plaza/detail',query:{aid:d.dynamic.id}}"> -->
+        <div class="li-comment">
+          <div class="c-i flexa"  v-for="(d2,i2) in info.comments" :key="i2" @click="twoComment(d2,i2)">
+            <div class="flexa" v-if="d2.formUserId == info.user.userId">
+              <p class="c-i-name fmiddle">{{d2.formUserName}}:</p>
+              <div class="c-i-body fmiddle">{{d2.commentContent}} </div>
+            </div>
+            <div class="flexa" v-else>
+              <p class="fmiddle"><span class="c-i-name">{{d2.formUserName}}</span>回复<span  class="c-i-name">{{d2.toUserName}}</span>:</p>
+              <div class="c-i-body fmiddle">{{d2.commentContent}} </div>
+            </div>
+          </div>
+        </div>
+        <!-- 这个是用户的评论 结束 -->
         <div class="place"></div>
         <div class="activityBottom flexs">
             <div class="leftBootom flexs">
@@ -75,13 +107,31 @@
                 <div @click="join" class="w100 h100 flex" v-if="!info.isJoin">马上预订</div>
                 <div class="w100 h100 flex" v-if="info.isJoin">已加入</div>
                
-            </div>
+            </div>  
         </div>
+        <!-- 评论 输入框 开始 :class="{showComment:showComment}"-->
+        <div class="comment w100 flex" :class="{showComment:showComment}">
+            <div class="c-input flex">
+              <yd-textarea slot="right" v-model="commentContent" :placeholder="ydPlaceholder" maxlength="100"></yd-textarea>
+            </div>
+            <div class="c-send h100">
+              <div class="w100 flex" @click="sendComment()">
+                <div class="blue fmiddle bold">发送</div>
+              </div>
+              <div v-if="userId == commentInfo.formUserId && commentInfo.type==2" class="w100 flex" @click="delComment(commentInfo.formUserId,commentInfo.id,commentInfo.index2)">
+                <div class="red fmiddle bold">删除</div>
+              </div>
+            </div>
+            <div class="w100 c-close fmiddle grey" @click="closeComment"><i class="iconfont2">&#xe656;</i></div>
+        </div>
+        <!-- 评论 输入框 结束-->
    </div>
+
+
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 import 'swiper/dist/css/swiper.css'
 import  { swiper, swiperSlide } from 'vue-awesome-swiper'
 import wx from 'weixin-js-sdk';
@@ -94,7 +144,7 @@ export default {
     swiperSlide
   },
   computed: {
-    ...mapState(['userId'])
+    ...mapState(['userId','userName'])
   },
   data() {
     return {
@@ -104,12 +154,21 @@ export default {
           }
       },
       aid:'',
-      info:{activity:{},user:{},isJoin:false},
+      info:{activity:{},user:{},isJoin:false,comments:{},isLike:0,likeNum:0},
       slides: [],
-      users:{users:[],usersLen:''}
+      users:{users:[],usersLen:''},
+      joinBeforeFlag:0,
+      joinBeforeMsg:"",
+      commentNum:0,
+      commentContent: "",
+      commentInfo: [],
+      showComment: false,
+      ydPlaceholder: "写评论"
+
     };
   },
   methods: {
+    ...mapMutations(["setUserId"]),
     del(id,uid){
       const self = this
       this.post('activity/delete',{userId:uid,activityId:id},function(e){
@@ -273,14 +332,67 @@ export default {
       
       });
     },
+    // 加入活动之前要先检查该用户是否符合加入活动的要求
+    joinBefore(){
+      const self = this
+      this.post('activity/joinBefore',{userId:this.userId,activityId:this.aid},function(e){
+        if(e.errCode != 200){
+          self.joinBeforeFlag = 0;
+        } else {
+          self.joinBeforeFlag = 1;
+        }
+        self.joinBeforeMsg = e.errMsg;
+        
+      })
+    },
+    groupChat(){
+      this.$dialog.toast({mes:'群聊开发中',icon:'success'});
+    },
+    finished(){
+      this.$dialog.toast({mes:'活动已结束',icon:'success'});
+    },
     join(){
       const self = this
+      if(self.joinBeforeFlag==0) {
+
+        
+        if(!!self.joinBeforeMsg && self.joinBeforeMsg=='用户未认证不能参加活动') {
+            self.$dialog.confirm({
+                title: '身份认证',
+                mes: self.joinBeforeMsg,
+                opts: () => {
+                    self.$dialog.toast({mes: '去认证',timeout: 1000,
+                        callback: () => {
+                            self.$router.push({
+                              path: "/personal/authIdentity"
+                            });
+                        }
+                    });
+                }
+            });
+        } else {
+          self.$dialog.toast({mes:self.joinBeforeMsg,icon:'error'})
+        }
+        return;
+      }
       this.post('activity/join',{activityId:this.aid,userId:this.userId,activityCost:this.info.activity.activityCost},function(e){
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
           return
+        } else {
+          //self.getActivityDetail(self.aid);
+          //产生订单之后就是支付，支付成功之后要回调到这个页面，需要带的参数有orderId returnUrl 用户id在订单详情里取
+          console.log("订单id=");
+          console.log(e.data);
+          //将用户的id放在userId= self.userId,在后台解析
+          let url = 'http://www.ygtqzhang.cn/pay/create?orderId='+e.data
+                            +'&returnUrl=http://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
+                            + self.aid+"userId="
+                            + self.userId;
+          location.href = url;
         }
-        self.getActivityDetail(self.aid)
+
+        
       })
     },
     getActivityDetail(aid){
@@ -291,10 +403,18 @@ export default {
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
           return
         }
+        
         const d = e.data
+        console.log("e.data",e.data);
         self.info.activity = d.activityMoreInfo
         self.info.user = d.userInfoOutput
-        self.isJoin = e.isJoin
+        self.info.isJoin = d.isJoin
+        self.info.comments = d.commentOutputs
+        self.info.isLike = d.isLike
+        self.info.likeNum = d.likeNum
+        if (d.commentOutputs != null &&  d.commentOutputs != undefined) {
+            self.commentNum = d.commentOutputs.length;
+        }
         const  urls = d.activityMoreInfo.activityPictureUrl
         if(urls){
           for (let i in urls) {
@@ -308,11 +428,197 @@ export default {
     getUsers(aid){
       const self = this
       this.get('activity/join/get',aid,function(e){
-        if(e.errCode != 20)return
+        console.log("e=",e)
+        if(e.errCode != 200)
+        return
         self.users.users = e.data
-        self.users.usersLen = e.data.length
+        self.users.usersLen = e.total
       })
-    }
+    },
+    tapComment(type, aid, toId, toName, formUserName = "", commentId) {
+      const self = this;
+     
+      if (type == 0) {
+        //判断用户是否点赞了 如果点赞了则取消点赞 否则就点赞
+        if (this.info.isLike===1) {
+          this.cancelZan(this.userId, aid);
+          this.info.isLike = 0;
+          this.info.likeNum = this.info.likeNum - 1;
+        } else {
+          console.log("点赞1");
+          this.post(
+            "comment/add",
+            {
+              correlationId: aid,
+              formUserId: this.userId,
+              formUserName: this.userName,
+              toUserId: toId,
+              toUserName: toName,
+              commentType: 0,
+              type: 1
+            },
+            function() {}
+          );
+          console.log("点赞1");
+          this.info.isLike = 1;
+          this.info.likeNum = this.info.likeNum + 1;
+        }
+      }
+      if (type == 1) {
+        this.commentContent = "";
+        this.commentInfo["correlationId"] = aid;
+        this.commentInfo["toUserId"] = toId;
+        this.commentInfo["toUserName"] = toName;
+        this.commentInfo["formUserName"] = formUserName;
+        this.commentInfo["type"] = 1;
+        this.commentInfo["id"] = commentId;
+        this.ydPlaceholder = "评论:";
+        this.showComment = true;
+      }
+    },
+    cancelZan(userid, aid) {
+      this.post(
+        "comment/cancel/like",
+        { formUserId: userid, correlationId: aid, type: 1 },
+        function() {}
+      );
+    },
+    twoComment(d,i2) {
+      if (!d) location.reload();
+      this.commentContent = "";
+      this.commentInfo["correlationId"] = d.correlationId;
+      this.commentInfo["formUserId"] = d.formUserId;
+      this.commentInfo["formUserName"] = d.formUserName;
+      this.commentInfo["toUserId"] = d.toUserId;
+      this.commentInfo["toUserName"] = d.toUserName;
+      this.commentInfo["index2"] = i2;
+      this.commentInfo["type"] = 2;
+      this.commentInfo["id"] = d.commentId;
+      this.ydPlaceholder = "回复" + d.formUserName + ":";
+      this.showComment = true;
+    },
+    sendComment() {
+      const self = this;
+      if (!this.commentInfo) location.reload();
+
+      const c = this.commentInfo;
+
+      if (this.commentContent == "") {
+        self.$dialog.toast({ mes: "写点什么吧！" });
+        return;
+      }
+
+      if (c.type == 1) {
+        
+        this.post(
+          "comment/add",
+          {
+            correlationId: c.correlationId,
+            formUserId: self.userId,
+            formUserName: self.userName,
+            toUserId: c.toUserId,
+            toUserName: c.toUserName,
+            commentType: 1,
+            type: 1,
+            commentContent: this.commentContent
+          },
+          function(e) {
+            if (!e) return;
+            if (e.errCode !== 200) {
+              self.$dialog.toast({ mes: e.errMsg });
+              self.commentInfo = [];
+              self.showComment = false;
+              return;
+            }
+
+            const con = self.commentContent;
+            if (self.info.comments == null) {
+              self.info.comments.comment = [];
+            }
+            self.info.comments.unshift({
+              commentContent: con,
+              formUserId: self.userId,
+              formUserName: self.userName,
+              correlationId: c.correlationId,
+              type: 1,
+              toUserId: c.toUserId,
+              toUserName: c.toUserName,
+              id: e.data,
+              commentId: e.data
+            });
+            self.commentNum = self.commentNum+1;
+            self.commentInfo = [];
+            self.showComment = false;
+          }
+        );
+      } else {
+        this.post(
+          "comment/add",
+          {
+            correlationId: c.correlationId,
+            formUserId: self.userId,
+            formUserName: self.userName,
+            toUserId: c.formUserId,
+            toUserName: c.formUserName,
+            commentType: 1,
+            type: 1,
+            commentContent: self.commentContent
+          },
+          function(e) {
+            if (!e) return;
+            if (e.errCode != 200) {
+              self.$dialog.toast({ mes: e.errMsg });
+              return;
+            }
+            // console.log(self.commentInfo);
+            debugger
+            const con = self.commentContent;
+            if (self.info.comments == null) {
+              self.info.comments = [];
+            }
+            // self.list[c['index']].comment.unshift({commentContent:con,formUserId:self.userId,formUserName:self.userName,correlationId:c.correlationId,type:0})
+            self.info.comments.unshift({
+              commentContent: con,
+              formUserId: self.userId,
+              formUserName: self.userName,
+              correlationId: c.correlationId,
+              type: 1,
+              toUserId: c.formUserId,
+              toUserName: c.formUserName,
+              id: e.data,
+              commentId: e.data
+            });
+            self.commentNum = self.commentNum + 1;
+            
+            self.commentInfo = [];
+            self.showComment = false;
+          }
+        );
+      }
+    },
+    delComment(uid, id, i2) {
+      const self = this;
+      this.post(
+        "comment/delete",
+        { formUserId: uid, id: id, type: 1 },
+        function(e) {
+          if (!e) return;
+          if (e.errCode != 200) {
+            self.$dialog.toast({ mes: e.errMsg });
+            return;
+          }
+          self.$dialog.toast({ mes: "删除成功" });
+
+          self.info.comments.splice(i2, 1);
+          self.commentNum--;
+        
+          self.showComment = false;
+        }
+      );
+    },
+    closeComment() {
+      this.showComment = false;
+    },
   },
   mounted() {
     const aid  = this.$route.query.aid
@@ -320,9 +626,18 @@ export default {
     if(!aid) this.$router.go(-1)
     this.aid = aid
 
+    const userId  = this.$route.query.userId
+    console.log("userId= ");
+    console.log(userId);
+    if(userId != null && userId != undefined && userId != "") {
+       self.setUserId(userId);
+       //this.userId = userId;
+    }
+
     this.getActivityDetail(aid)
     this.getUsers(aid)
     this.weiXinShare(aid)
+    this.joinBefore()
   },
   watch: {},
 };
@@ -331,6 +646,53 @@ export default {
   .slides{
     max-height: 6rem;
     position: relative;
+  }
+  .actionBox {
+  }
+  .actionBox .flex {
+    width: 25%;
+  }
+  .showComment {
+    transform: translateY(0) !important;
+  }
+  .c-send .w100 {
+    min-height: 60px;
+  }
+  .c-close {
+    position: absolute;
+    right: 2%;
+    top: 0;
+    width: 20px;
+  }
+  .c-input {
+    width: 70%;
+    padding: 0 10px;
+    background: #ffffff;
+  }
+  .c-send {
+    width: 20%;
+  }
+  .comment {
+    position: fixed;
+    bottom: 0;
+    background: #f5f5f5;
+    z-index: 9;
+    padding: 8px 0;
+    transform: translateY(150%);
+    transition: all 0.3s;
+  }
+  .c-i-name {
+    color: #0168c3;
+  }
+  .li-comment {
+    background: #f9f9f9;
+    border-radius: 3px;
+    padding: 20px 10px;
+  }
+  .li-comment div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .fenxiang{
     width: 3rem;

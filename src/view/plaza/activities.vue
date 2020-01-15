@@ -36,7 +36,7 @@
                        </router-link>
                         <div class="flexs">
                           <p class="fbig">
-                              <span class="activityStatus">【报名中】</span>{{d.activityTheme}}
+                              <span class="activityStatus">{{d.isEnable==1?'【报名中】':'【已结束】' }}</span>{{d.activityTheme}}
                           </p>
                           <p v-if="userId == d.userId" @click="del(d.userId,d.id,i)">
                             <span class="fsmall red">删除</span>

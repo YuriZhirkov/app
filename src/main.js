@@ -4,7 +4,7 @@ import router from './router'
 
 import fastClick from 'fastclick'
 
-import store from './store/index'
+import store from './store'
 
  
 
@@ -162,7 +162,6 @@ Vue.prototype.dateFormat = function(fmt,y) {
   const day = change(d.getDate());
   const hour = change(d.getHours());
   const minute = d.getMinutes();
-  const second = change(d.getSeconds());
 
   function change(t) {
     if (t < 10) {
@@ -174,7 +173,7 @@ Vue.prototype.dateFormat = function(fmt,y) {
   if(y === true){
     return year + '-' + month + '-' + day
   }
-  return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+  return year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
 }
 
 
@@ -313,7 +312,7 @@ Vue.filter('totime', function (date) {
   }
 });
 
-Vue.filter('dateformat', function(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
+Vue.filter('dateformat', function(dataStr, pattern = 'YYYY-MM-DD HH:mm') {
     return moment(dataStr).format(pattern)
 })
 Vue.filter('datemm', function(dataStr) {
