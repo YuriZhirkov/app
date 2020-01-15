@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import axios from "axios"
 import { mapState } from 'vuex'
 export default {
   name: "App",
@@ -106,6 +107,7 @@ export default {
      * 修改用户信息，同步
      */
     async updateMyProfile() {
+        debugger
         let res = await this.getUserInfo()
         console.log(res, '用户信息')
         let obj = res.data.data

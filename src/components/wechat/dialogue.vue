@@ -275,7 +275,7 @@
                         if(v.name === "text") {
                             res += '<span class="spanText">' + v.text + '</span>'
                         } else if(v.name === "img") {
-                            res += '<img style="width:25px;height25px" src='+ v.src + '></img>'
+                            res += '<img style="width:25px;height:25px" src='+ v.src + '></img>'
                         }
                     })
                 }
