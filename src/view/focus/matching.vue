@@ -92,13 +92,15 @@
     </div>
 </template>
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+
+import { mapMutations, mapState, mapGetters } from "vuex";
+import axios from "axios";
 export default {
   name: "matching",
   props: {},
   components: {},
   computed: {
-    ...mapState(['userId'])
+    ...mapState(['userId','flagEdit'])
   },
   data() {
     return {
@@ -143,13 +145,129 @@ export default {
           self.list.push(d[i])
         }
       })
+    },
+    baseHint() {
+      const self = this;  
+      self.$store.commit('setFlagEdit',1); 
+      self.$dialog.toast({
+        mes: "完善信息",
+        timeout: 2000,
+        callback: () => {
+            self.$router.push({
+              path: "/personal/multiInfo",
+              query: {  i: 1 }
+          });
+        }
+      });
+      
+    },
+    getTicket() {
+      const self = this;
+      //此处写公众号配置的回调地址
+      let jumpToUrl = "http://www.ygtqzhang.cn/wxAuth/callBack";
+      let params = {
+        //回调url编码
+        callbackUrl: encodeURIComponent(jumpToUrl),
+        serialNumber: "2"
+      };
+      axios
+        .get("http://www.ygtqzhang.cn/wxAuth/wxLogin", {
+          //参数列表
+          params: params
+        })
+        .then(function(response) {
+          if (response.data && response.data.errCode != 200) {
+            let data = response.data;
+            self.$dialog.toast({
+              mes: data.errMsg,
+              timeout: 500
+            });
+            return;
+          } else {
+            let data = response.data;
+            //跳转微信授权页面
+            window.location.href = data.data;
+          }
+        })
+        .catch(function(response) {
+          if (response == undefined) {
+            self.$dialog.toast({
+              mes: "网络或请求接口错误",
+              timeout: 500
+            });
+            return;
+          }
+          if (response.data && response.data.errCode != 200) {
+            let data = response.data;
+            self.$dialog.toast({
+              mes: data.errMsg,
+              timeout: 500
+            });
+            return;
+          } else {
+            let data = response.data;
+            //跳转微信授权页面
+            window.location.href = data.data;
+          }
+        });
     }
   },
   mounted() {
-    // this.getRecommend()
-    this.getList()
 
     const self = this
+    const obj = this.$route.query;
+    console.log("obj=",obj);
+    if (obj && JSON.stringify(obj) != "{}") {
+      let errCode = obj.errCode;
+      if (errCode == 200) {
+        //微信登录成功
+        this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
+        let userInfo = obj.info;
+        this.$store.commit('setUserId',obj.userId);
+        // this.userId = obj.userId;
+
+        // 登录成功标识,设置tim登录
+        this.$store.commit('toggleIsSDKReady', true)
+    
+       
+      } else {
+        if (errCode == 400) {
+          this.$dialog.toast({
+            mes: "微信登录获取用户的信息失败",
+            icon: "error"
+          });
+          return
+        } else if (errCode == 401) {
+          this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+           return
+        } else if (errCode == 402) {
+          this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+           return
+        }
+      }
+    }
+
+    //如果用户为空的话
+    // if (!this.userId) {
+    //   this.$router.push("/");
+    // }
+    console.log("this.userId=",this.userId);
+    
+    if (!this.userId) {
+      //this.$router.push("/");
+      //微信授权登录
+      this.getTicket();
+      console.log("微信授权登录");
+
+
+    } else {
+      console.log("获取数据");
+      this.getList();
+      if(!this.flagEdit && this.flagEdit==0) {
+        this.baseHint();
+      }
+
+    }
 
     const app = document.getElementById('app')
      app.addEventListener('scroll',function(e){
@@ -160,6 +278,10 @@ export default {
        if((apptHeight+appHeight+1) > scrollHeight &&  self.flag ){
          self.flag = false
          self.getList()
+         if(!self.flagEdit && self.flagEdit==0) {
+            self.baseHint();
+         }
+         
        }
      })
 

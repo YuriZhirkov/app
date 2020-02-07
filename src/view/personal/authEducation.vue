@@ -21,7 +21,7 @@
                 </yd-cell-item>
             </template>
         </div>
-        <div class="fileBox">
+        <!-- <div class="fileBox">
             <dl class="fmiddle">
                 <dd class="fmiddle">
                     <i v-if="!cover1" class="iconfont2">&#xeb55;</i>
@@ -31,7 +31,7 @@
                 </dd>
                 <dt>学历证书照片</dt>
             </dl>
-        </div>
+        </div> -->
         <div class="trip fsmall">
             <span>温馨提示：</span>
             打造100%真是交友平台，为了信息的真是准确定，每个人都需要完成实名认证才能开启交友功能
@@ -58,10 +58,10 @@ export default {
       info: {
         educationalBackground: "",
         schoolName: "",
-        educationalNum: "",
-        educationalUrl: ""
+        educationalNum: ""
+        // educationalUrl: ""
       },
-      cover1: "",
+      // cover1: "",
       items: [
         { label: "博士", callback: () => this.selected("博士") },
         { label: "硕士", callback: () => this.selected("硕士") },
@@ -90,8 +90,8 @@ export default {
           self.info.educationalBackground = d.educationalBackground;
           self.info.schoolName = d.schoolName;
           self.info.educationalNum = d.educationalNum;
-          self.info.educationalUrl = d.educationalUrls;
-          self.cover1 = d.educationalUrls;
+          // self.info.educationalUrl = d.educationalUrls;
+          // self.cover1 = d.educationalUrls;
         }
       );
     },
@@ -130,10 +130,10 @@ export default {
         this.$dialog.toast({ mes: "请输入您学历证书编号" });
         return;
       }
-      if (!this.info.educationalUrl) {
-        this.$dialog.toast({ mes: "请上传学历证书照片" });
-        return;
-      }
+      // if (!this.info.educationalUrl) {
+      //   this.$dialog.toast({ mes: "请上传学历证书照片" });
+      //   return;
+      // }
       return true;
     },
     selected(e) {

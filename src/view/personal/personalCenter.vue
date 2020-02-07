@@ -254,7 +254,39 @@ export default {
         }
         console.log(e);
       })
-    }
+    },
+    identityAuthenticationHint() {
+      const self = this;
+      this.get(
+        "user/baseInfo/identityAuthentication/hint",
+        {
+          userId: this.userId
+        },
+        res => {
+          if (res.errCode == 200) {
+            let status = res.data.substr(0, 2);
+            if (status == "00" || status == "02") {
+              let noAuth = res.data.substr(3);
+              self.$dialog.confirm({
+                title: '身份认证',
+                mes: noAuth,
+                opts: () => {
+                    self.$dialog.toast({mes: '去认证',timeout: 1000,
+                        callback: () => {
+                            self.$router.push({
+                              path: "/personal/authIdentity",
+                              query: { jump: 1 }
+                            });
+                        }
+                    });
+                }
+              });
+
+            } 
+          } 
+        }
+      );
+    },
   },
   computed:{...mapState(['userId'])},
   mounted() {
@@ -264,6 +296,9 @@ export default {
     }
     this.getUserInfo()
     this.getVip()
+
+    //1. 如果用户没有认证提示要认证
+    this.identityAuthenticationHint();
     // this.getActivity()
 
     // setTimeout(function(){

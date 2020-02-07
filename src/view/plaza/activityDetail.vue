@@ -46,6 +46,12 @@
                 <span>{{info.activity.activitySpecification}}</span>
             </div>
         </div>
+        <div class="reserveInfo">
+            <h1>活动总人数</h1>
+            <div class="orderContent fmiddle">
+                <span>{{info.activity.activityJoinPerson}}人</span>
+            </div>
+        </div>
         <div class="collectInfo">
             <div class="collectTitle flexs">
                 <p class="fmiddle flex grey" :class="{red:info.isJoin}"><i class="iconfont2 fbig">&#xe629;</i>{{users.usersLen}}预定</p>
@@ -104,8 +110,9 @@
                 </div>
             </div>
             <div class="rightBottom themeBg h100 flex bold fbig">
-                <div @click="join" class="w100 h100 flex" v-if="!info.isJoin">马上预订</div>
-                <div class="w100 h100 flex" v-if="info.isJoin">已加入</div>
+                <div @click="join" class="w100 h100 flex" v-if="info.isJoin==0 && isEnable==1">马上预订</div>
+                <div @click="groupChat" class="w100 h100 flex" v-if="info.isJoin==1 && isEnable==1">群聊</div>
+                <div @click="finished" class="w100 h100 flex" v-if="isEnable==0">已结束</div>
                
             </div>  
         </div>
@@ -163,7 +170,8 @@ export default {
       commentContent: "",
       commentInfo: [],
       showComment: false,
-      ydPlaceholder: "写评论"
+      ydPlaceholder: "写评论",
+      isEnable:0
 
     };
   },
@@ -407,6 +415,7 @@ export default {
         const d = e.data
         console.log("e.data",e.data);
         self.info.activity = d.activityMoreInfo
+        self.isEnable =  d.activityMoreInfo.isEnable
         self.info.user = d.userInfoOutput
         self.info.isJoin = d.isJoin
         self.info.comments = d.commentOutputs

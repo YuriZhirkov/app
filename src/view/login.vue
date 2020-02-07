@@ -346,7 +346,8 @@ export default {
       let jumpToUrl = "http://www.ygtqzhang.cn/wxAuth/callBack";
       let params = {
         //回调url编码
-        callbackUrl: encodeURIComponent(jumpToUrl)
+        callbackUrl: encodeURIComponent(jumpToUrl),
+        serialNumber: '1'
       };
       axios
         .get("http://www.ygtqzhang.cn/wxAuth/wxLogin", {

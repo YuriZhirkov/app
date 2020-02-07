@@ -45,6 +45,12 @@
          <yd-input class="fmiddle"  v-model="info.activityCost" type="number" max="30" placeholder="请输入活动费用(可选)" :show-error-icon="false" :show-success-icon="false"></yd-input>
        </div>
      </div>
+    <div class="item flexs">
+       <div class="i-name flexs fmiddle">活动总人数</div>
+       <div class="i-input flex fmiddle">
+         <yd-input class="fmiddle" v-model="info.activityJoinPerson"  placeholder="参加活动的总人数" :show-error-icon="false" :show-success-icon="false"></yd-input>
+       </div>
+     </div>
 <!--     <div class="item flexs">
        <div class="i-name flexs fmiddle">活动收款账户</div>
        <div class="i-input flex fmiddle">
@@ -137,7 +143,7 @@
 import { mapActions, mapState, mapGetters } from "vuex";
 import bg from '@/assets/images/bg.jpg';
 import District from 'ydui-district/dist/jd_province_city_area_id';
-import District1 from 'ydui-district/dist/jd_province_city_id';
+import District1 from 'ydui-district/dist/jd_province_city_area_id';
 import axios from 'axios'
 import VueHtml5Editor from 'vue-html5-editor'
 
@@ -233,7 +239,7 @@ export default {
   name: "",
   data() {
     return {
-      info:{activityStartTime:this.dateFormat(),activityEndTime:this.dateFormat(),activityPictureUrls:[]},
+      info:{activityStartTime:this.dateFormat(),activityEndTime:this.dateFormat(),activityPictureUrls:[],activityJoinPerson:0},
       bg:bg,
       imgs:[],
       addressShow:false,
@@ -263,7 +269,8 @@ export default {
         activityDetails:this.info.activityDetails,
         activityPictureUrls:this.info.activityPictureUrls,
         activityCost:this.info.activityCost,
-        activitySpecification:this.info.activitySpecification
+        activitySpecification:this.info.activitySpecification,
+        activityJoinPerson:this.info.activityJoinPerson
       }
       self.$dialog.loading.open('发布活动中..')
       this.post('activity/publish',data,function(e){

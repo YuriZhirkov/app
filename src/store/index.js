@@ -12,7 +12,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state:{
       userId:'',
-      userName:''
+      userName:'',
+      flagEdit:0
     },
     mutations: {
         setUserId(state,id){
@@ -22,6 +23,10 @@ export default new Vuex.Store({
         setUserName(state,id){
           state.userName = id
           localStorage.setItem('username',id)
+        },
+        setFlagEdit(state,id){
+          state.flagEdit = id
+          localStorage.setItem('flagEdit',id)
         },
         initUserId(state){
           const uid = localStorage.getItem('uid')

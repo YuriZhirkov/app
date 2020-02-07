@@ -80,166 +80,181 @@ export default {
   props: {},
   components: {},
   computed: {
-    ...mapState(['userId'])
+    ...mapState(["userId"])
   },
   data() {
     return {
-      swSearch:false,
-      list:[],
-      flag:true,
-      offset:1,
-      user:[],
-      selectIndex:1,
-      firstIndex:1
+      swSearch: false,
+      list: [],
+      flag: true,
+      offset: 1,
+      user: [],
+      selectIndex: 1,
+      firstIndex: 1
     };
   },
 
   watch: {
-    selectIndex(){
-      this.getActivities()
+    selectIndex() {
+      this.getActivities();
     }
   },
   methods: {
-    del(uid,id,i){
-      if(confirm('是否删除活动')){
-        const self = this
-        this.post('activity/delete',{userId:uid,id:id},function(e){
-          if(!e) return
-          if(e.errCode != 200){
-            self.$dialog.toast({mes:e.errMsg,icon:'error'})
-            return
+    del(uid, id, i) {
+      if (confirm("是否删除活动")) {
+        const self = this;
+        this.post("activity/delete", { userId: uid, id: id }, function(e) {
+          if (!e) return;
+          if (e.errCode != 200) {
+            self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+            return;
           }
-          self.list.splice(i,1)
-          self.$dialog.toast({mes:'删除成功'})
-        })
+          self.list.splice(i, 1);
+          self.$dialog.toast({ mes: "删除成功" });
+        });
       }
     },
-    getActivities(){
-      const self = this
-      if(self.selectIndex != self.firstIndex){
-        self.list = []
-        self.offset = 1
-        self.firstIndex = self.selectIndex
+    getActivities() {
+      const self = this;
+      if (self.selectIndex != self.firstIndex) {
+        self.list = [];
+        self.offset = 1;
+        self.firstIndex = self.selectIndex;
       }
-      this.post('activity/search',{offset:this.offset,count:20,userId:this.userId,type:this.selectIndex},function(e){
-        if(!e) return
-        if(e.errCode != 200){
-          // self.$dialog.toast({mes:e.errMsg,icon:'error'})
-          self.$dialog.toast({mes:'暂无更多活动',icon:'error'})
-          return
-        }
-        const data = e.data
-        self.offset ++
+      this.post(
+        "activity/search",
+        {
+          offset: this.offset,
+          count: 20,
+          userId: this.userId,
+          type: this.selectIndex
+        },
+        function(e) {
+          if (!e) return;
+          if (e.errCode != 200) {
+            // self.$dialog.toast({mes:e.errMsg,icon:'error'})
+            self.$dialog.toast({ mes: "暂无更多活动", icon: "error" });
+            return;
+          }
+          const data = e.data;
+          self.offset++;
 
-        for (let i in data) {
-          self.list.push(data[i])
+          for (let i in data) {
+            self.list.push(data[i]);
+          }
+          console.log(self.list);
         }
-        console.log(self.list);
-      })
+      );
     },
     goDynamic() {
       this.$router.push("/plaza/dynamic");
     },
-    tapSearch(){
-      this.swSearch = true
+    tapSearch() {
+      this.swSearch = true;
     },
-    tapCancelSearch(){
-      this.swSearch = false
+    tapCancelSearch() {
+      this.swSearch = false;
     },
-    getUserInfo(){
-      const  self = this
-      this.post('user/baseInfo/moreInfo',{userId:this.userId},function(e){
-        if(e.errCode != 200){
-          self.$dialog.toast({mes:e.errMsg,icon:"error"})
-          return
+    getUserInfo() {
+      const self = this;
+      this.post("user/baseInfo/moreInfo", { userId: this.userId }, function(e) {
+        if (e.errCode != 200) {
+          self.$dialog.toast({ mes: e.errMsg, icon: "error" });
+          return;
         }
-        self.user = e.data
+        self.user = e.data;
         console.log(self.user);
-      })
+      });
     }
   },
   mounted() {
-  	  this.getActivities()
-      this.getUserInfo()
-      const self = this
-        const app = document.getElementById('app')
-         app.addEventListener('scroll',function(e){
-
-           let scrollHeight = app.scrollHeight
-           let appHeight = app.clientHeight
-           let apptHeight = app.scrollTop
-           if((apptHeight+appHeight+1) > scrollHeight &&  self.flag && '/plaza/activities' == self.$route.path){
-             self.getActivities()
-           }
-         })
-
+    if (!this.userId) {
+      this.$router.push("/");
+    } else {
+      this.getActivities();
+      this.getUserInfo();
+      const self = this;
+      const app = document.getElementById("app");
+      app.addEventListener("scroll", function(e) {
+        let scrollHeight = app.scrollHeight;
+        let appHeight = app.clientHeight;
+        let apptHeight = app.scrollTop;
+        if (
+          apptHeight + appHeight + 1 > scrollHeight &&
+          self.flag &&
+          "/plaza/activities" == self.$route.path
+        ) {
+          self.getActivities();
+        }
+      });
+    }
   }
 };
 </script>
 <style lang="less" scoped>
-  .s-select{
-    color: #888888;
-    width: 95%;
-    margin: auto;
-  }
-  .s-select span{
-    width: 20%;
-    text-align: center;
-  }
-  .s-active{
-    background: #866ef0;
-    color: #ffffff;
-    border-radius: 20px;
-    font-weight: bold;
-  }
+.s-select {
+  color: #888888;
+  width: 95%;
+  margin: auto;
+}
+.s-select span {
+  width: 20%;
+  text-align: center;
+}
+.s-active {
+  background: #866ef0;
+  color: #ffffff;
+  border-radius: 20px;
+  font-weight: bold;
+}
 
-  .publishBtn {
-    position: fixed;
-    right: 0.5rem;
-    bottom: 2rem;
-    width: 1rem;
-    height: 1rem;
-    color: #fff;
-    border-radius: 50%;
-    .icontianjia {
-      padding-left: 0.3rem;
-      line-height: 1rem;
-    }
+.publishBtn {
+  position: fixed;
+  right: 0.5rem;
+  bottom: 2rem;
+  width: 1rem;
+  height: 1rem;
+  color: #fff;
+  border-radius: 50%;
+  .icontianjia {
+    padding-left: 0.3rem;
+    line-height: 1rem;
   }
+}
 
-  ._search{
-      width: 98%;
-      opacity: 0;
-      transform: translateX(100%);
-      transition: all .25s;
-    }
-    ._search-active{
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .i-img{
-      max-height: 230px;
-      overflow: hidden;
-    }
-  .search{
-    width: 90%;
-    height: 35px;
-    right: 1%;
-    background: #FFFFFF;
-    z-index: 2;
-    border-radius: 20px;
-  }
-  .search i{
-    color: #888888;
-    width: 50px;
-  }
-  .search /deep/ input{
-    width: 90%;
-    margin-left:3%;
-  }
-  ._search .s-exit{
-    width: 10%;
-  }
+._search {
+  width: 98%;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.25s;
+}
+._search-active {
+  opacity: 1;
+  transform: translateX(0);
+}
+.i-img {
+  max-height: 230px;
+  overflow: hidden;
+}
+.search {
+  width: 90%;
+  height: 35px;
+  right: 1%;
+  background: #ffffff;
+  z-index: 2;
+  border-radius: 20px;
+}
+.search i {
+  color: #888888;
+  width: 50px;
+}
+.search /deep/ input {
+  width: 90%;
+  margin-left: 3%;
+}
+._search .s-exit {
+  width: 10%;
+}
 .container {
   .leftSolt {
     width: 40%;

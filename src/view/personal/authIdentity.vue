@@ -47,7 +47,7 @@
           </yd-cell-item>
           <yd-cell-item>
             <span slot="left">身份证号</span>
-            <yd-input slot="right" v-model="info.idCare" placeholder="请输入身份证号"></yd-input>
+            <yd-input slot="right" v-model="info.idCare" placeholder="请输入身份证号(加密保存) 非必填"></yd-input>
           </yd-cell-item>
           <yd-cell-item>
             <span slot="left">出生日期</span>
@@ -56,9 +56,9 @@
           
         </template>
       </div>
-      <div class="fileBox">
+      <!-- <div class="fileBox">
         <dl>
-          <!-- <div class="fileBox" @click="$refs.inputer.click()"> -->
+          
           <dd class="fmiddle">
             <i v-if="!cover1" class="iconfont2 grey">&#xeb55;</i>
             <span v-if="!cover1">上传照片</span>
@@ -76,7 +76,7 @@
           </dd>
           <dt class="fmiddle">身份证反面</dt>
         </dl>
-      </div>
+      </div> -->
       <div class="trip fsmall">
         <span>温馨提示</span>
         打造100%真是交友平台，为了信息的真是准确定，每个人都需要完成实名认证才能开启交友功能
@@ -127,7 +127,7 @@ export default {
         realName: this.info.realName,
         gender: this.info.gender,
         idCare: this.info.idCare,
-        idCareUrl: arr,
+        // idCareUrl: arr,
         phone: this.info.phone,
         validateCode: this.info.validateCode,
         dateOfBirth: this.info.dateOfBirth,
@@ -148,7 +148,7 @@ export default {
 
         let jump = self.$route.query.jump;
         let msg = self.msg;
-        if (!!jump && jump == 1) {
+        if (jump && jump == 1) {
           if (self.flag == 1) {
             self.$dialog.toast({
               mes: msg,
@@ -204,22 +204,22 @@ export default {
         this.$dialog.toast({ mes: "请填写您的姓名" });
         return;
       }
-      if (!this.info.idCare) {
-        this.$dialog.toast({ mes: "请填写您的身份证号码" });
-        return;
-      }
+      // if (!this.info.idCare) {
+      //   this.$dialog.toast({ mes: "请填写您的身份证号码" });
+      //   return;
+      // }
       if (!this.info.gender) {
         this.$dialog.toast({ mes: "请选择您的性别" });
         return;
       }
-      if (!this.info.idCareUrl) {
-        this.$dialog.toast({ mes: "请上传您的身份证正反面照片" });
-        return;
-      }
-      if (!this.info.idCareUrl[0] || !this.info.idCareUrl[1]) {
-        this.$dialog.toast({ mes: "请上传您的身份证正反面照片" });
-        return;
-      }
+      // if (!this.info.idCareUrl) {
+      //   this.$dialog.toast({ mes: "请上传您的身份证正反面照片" });
+      //   return;
+      // }
+      // if (!this.info.idCareUrl[0] || !this.info.idCareUrl[1]) {
+      //   this.$dialog.toast({ mes: "请上传您的身份证正反面照片" });
+      //   return;
+      // }
       if (!this.info.dateOfBirth) {
         this.$dialog.toast({ mes: "请选择您的出生日期" });
         return;
@@ -331,12 +331,12 @@ export default {
             if (d.idCareUrl) {
               let urls = d.idCareUrl + "";
               let imgUrl = urls.split(";");
-              self.cover1 = imgUrl[0];
-              self.cover2 = imgUrl[1];
+              // self.cover1 = imgUrl[0];
+              // self.cover2 = imgUrl[1];
             }
           } else {
-            self.cover1 = "";
-            self.cover2 = "";
+            // self.cover1 = "";
+            // self.cover2 = "";
           }
         }
       );
