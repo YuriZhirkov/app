@@ -114,6 +114,18 @@
                     </div>
                 </router-link>
             </li>
+            <li>
+                <router-link to="/application/availableTime">
+                    <div class="leftB">
+                        <b class="iconfont iconyuanxingxuanzhong"></b>
+                        <span>十点有空</span>
+                    </div>
+                    <div class="rightB">
+                        <!-- <span>详细信息</span> -->
+                        <b class="iconfont iconenter"></b>
+                    </div>
+                </router-link>
+            </li>
         </ul>
         <footComponent></footComponent>
     </div>

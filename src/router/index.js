@@ -263,6 +263,13 @@ export default new Router({
             component: resolve => require(['../view/application/sponsor'], resolve)
         },
         {
+            path: '/application/availableTime',
+            meta: {
+                // title: '十点有空'
+            },
+            component: resolve => require(['../view/application/availableTime'], resolve)
+        },
+        {
             path: '/application/productList',
             meta: {
                 title: '商品列表'
