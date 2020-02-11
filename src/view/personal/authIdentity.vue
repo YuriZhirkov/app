@@ -10,8 +10,19 @@
             <span slot="left">您的姓名</span>
             <yd-input slot="right" required v-model="info.realName" max="20" placeholder="请输入用户名"></yd-input>
           </yd-cell-item>
+          <div class="fileBox">
+            <dl class="fmiddle">
+                <dd class="fmiddle">
+                    <i v-if="!headUrl" class="iconfont2">&#xeb55;</i>
+                    <span v-if="!headUrl">上传照片</span>
+                    <input type="file" name="" @change="uploadHeadUrl($event)"  ref="uploadHeadUrl"/>
+                    <img v-if="headUrl" :src="headUrl" id="fistImg" class="uploadImg">
+                </dd>
+                <dt>头像照片</dt>
+            </dl>
+        </div>
           <div class="nameOption flexa w100 fmiddle">
-            <yd-radio-group v-model="info.gender" size="20" class="small flex">
+            <yd-radio-group v-model="gender" size="20" class="small flex">
               <yd-radio class="flex" val="男">男</yd-radio>
               <yd-radio class="flex" val="女">女</yd-radio>
             </yd-radio-group>
@@ -45,10 +56,10 @@
                   regex="^\d{5,12}$"
                   v-model="info.validateCode" placeholder="校验码"></yd-input>
           </yd-cell-item>
-          <yd-cell-item>
+          <!-- <yd-cell-item>
             <span slot="left">身份证号</span>
             <yd-input slot="right" v-model="info.idCare" placeholder="请输入身份证号(加密保存) 非必填"></yd-input>
-          </yd-cell-item>
+          </yd-cell-item> -->
           <yd-cell-item>
             <span slot="left">出生日期</span>
             <yd-datetime :start-year="1970" type="date" v-model="info.dateOfBirth" slot="right"></yd-datetime>
@@ -89,6 +100,7 @@
 </template>
 <script>
 import axios from "axios";
+import moment from 'moment'
 import { mapState } from "vuex";
 export default {
   name: "authIdentity",
@@ -100,13 +112,15 @@ export default {
       code: "",
       cover1: "",
       cover2: "",
+      headUrl:"",
       info: {
         dateOfBirth: "1990-10-10",
         idCareUrl: [],
         validateCode: "",
-        phone: ""
+        phone: ""       
       },
       flag: 0,
+      gender:"",
       msg: "",
       countCode: 60,
       isShowPhone: 0
@@ -125,8 +139,9 @@ export default {
       const data = {
         userId: this.userId,
         realName: this.info.realName,
-        gender: this.info.gender,
-        idCare: this.info.idCare,
+        gender: this.gender,
+        // idCare: this.info.idCare,
+        headUrl:this.headUrl,
         // idCareUrl: arr,
         phone: this.info.phone,
         validateCode: this.info.validateCode,
@@ -208,7 +223,7 @@ export default {
       //   this.$dialog.toast({ mes: "请填写您的身份证号码" });
       //   return;
       // }
-      if (!this.info.gender) {
+      if (!this.gender) {
         this.$dialog.toast({ mes: "请选择您的性别" });
         return;
       }
@@ -246,6 +261,39 @@ export default {
       return true;
     },
 
+    uploadHeadUrl(e) {
+      if (!e.target.files[0]) return;
+      const file = e.target.files[0];
+      this.uploadImgHeadUrl(file);
+    },
+    uploadImgHeadUrl(file) {
+      const self = this;
+      const fd = new FormData();
+      fd.append("file", file);
+      axios({
+        method: "post",
+        url: this.host + "file/upload",
+        data: fd
+      })
+        .then(function(e) {
+
+          if (e.data && e.data.errCode != 200) {
+            self.$dialog.toast({ mes: e.data.errMsdg, icon: "erroe" });
+            return;
+          }
+          self.headUrl = '';
+          self.headUrl = e.data.data;
+        })
+        .catch(function(e) {
+          if (!e) return;
+          if (e.data && e.data.errCode != 200) {
+            self.$dialog.toast({ mes: e.data.errMsdg, icon: "erroe" });
+            return;
+          }
+          self.headUrl = '';
+          self.headUrl = e.data.data;
+        });
+    },
     frontUpload(e) {
       if (!e.target.files[0]) return;
       const file = e.target.files[0];
@@ -298,12 +346,13 @@ export default {
         e => {
           if (!e) return;
           if (e.errCode != 200) return;
-          
+
           const d = e.data;
           self.info = d;
 
           const t = d.dateOfBirth;
-          self.info.dateOfBirth = t;
+          self.headUrl = d.headUrl;
+          self.info.dateOfBirth = moment(t).format('YYYY-MM-DD');
        
           if (d.phone == undefined || d.phone == "" || d.phone == null) {
             self.isShowPhone = 1;
@@ -341,6 +390,21 @@ export default {
         }
       );
     },
+    // 增加一个接口获取用户的性别
+    getGender(){
+        const self = this;
+        this.get(
+          "user/baseInfo/getGender",
+          {
+            userId: this.userId
+          },
+          res => {
+            if (res.errCode == 200) {
+              self.gender = res.data;
+            }
+          }
+        );
+    }, 
     educationBackgroundAuthenticationHint() {
       const self = this;
       this.get(
@@ -349,7 +413,6 @@ export default {
           userId: this.userId
         },
         res => {
-          console.log("res", res);
           if (res.errCode == 200) {
             let status = res.data.substr(0, 2);
             if (status == "00" || status == "02") {
@@ -365,6 +428,7 @@ export default {
   mounted() {
     this.getInfo();
     this.educationBackgroundAuthenticationHint();
+    this.getGender();
   },
   computed: { ...mapState(["userId"]) }
 };

@@ -295,6 +295,10 @@ export default {
         this.$dialog.toast({ mes: "请选择您住房状况" });
         return;
       }
+      if (!this.info.gender) {
+        this.$dialog.toast({ mes: "请选择您的性别" });
+        return;
+      }
       return true;
     },
     addrResult(e) {

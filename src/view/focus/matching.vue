@@ -70,6 +70,9 @@
                         <span  v-if="d.loneLinessIndex" class="_yellow fmiddle"> <i class="iconfont2 fmiddle">&#xe68d;</i>{{d.loneLinessIndex}}</span>
                     </p>
                     <p class="fsmall">
+                        <span v-if="d.gender">
+                          {{d.gender}}<i class="iconfont2 fsmall">&#xe862;</i>
+                        </span>
                         <span v-if="d.age && d.age > 1">
                          {{d.age}}岁<i class="iconfont2 fsmall">&#xe862;</i>
                         </span>
@@ -80,7 +83,10 @@
                           月入{{d.salary}}<i class="iconfont2 fsmall">&#xe862;</i>
                         </span>
                         <span v-if="d.area">
-                          {{d.area}}
+                          居住地:{{d.area}}<i class="iconfont2 fsmall">&#xe862;</i>
+                        </span>
+                        <span v-if="d.educationalBackground">
+                          {{d.educationalBackground}}<i class="iconfont2 fsmall">&#xe862;</i>
                         </span>
                     </p>
                     <p class="fmiddle" v-if="d.selfIntroduction">{{d.selfIntroduction}}</p>
@@ -147,19 +153,32 @@ export default {
       })
     },
     baseHint() {
-      const self = this;  
-      self.$store.commit('setFlagEdit',1); 
-      self.$dialog.toast({
-        mes: "完善信息",
-        timeout: 2000,
-        callback: () => {
-            self.$router.push({
-              path: "/personal/multiInfo",
-              query: {  i: 1 }
-          });
+      const self = this;
+      this.get(
+        "user/extendInfo/hint",
+        {
+          userId: this.userId
+        },
+        res => {
+          
+          if (res.errCode == 200) {
+            let status = res.data.substr(0, 2);
+            if (status == "01") {
+              let noAuth = res.data.substr(3);
+              self.$dialog.toast({
+                mes: noAuth,
+                timeout: 2000,
+                callback: () => {
+                    self.$router.push({
+                      path: "/personal/multiInfo",
+                      query: {  i: 1 }
+                  });
+                }
+              });
+            }
+          }
         }
-      });
-      
+      );
     },
     getTicket() {
       const self = this;
@@ -168,7 +187,7 @@ export default {
       let params = {
         //回调url编码
         callbackUrl: encodeURIComponent(jumpToUrl),
-        serialNumber: "2"
+        serialNumber: '2'
       };
       axios
         .get("http://www.ygtqzhang.cn/wxAuth/wxLogin", {
@@ -263,9 +282,7 @@ export default {
     } else {
       console.log("获取数据");
       this.getList();
-      if(!this.flagEdit && this.flagEdit==0) {
-        this.baseHint();
-      }
+      this.baseHint();
 
     }
 
@@ -278,9 +295,6 @@ export default {
        if((apptHeight+appHeight+1) > scrollHeight &&  self.flag ){
          self.flag = false
          self.getList()
-         if(!self.flagEdit && self.flagEdit==0) {
-            self.baseHint();
-         }
          
        }
      })

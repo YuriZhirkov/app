@@ -107,9 +107,7 @@ export default {
      * 修改用户信息，同步
      */
     async updateMyProfile() {
-        debugger
         let res = await this.getUserInfo()
-        console.log(res, '用户信息')
         let obj = res.data.data
         let headUrl = obj.headUrl ? obj.headUrl : 'https://imgcache.qq.com/open/qcloud/video/act/webim-avatar/avatar-2.png'
         const options = {

@@ -512,19 +512,13 @@ export default {
             let status = res.data.substr(0, 2);
             if (status == "00" || status == "02") {
               let noAuth = res.data.substr(3);
-              self.$dialog.confirm({
-                title: '身份认证',
-                mes: noAuth,
-                opts: () => {
-                    self.$dialog.toast({mes: '去认证',timeout: 1000,
-                        callback: () => {
-                            self.$router.push({
-                              path: "/personal/authIdentity",
-                              query: { jump: 1 }
-                            });
-                        }
-                    });
-                }
+              self.$dialog.toast({mes: noAuth,timeout: 1000,
+                  callback: () => {
+                      self.$router.push({
+                        path: "/personal/authIdentity",
+                        query: { jump: 1 }
+                      });
+                  }
               });
 
             } 
@@ -636,20 +630,17 @@ export default {
             self.userName = dataRet.nickName;
             self.idFlag = dataRet.idFlag;
             //打印用户的信息
-            console.log("dataRet=");
-            console.log(dataRet);
-            if (dataRet.phone == undefined || dataRet.phone == "" || dataRet.phone == null) {
-                console.log("dataRet.phone=");
-                console.log(dataRet.phone);
-                self.isShowPhone = true;
-            }
+           
+            // if (dataRet.phone == undefined || dataRet.phone == "" || dataRet.phone == null) {
+            //     console.log("dataRet.phone=");
+            //     console.log(dataRet.phone);
+            //     self.isShowPhone = true;
+            // }
 
             if (dataRet.weChatId == undefined || dataRet.weChatId == "" || dataRet.weChatId == null) {
                  debugger;
                 let queryUserId = self.$route.query.userId;
-                if(queryUserId == null || queryUserId == undefined || queryUserId == "") {  
-                    console.log("dataRet.weChatId=");
-                    console.log(dataRet.weChatId);
+                if(queryUserId == null || queryUserId == undefined || queryUserId == "") {
                     console.log("self.userId=");
                     console.log(self.userId);
                     let url = 'http://www.ygtqzhang.cn/weChat/authorize'+
@@ -738,7 +729,7 @@ export default {
       this.getUserInfo();
       this.getDynamic();
       //这个认证放在一个对话框中
-      // this.identityAuthenticationHint();
+      this.identityAuthenticationHint();
       // this.baseHint();
       
     }
