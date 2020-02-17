@@ -108,10 +108,9 @@ export default {
     const obj = this.$route.query;
     if (obj && JSON.stringify(obj) != "{}") {
       let errCode = obj.errCode;
-      if (errCode == 200) {
+      if (errCode && (errCode == 200 || errCode == '200')) {
         //微信登录成功
         this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
-        let userInfo = obj.info;
         this.setUserId(obj.userId);
 
         // 登录成功标识,设置tim登录
@@ -341,54 +340,8 @@ export default {
     },
 
     getTicket() {
-      let self = this;
-      //此处写公众号配置的回调地址
-      let jumpToUrl = "http://www.ygtqzhang.cn/wxAuth/callBack";
-      let params = {
-        //回调url编码
-        callbackUrl: encodeURIComponent(jumpToUrl),
-        serialNumber: '1'
-      };
-      axios
-        .get("http://www.ygtqzhang.cn/wxAuth/wxLogin", {
-          //参数列表
-          params: params
-        })
-        .then(function(response) {
-          if (response.data && response.data.errCode != 200) {
-            let data = response.data;
-            self.$dialog.toast({
-              mes: data.errMsg,
-              timeout: 500
-            });
-            return;
-          } else {
-            let data = response.data;
-            //跳转微信授权页面
-            window.location.href = data.data;
-          }
-        })
-        .catch(function(response) {
-          if (response == undefined) {
-            self.$dialog.toast({
-              mes: "网络或请求接口错误",
-              timeout: 500
-            });
-            return;
-          }
-          if (response.data && response.data.errCode != 200) {
-            let data = response.data;
-            self.$dialog.toast({
-              mes: data.errMsg,
-              timeout: 500
-            });
-            return;
-          } else {
-            let data = response.data;
-            //跳转微信授权页面
-            window.location.href = data.data;
-          }
-        });
+      let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=1';
+      location.href = url;
     }
   }
 };

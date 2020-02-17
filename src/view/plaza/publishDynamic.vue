@@ -7,7 +7,7 @@
             <div class="flexa flexwrap">
               <div class="uploadFile fsmall">
                   <i  class="iconfont2">&#xe6c1;</i>
-                  <span >照片/视频</span>
+                  <span >照片</span>
                   <input  type="file" multiple="multiple"  accept="image/*"    @change="imgChange($event)"/>
               </div>
               <div class="flexa flexwrap"  v-if="imgUpload" >
@@ -69,7 +69,7 @@ export default {
       const self = this
       if(!this.chooseData()) return
       this.$dialog.loading.open('发布中')
-
+      
       this.post('dynamic/publish',{userId:this.userId,content:this.content,urlPicture:this.imgUploadUrl,type:1},function(e){
         self.$dialog.loading.close()
         if(e.errCode != 200){
@@ -81,15 +81,19 @@ export default {
       })
     },
     chooseData(){
-      if(this.content == ''){
+     debugger;
+     if(this.content == "" && !this.imgUpload){
         this.$dialog.toast({mes:'请填写动态',icon:'error'})
         return false
+      } else {
+        return true
       }
+
       // if(!this.imgUpload || this.imgUploadUrl[0] == null){
       //   this.$dialog.toast({mes:'至少上传一张照片',icon:'error'})
       //   return
       // }
-      return true
+     
     },
 
     imgChange(e) {
@@ -128,13 +132,12 @@ export default {
         .then(function(e){
           console.log(e);
           if(e.data && e.data.errCode != 200){
-            debugger
             self.imgsUrl.slice(i,1)
             self.$dialog.toast({mes:e.date.errMsg,icon:'error'})
             return
           }
-        
          
+         debugger
           self.imgUploadUrl.push.apply(self.imgUploadUrl , e.data.data)
           //self.imgUploadUrl= e.data.data
           self.imgUpload = true
@@ -149,7 +152,9 @@ export default {
             self.$dialog.toast({mes:e.date.errMsg,icon:'error'})
             return
           }
-          self.imgUploadUrl= e.data.data
+          debugger
+          self.imgUploadUrl.push.apply(self.imgUploadUrl , e.data.data)
+          //self.imgUploadUrl= e.data.data
           self.imgUpload = true
         })
     

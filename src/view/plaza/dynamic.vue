@@ -637,15 +637,14 @@ export default {
             //     self.isShowPhone = true;
             // }
 
+
+            //这是绑定微信的
             if (dataRet.weChatId == undefined || dataRet.weChatId == "" || dataRet.weChatId == null) {
                  debugger;
                 let queryUserId = self.$route.query.userId;
                 if(queryUserId == null || queryUserId == undefined || queryUserId == "") {
-                    console.log("self.userId=");
-                    console.log(self.userId);
-                    let url = 'http://www.ygtqzhang.cn/weChat/authorize'+
-                            '?returnUrl=http://www.ygtqzhang.cn:8090/plaza/dynamic?login=1'
-                            + self.userId;
+                    console.log("self.userId=",self.userId);
+                    let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=A'+self.userId;
                     location.href = url;
                 }
 
@@ -717,11 +716,20 @@ export default {
     //获取 http://www.ygtqzhang.cn:8090/plaza/dynamic?login=1&userId='+ this.userId 中用户id
     console.log("self.$route.query=");
     console.log(self.$route.query);
-    let queryUserId = self.$route.query.userId;;
+    let queryUserId = self.$route.query.userId;
+    let errCode = self.$route.query.errCode;
+    console.log("errCode=",errCode);
     if(queryUserId != null && queryUserId != undefined && queryUserId != "") {
          console.log(queryUserId);
          //this.userId=queryUserId;
-         self.setUserId(queryUserId);
+         if(errCode && (errCode==200 || errCode=='200') ){
+           self.setUserId(queryUserId);
+           self.$dialog.toast({ mes: "绑定微信成功", icon: "success" });
+         } else {
+            self.$dialog.toast({ mes: "绑定微信失败", icon: "error" });
+         }
+         
+
     }
     if (!this.userId) {
       this.$router.push("/");
