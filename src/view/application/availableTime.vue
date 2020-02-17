@@ -84,12 +84,12 @@
     </div>
 </template>
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapMutations, mapState, mapGetters } from "vuex";
 // import { testServer } from "@/servers/plaza";
 export default {
   components: {},
   computed: {
-    ...mapGetters([])
+    ...mapState(['userId'])
   },
   data() {
     return {

@@ -66,15 +66,22 @@
                               <i class="iconfont2 red"  v-if="d.isFlag" >&#xe600;</i>
                                {{d.likes ? d.likes : ''}}
                           </div>
+                          
                           <!-- <router-link :to="{path:'/plaza/detail',query:{aid:d.dynamic.id,comment:true}}"> -->
                             <div class="flex fmiddle" @click="tapComment(1,d.dynamic.id,d.user.userId,d.user.nickName,i,d.user.nickName,d.comment.commentId)">
                               <i class="iconfont2">&#xe665;</i>
                                 {{commentLens[i]?commentLens[i]:''}}
                             </div>
+
+                            <div v-if="d.user.userId==userId" class="flex">
+                            <i  class="iconfont2">
+                              <p  @click="dynamicDelItme(d.user.userId,d.dynamic.id,i)">
+	                                <span class="fsmall red">删除</span>
+                              </p>
+                            </i>
+                          </div>
                           <!-- </router-link> -->
-                          <!-- <div class="flex">
-                            <i class="iconfont2">&#xe610;</i>
-                          </div> -->
+                          
                           <!-- <div v-if="userId == d.user.userId" class="flex icon20 bold grey" @click="openSelect(d.user.userId,d.dynamic.id,i)">
                             <i class="iconfont2">&#xe60c;</i>
                           </div> -->
@@ -280,6 +287,25 @@ export default {
       );
     },
 
+
+    dynamicDelItme(userId,dynimicId,i) {
+      const self = this;
+      this.post(
+        "dynamic/delete",
+        { userId: userId, id: dynimicId },
+        function(e) {
+          if (!e) return;
+          if (e.errCode != 200) {
+            self.$dialog.toast({ mes: e.errMsg });
+            return;
+          }
+          self.list.splice(i, 1);
+          self.commentLens.splice(i, 1);
+          self.$dialog.toast({ mes: "已删除" });
+
+        }
+      );
+    },
     tapComment(type, dynimicId, toId, toName, i, formUserName = "", commentId) {
       console.log(commentId);
 
@@ -712,6 +738,7 @@ export default {
       },
   },
   mounted() {
+   
     const self = this;
     //获取 http://www.ygtqzhang.cn:8090/plaza/dynamic?login=1&userId='+ this.userId 中用户id
     console.log("self.$route.query=");
