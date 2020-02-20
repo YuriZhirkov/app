@@ -221,7 +221,6 @@ export default {
     // if (!this.userId) {
     //   this.$router.push("/");
     // }
-    console.log("this.userId=",this.userId);
     
     if (!this.userId) {
       //this.$router.push("/");

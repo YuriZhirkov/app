@@ -111,7 +111,7 @@
         <i class="iconfont2 fbig">&#xe6d2;</i>
       </div>
     </div>
-    <div class="b-item flexs"   @click="openSelect('smoke')">
+    <!-- <div class="b-item flexs"   @click="openSelect('smoke')">
       <div class="b-name">吸烟</div>
       <div class="b-input flexs">
         <div class="_b-input fmiddle">
@@ -119,8 +119,8 @@
         </div>
         <i class="iconfont2 fbig">&#xe6d2;</i>
       </div>
-    </div>
-    <div class="b-item flexs" @click="openSelect('drink')">
+    </div> -->
+    <!-- <div class="b-item flexs" @click="openSelect('drink')">
       <div class="b-name">喝酒</div>
       <div class="b-input flexs">
         <div class="_b-input fmiddle">
@@ -128,8 +128,8 @@
         </div>
         <i class="iconfont2 fbig">&#xe6d2;</i>
       </div>
-    </div>
-    <div class="b-item flexs"  @click="openSelect('playGame')">
+    </div> -->
+    <!-- <div class="b-item flexs"  @click="openSelect('playGame')">
       <div class="b-name">打游戏</div>
       <div class="b-input flexs">
         <div class="_b-input fmiddle">
@@ -137,7 +137,7 @@
         </div>
         <i class="iconfont2 fbig">&#xe6d2;</i>
       </div>
-    </div>
+    </div> -->
     <div class="b-item flexs" @click="openSelect('hopeMarriedTime')">
       <div class="b-name">期望结婚时间</div>
       <div class="b-input flexs">

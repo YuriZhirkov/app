@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapMutations, mapState, mapGetters } from "vuex";
 import 'swiper/dist/css/swiper.css'
 import  { swiper, swiperSlide } from 'vue-awesome-swiper'
 import wx from 'weixin-js-sdk'
@@ -396,9 +396,46 @@ export default {
     }
   },
   mounted() {
-    const touid = this.$route.query.uid
+
+    const obj = this.$route.query;
+    const touid = obj.uid;
+    const userId = obj.userId;
+    const errCode = obj.errCode;
+    console.log("obj=",obj);
+    if(errCode) {
+        if (errCode==200 || errCode=='200') {
+          //微信登录成功
+          this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
+          this.$store.commit('setUserId',userId);
+
+          // 登录成功标识,设置tim登录
+          this.$store.commit('toggleIsSDKReady', true)
+        } else {
+          if (errCode == 400) {
+            this.$dialog.toast({
+              mes: "微信登录获取用户的信息失败",
+              icon: "error"
+            });
+            this.$router.push("/");
+          } else if (errCode == 401) {
+            this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+            this.$router.push("/");
+          } else if (errCode == 402) {
+            this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+            this.$router.push("/");
+          }
+        }
+         
+    } 
+
+
     if(!touid){
       this.$router.back(-1)
+    }
+
+    if(!this.userId){
+        let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=B'+touid;
+        location.href = url;
     }
     this.touid = touid
     this.getUserInfo(touid)

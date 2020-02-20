@@ -15,10 +15,10 @@
                     <span class="grey" v-if="!info.educationalBackground">请选择</span>
                     <span v-if="info.educationalBackground">{{info.educationalBackground}}</span>
                 </div>
-                <yd-cell-item>
+                <!-- <yd-cell-item>
                     <span slot="left">学历证书编号：</span>
                     <yd-input slot="right" type="text" v-model="info.educationalNum" placeholder="请输入学历证书编号"></yd-input>
-                </yd-cell-item>
+                </yd-cell-item> -->
             </template>
         </div>
         <!-- <div class="fileBox">
@@ -126,10 +126,10 @@ export default {
         this.$dialog.toast({ mes: "请选择您的学历" });
         return;
       }
-      if (!this.info.educationalNum) {
-        this.$dialog.toast({ mes: "请输入您学历证书编号" });
-        return;
-      }
+      // if (!this.info.educationalNum) {
+      //   this.$dialog.toast({ mes: "请输入您学历证书编号" });
+      //   return;
+      // }
       // if (!this.info.educationalUrl) {
       //   this.$dialog.toast({ mes: "请上传学历证书照片" });
       //   return;
