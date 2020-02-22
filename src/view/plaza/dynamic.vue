@@ -47,6 +47,13 @@
                           <span v-if="d.user.area" >{{d.user.area}}</span>
                           <i class="iconfont2" v-if="d.user.stature">&#xe862;</i>
                           <span v-if="d.user.stature">{{d.user.stature}}cm</span>
+                          <i v-if="d.user.educationalBackground" class="iconfont2">&#xe862;</i>
+                          <span v-if="d.user.educationalBackground">{{d.user.educationalBackground}}</span>
+                          <i v-if="d.user.gender" class="iconfont2">&#xe862;</i>
+                          <span v-if="d.user.gender">{{d.user.gender}}</span>
+                          <i v-if="d.user.salary" class="iconfont2">&#xe862;</i>
+                          <span v-if="d.user.salary">薪资:{{d.user.salary}}</span>
+
                       </div>
                     </div>
                   </div>
@@ -91,7 +98,7 @@
                       <!-- <router-link :to="{path:'/plaza/detail',query:{aid:d.dynamic.id}}"> -->
                       <div class="li-comment">
                         <div class="c-i flexa"  v-for="(d2,i2) in d.comment" :key="i2" v-if="i2 < 5" @click="twoComment(d2,i,i2)">
-                          <div class="flexa" v-if="d2.formUserId == d.user.userId">
+                          <div class="flexa" v-if="d2.formUserId == d2.toUserId">
                             <p class="c-i-name fmiddle">{{d2.formUserName}}:</p>
                             <div class="c-i-body fmiddle">{{d2.commentContent}} </div>
                           </div>
