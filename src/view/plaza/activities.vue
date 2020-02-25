@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <topComponent title='' :showLeft="false" title="活动">
+        <topComponent  :showLeft="false" title="活动">
           <!--  <div slot="left" class="leftSolt"  v-show="!swSearch">
                 <router-link to='/personal/personalCenter'>
                     <i class="iconfont iconwode"></i>

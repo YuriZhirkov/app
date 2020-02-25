@@ -4,30 +4,32 @@
         <div class="mainTitle">十点有空,我等你哦</div>
         <div class="mianContent">
             <ul>
-                <li :class="{'typeA':type==1}">全部</li>
-                <li :class="{'typeB':type==2}">表白</li>
+                <li v-for="(item,index) in tabData" :key="index" :class="{typeA:item.type==Toptype}" @click="changeTabStatus(item.type)">{{item.name}}</li>
+                <!-- <li :class="{'typeB':type==2}">表白</li>
                 <li :class="{'typeC':type==3}">吐槽</li>
                 <li :class="{'typeD':type==4}">心愿</li>
-                <li :class="{'typeE':type==5}">知乎</li>
+                <li :class="{'typeE':type==5}">知乎</li> -->
             </ul>
-            <div class="searchContent">
-                <!-- <yd-button  bgcolor="#313737" color="#FFF"><yd-icon name="search" size=".2rem" color="#fff"></yd-icon>搜索</yd-button>     -->
+            <!-- <div class="searchContent">
                 <yd-search v-model="searchValue" :on-submit="submitSearch"></yd-search>
-            </div>
+            </div> -->
             <div class="msgContent">
                 <div class="MsgInput">
                 <yd-input slot="right"  v-model="sendMsg" max="20" placeholder="说点什么呢~"></yd-input>
                 </div>
                 <div class="MsgBtn">
-                   <yd-button  bgcolor="#7CABDA" color="#FFF">发布</yd-button>
+                   <input type="checkbox" name="checkbox" v-model="Anonychecked" /><span class="anonymous">匿名</span>
+                   <input v-show="!Anonychecked" type="input" placeholder="请输入昵称" class="nickName" v-model="nickName"/>
+                   <button type="button" class="publishBtn" @click="publish">发布</button>
                  </div>
             </div>
             <div class="tabContent">
                 <ul>
-                    <li :class="{'typeStyle':subType==1}">我的</li>
+                    <li v-for="(item,index) in subTabData" :key="index" :class="{typeA:item.type==subType}" @click="changeSubTabStatus(item.type)">{{item.name}}</li>
+                    <!-- <li :class="{'typeStyle':subType==1}">我的</li>
                     <li :class="{'typeStyle':subType==2}">最新</li>
                     <li :class="{'typeStyle':subType==3}">新回复</li>
-                    <li :class="{'typeStyle':subType==4}">最热</li>
+                    <li :class="{'typeStyle':subType==4}">最热</li> -->
                 </ul>
             </div>
             <div class="listContent">
@@ -36,19 +38,20 @@
                     <yd-list-item v-for="(item, index) in list" :key="index">
                         <yd-list-other slot="other">
                             <div class="wordMsg">
-                                <div class="MsgTop">{{item.name}}|{{item.type}}<p>{{item.time}}</p></div>
-                                <div class="MsgCenter">{{item.content}}</div>
+                                <div class="close" @click="deleteThis(item.leaveMessageOutput.id)">×</div>
+                                <div class="MsgTop">{{item.leaveMessageOutput.nickname==''?'匿名':item.leaveMessageOutput.nickname}}|{{tabData[item.leaveMessageOutput.subType].name}}<p>{{item.leaveMessageOutput.createTime|totime}}</p></div>
+                                <div class="MsgCenter">{{item.leaveMessageOutput.content}}</div>
                                 <div class="MsgBottom">
                                     <div class="actionBox flexs">
                                        <div class="flexs w100 grey">
                                          <div class="fmiddle flex" :class="{red:item.isFlag}">
                                              <i class="iconfont2" v-if="!item.isFlag" >&#xe600;</i>
                                              <i class="iconfont2 red"  v-if="item.isFlag" >&#xe600;</i>
-                                              {{item.likes ? item.likes : ''}}
+                                              <!-- {{item.likes ? item.likes : ''}} -->
                                          </div>
                                            <div class="flex fmiddle">
                                              <i class="iconfont2">&#xe665;</i>
-                                               {{item.commentLens[i]?item.commentLens[i]:''}}
+                                               <!-- {{item.commentLens[i]?item.commentLens[i]:''}} -->
                                            </div>
                                          
                                        </div>
@@ -60,10 +63,10 @@
                 </yd-list>
 
         <!-- 数据全部加载完毕显示 -->
-        <span slot="doneTip">没有数据啦~~</span>
+        <!-- <span slot="doneTip">没有数据啦~~</span> -->
 
         <!-- 加载中提示，不指定，将显示默认加载中图标 -->
-        <img slot="loadingTip" src="path/img/loading.svg"/>
+        <img v-show="more" slot="loadingTip" src="../../assets/images/timg.gif"/>
 
     </yd-infinitescroll>
                 <!-- <yd-timeline>
@@ -93,36 +96,136 @@ export default {
   },
   data() {
     return {
-        type:'1',//全部，表白，吐槽，心愿，知乎
+        tabData:[
+            {name:'全部',type:0},
+            {name:'表白',type:1},
+            {name:'吐槽',type:2},
+            {name:'心愿',type:3},
+            {name:'知乎',type:4},
+        ],
+        Toptype:'0',//全部，表白，吐槽，心愿，知乎
+        subTabData:[
+            {name:'我的',type:1},
+            {name:'最新',type:2},
+            {name:'最热',type:3},
+        ],
         subType:'1',//我的，最新，新回复，最热
         searchValue:'',//搜索内容
         sendMsg:'',//用户发表的信息
         page: 1,
         pageSize: 10,
-        list:[
-           {
-            name:'sx',
-            type:'心愿',
-            content:'Ceshish策划书四十是',
-            time:'2小时前', 
-            isFlag:'',
-            likes:'',
-            commentLens:['cess','ces'],
-           },
-           {
-           name:'sx',
-           type:'心愿',
-           content:'Ceshish策划书四十是',
-           time:'2小时前', 
-           commentLens:['cess','ces'],
-            }
-        ]
+        Anonychecked:false,
+        nickName:'',
+        list:[],
+        comment:[],//评论
+        isFlag:'',//是否点赞
+        pageNumber:1,//页面的页数
+        more:true,//是否有更多数据
     };
+  },
+  created(){
+    let that=this;
+    //获取列表
+    that.getList();
   },
   mounted() {},
   watch: {},
   methods: {
-    
+      //获取所有的列表信息
+     getList(){
+         let that=this;
+         that.post("leaveMessage/getLeaveMessageList", 
+         { flag: that.subType, 
+           pageNumber:that.pageNumber,
+           pageSzie: 5,
+           subType:that.Toptype,
+           type:1,
+           userId:that.userId,
+         }, function(e) {
+          if (e.errCode != 200) {
+            that.$dialog.toast({ mes: e.errMsg, icon: "error" });
+            return;
+          }
+         that.list=e.data;
+        //   for(let i=0;i<e.data.length;i++){
+        //       that.list.push(e.data[i].leaveMessageOutput);
+        //   }
+        });
+     },
+     //改变tab栏目的状态
+     changeTabStatus(type){
+         let that=this;
+         that.Toptype=type;
+     },
+     changeSubTabStatus(type){
+         let that=this;
+         that.subType=type;
+         that.getList();
+     },
+     //删除本个
+     deleteThis(id){
+         let that=this;
+         that.post("leaveMessage/delete", 
+         { 
+             "id": id,
+             "type": 1,
+             "userId": that.userId
+         }, function(e) {
+          if (e.errCode != 200) {
+            that.$dialog.toast({ mes: e.errMsg, icon: "error" });
+            return;
+          }
+          that.$dialog.toast({ mes: e.errMsg, icon: "success"});
+          that.getList();
+        });
+     },
+     //发布说说
+     publish(){
+         let that=this;
+         if(that.sendMsg==''){
+             that.$dialog.toast({ mes: '请先输入你想说的话之后再发表哦', icon: "error" });
+             return;
+         }
+         that.post("leaveMessage/publish", 
+         { content: that.sendMsg, 
+           nickname:that.nickName==''?'匿名':that.nickName,
+           subType: that.Toptype,
+           type:1,
+           userId:that.userId,
+         }, function(e) {
+          if (e.errCode != 200) {
+            that.$dialog.toast({ mes: e.errMsg, icon: "error" });
+            return;
+          }
+          that.$dialog.toast({ mes: e.errMsg, icon: "success" });
+          that.sendMsg='';//清空之前写的内容
+        });
+     },
+     //加载更多
+     loadList(){
+        let that=this;
+         that.post("leaveMessage/getLeaveMessageList", 
+         { flag: that.subType, 
+           pageNumber:++that.pageNumber,
+           pageSzie: 5,
+           subType:that.Toptype,
+           type:1,
+           userId:that.userId,
+         }, function(e) {
+          if (e.errCode != 200) {
+            that.$dialog.toast({ mes: e.errMsg, icon: "error" });
+            return;
+          }
+          if(e.data.length=0){
+              that.more=false;
+              return;
+          }
+        //  console.log("哈哈哈",that.list);
+          for(let i=0;i<e.data.length;i++){
+              that.list.push(e.data[i]);
+          }
+        });
+     }
   }
 };
 </script>
@@ -178,7 +281,7 @@ background-image: url('../../assets/images/appBg1.jpg');
        }
    }
    .msgContent{
-       margin:0rem 0.2rem;
+       margin:0 0 0.2rem 0;
        padding-right:0.1rem;
        height:2rem;
        background: #fff;
@@ -189,13 +292,22 @@ background-image: url('../../assets/images/appBg1.jpg');
        .MsgBtn{
            float: right;
            margin-top:0.2rem;
+           .anonymous{
+               color:#000;
+               font-size:12px;
+           }
+           .nickName{
+               width:1.8rem;
+           }
+           .publishBtn{
+               background-color: #3390D4;
+               border-radius: 0.1rem;
+               width:0.8rem;
+               height:0.6rem;
+           }
        }
    }
-   .searchContent{
-    //    margin:0.3rem 0rem;
-    //    position: absolute;
-    //    right:0%;
-   }
+   
    .tabContent{
         margin:0.3rem 0rem;
         ul{
@@ -204,7 +316,7 @@ background-image: url('../../assets/images/appBg1.jpg');
             background: #fff;
             li{
                 float: left;
-                width:25%;
+                width:33%;
                 text-align: center;
                 line-height:0.7rem; 
             }
@@ -216,13 +328,23 @@ background-image: url('../../assets/images/appBg1.jpg');
     }
     .listContent{
         .wordMsg{
+            position: relative;
             width:100%;
+            .close{
+                cursor: pointer;
+                position: absolute;
+                right:0.2rem;
+                top:-0.1rem;
+                font-size:19px;
+                color:#fff;
+            }
             // background-color:rgba(240,119,167,0.2);
             .MsgTop{
+                padding:0.2rem 0 0 0.3rem;
                 color:#000;
                 p{
                     float: right;
-                    padding-right:0.2rem;
+                    padding-right:0.5rem;
                 }
             }
             .MsgCenter{
