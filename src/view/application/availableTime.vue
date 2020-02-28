@@ -4,7 +4,7 @@
         <div class="mainTitle">十点有空,我等你哦</div>
         <div class="mianContent">
             <ul>
-                <li v-for="(item,index) in tabData" :key="index" :class="{typeA:item.type==Toptype}" @click="changeTabStatus(item.type)">{{item.name}}</li>
+                <li v-for="(item,index) in tabData" :key="index" :class="{typeA:item.type==toptype}" @click="changeTabStatus(item.type)">{{item.name}}</li>
                 <!-- <li :class="{'typeB':type==2}">表白</li>
                 <li :class="{'typeC':type==3}">吐槽</li>
                 <li :class="{'typeD':type==4}">心愿</li>
@@ -18,8 +18,14 @@
                 <yd-input slot="right"  v-model="sendMsg" max="20" placeholder="说点什么呢~"></yd-input>
                 </div>
                 <div class="MsgBtn">
-                   <input type="checkbox" name="checkbox" v-model="Anonychecked" /><span class="anonymous">匿名</span>
-                   <input v-show="!Anonychecked" type="input" placeholder="请输入昵称" class="nickName" v-model="nickName"/>
+                    <Select style="width:40px" v-model="sendValueSub">
+                        <Option v-for="(item,index) in typeList" :value="item.type" :key="index" name="sendValueSub">{{
+                            item.name }}
+                        </Option>
+                   </Select>
+
+                   <input v-show="!anonychecked" type="input" placeholder="请输入昵称" class="nickName" v-model="nickName"/>
+                   <input type="checkbox" name="checkbox" v-model="anonychecked" /><span class="anonymous">匿名</span>
                    <button type="button" class="publishBtn" @click="publish">发布</button>
                  </div>
             </div>
@@ -103,18 +109,23 @@ export default {
             {name:'心愿',type:3},
             {name:'知乎',type:4},
         ],
-        Toptype:'0',//全部，表白，吐槽，心愿，知乎
+        typeList:[
+          {name:'表白',type:1},
+          {name:'吐槽',type:2},
+          {name:'心愿',type:3},
+          {name:'知乎',type:4},
+        ],
+        toptype:'0',//全部，表白，吐槽，心愿，知乎
         subTabData:[
             {name:'我的',type:1},
             {name:'最新',type:2},
             {name:'最热',type:3},
         ],
         subType:'1',//我的，最新，新回复，最热
-        searchValue:'',//搜索内容
         sendMsg:'',//用户发表的信息
         page: 1,
         pageSize: 10,
-        Anonychecked:false,
+        anonychecked:false,
         nickName:'',
         list:[],
         comment:[],//评论
@@ -128,7 +139,11 @@ export default {
     //获取列表
     that.getList();
   },
-  mounted() {},
+  mounted() {
+      //获取用户信息
+      this.getUserInfo();
+
+  },
   watch: {},
   methods: {
       //获取所有的列表信息
@@ -138,7 +153,7 @@ export default {
          { flag: that.subType, 
            pageNumber:that.pageNumber,
            pageSzie: 5,
-           subType:that.Toptype,
+           subType:that.toptype,
            type:1,
            userId:that.userId,
          }, function(e) {
@@ -152,10 +167,22 @@ export default {
         //   }
         });
      },
+     getUserInfo() {
+        const self = this;
+        this.post(
+          "user/baseInfo/get/authentication",
+          { visitorId: this.userId },
+          function(e) {
+            if (e.errCode != 200) return;
+            let dataRet = e.data;
+            self.nickName =  dataRet.nickName;
+          }
+        );
+     },
      //改变tab栏目的状态
      changeTabStatus(type){
          let that=this;
-         that.Toptype=type;
+         that.toptype=type;
      },
      changeSubTabStatus(type){
          let that=this;
@@ -182,22 +209,24 @@ export default {
      //发布说说
      publish(){
          let that=this;
-         if(that.sendMsg==''){
+         if(that.sendMsg==''|| that.sendMsg==""){
              that.$dialog.toast({ mes: '请先输入你想说的话之后再发表哦', icon: "error" });
              return;
          }
          that.post("leaveMessage/publish", 
-         { content: that.sendMsg, 
+         { 
+           content: that.sendMsg, 
            nickname:that.nickName==''?'匿名':that.nickName,
-           subType: that.Toptype,
+           subType: that.sendValueSub,
            type:1,
-           userId:that.userId,
+           userId:that.userId
          }, function(e) {
           if (e.errCode != 200) {
             that.$dialog.toast({ mes: e.errMsg, icon: "error" });
             return;
           }
           that.$dialog.toast({ mes: e.errMsg, icon: "success" });
+          // 
           that.sendMsg='';//清空之前写的内容
         });
      },
@@ -208,7 +237,7 @@ export default {
          { flag: that.subType, 
            pageNumber:++that.pageNumber,
            pageSzie: 5,
-           subType:that.Toptype,
+           subType:that.toptype,
            type:1,
            userId:that.userId,
          }, function(e) {

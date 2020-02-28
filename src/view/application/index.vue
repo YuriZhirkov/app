@@ -118,7 +118,7 @@
                 <router-link to="/application/availableTime">
                     <div class="leftB">
                         <b class="iconfont iconyuanxingxuanzhong"></b>
-                        <span>十点有空</span>
+                        <span>十点有空,我等你哦</span>
                     </div>
                     <div class="rightB">
                         <!-- <span>详细信息</span> -->

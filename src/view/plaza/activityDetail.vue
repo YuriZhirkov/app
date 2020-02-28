@@ -85,7 +85,7 @@
         <!-- <router-link :to="{path:'/plaza/detail',query:{aid:d.dynamic.id}}"> -->
         <div class="li-comment">
           <div class="c-i flexa"  v-for="(d2,i2) in info.comments" :key="i2" @click="twoComment(d2,i2)">
-            <div class="flexa" v-if="d2.formUserId == info.user.userId">
+            <div class="flexa" v-if="d2.formUserId == d2.toUserId">
               <p class="c-i-name fmiddle">{{d2.formUserName}}:</p>
               <div class="c-i-body fmiddle">{{d2.commentContent}} </div>
             </div>
