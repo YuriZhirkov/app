@@ -4,11 +4,11 @@
         <div class="mainTitle">十点有空,我等你哦</div>
         <div class="mianContent">
             <ul>
-                <li v-for="(item,index) in tabData" :key="index" :class="{typeA:item.type==toptype}" @click="changeTabStatus(item.type)">{{item.name}}</li>
-                <!-- <li :class="{'typeB':type==2}">表白</li>
-                <li :class="{'typeC':type==3}">吐槽</li>
-                <li :class="{'typeD':type==4}">心愿</li>
-                <li :class="{'typeE':type==5}">知乎</li> -->
+                <li v-for="(item,index) in subTypeData" :key="index" :class="{typeA:item.subType==subType}" @click="changeSubType(item.subType)">{{item.name}}</li>
+                <!-- <li :class="{'typeB':subType==2}">表白</li>
+                <li :class="{'typeC':subType==3}">吐槽</li>
+                <li :class="{'typeD':subType==4}">心愿</li>
+                <li :class="{'typeE':subType==5}">知乎</li> -->
             </ul>
             <!-- <div class="searchContent">
                 <yd-search v-model="searchValue" :on-submit="submitSearch"></yd-search>
@@ -18,24 +18,22 @@
                 <yd-input slot="right"  v-model="sendMsg" max="20" placeholder="说点什么呢~"></yd-input>
                 </div>
                 <div class="MsgBtn">
-                    <Select style="width:40px" v-model="sendValueSub">
-                        <Option v-for="(item,index) in typeList" :value="item.type" :key="index" name="sendValueSub">{{
-                            item.name }}
-                        </Option>
-                   </Select>
+                    <select style="width:40px" v-model="subTypeChage">
+                        <option v-for="(item,index) in subTypeList" :value="item.subType" :key="index" :label="item.name" name="subTypeChage">
+                        </option>
+                   </select>
 
-                   <input v-show="!anonychecked" type="input" placeholder="请输入昵称" class="nickName" v-model="nickName"/>
-                   <input type="checkbox" name="checkbox" v-model="anonychecked" /><span class="anonymous">匿名</span>
+                   <input v-show="!anonyChecked" type="input" placeholder="请输入昵称" class="nickName" v-model="nickName"/>
+                   <input type="checkbox" name="checkbox" v-model="anonyChecked" /><span class="anonymous">匿名</span>
                    <button type="button" class="publishBtn" @click="publish">发布</button>
                  </div>
             </div>
             <div class="tabContent">
                 <ul>
-                    <li v-for="(item,index) in subTabData" :key="index" :class="{typeA:item.type==subType}" @click="changeSubTabStatus(item.type)">{{item.name}}</li>
-                    <!-- <li :class="{'typeStyle':subType==1}">我的</li>
-                    <li :class="{'typeStyle':subType==2}">最新</li>
-                    <li :class="{'typeStyle':subType==3}">新回复</li>
-                    <li :class="{'typeStyle':subType==4}">最热</li> -->
+                    <li v-for="(item,index) in flags" :key="index" :class="{typeA:item.flag==flag}" @click="changeFlags(item.flag)">{{item.name}}</li>
+                    <!-- <li :class="{'typeStyle':flag==1}">我的</li>
+                    <li :class="{'typeStyle':flag==2}">最新</li>
+                    <li :class="{'typeStyle':flag==3}">最热</li> -->
                 </ul>
             </div>
             <div class="listContent">
@@ -44,8 +42,8 @@
                     <yd-list-item v-for="(item, index) in list" :key="index">
                         <yd-list-other slot="other">
                             <div class="wordMsg">
-                                <div class="close" @click="deleteThis(item.leaveMessageOutput.id)">×</div>
-                                <div class="MsgTop">{{item.leaveMessageOutput.nickname==''?'匿名':item.leaveMessageOutput.nickname}}|{{tabData[item.leaveMessageOutput.subType].name}}<p>{{item.leaveMessageOutput.createTime|totime}}</p></div>
+                                <div class="close" @click="deleteThis(item.leaveMessageOutput.id)">X</div>
+                                <div class="MsgTop">{{item.leaveMessageOutput.nickname==''?'匿名':item.leaveMessageOutput.nickname}}|{{subTypeData[item.leaveMessageOutput.subType].name}}<p>{{item.leaveMessageOutput.createTime|totime}}</p></div>
                                 <div class="MsgCenter">{{item.leaveMessageOutput.content}}</div>
                                 <div class="MsgBottom">
                                     <div class="actionBox flexs">
@@ -102,30 +100,30 @@ export default {
   },
   data() {
     return {
-        tabData:[
-            {name:'全部',type:0},
-            {name:'表白',type:1},
-            {name:'吐槽',type:2},
-            {name:'心愿',type:3},
-            {name:'知乎',type:4},
+        subTypeData:[
+            {name:'全部',subType:0},
+            {name:'表白',subType:1},
+            {name:'吐槽',subType:2},
+            {name:'心愿',subType:3},
+            {name:'知乎',subType:4},
         ],
-        typeList:[
-          {name:'表白',type:1},
-          {name:'吐槽',type:2},
-          {name:'心愿',type:3},
-          {name:'知乎',type:4},
+        subTypeList:[
+          {name:'表白',subType:1},
+          {name:'吐槽',subType:2},
+          {name:'心愿',subType:3},
+          {name:'知乎',subType:4},
         ],
-        toptype:'0',//全部，表白，吐槽，心愿，知乎
-        subTabData:[
-            {name:'我的',type:1},
-            {name:'最新',type:2},
-            {name:'最热',type:3},
+        subTypeChage:1,
+        subType:0,//全部，表白，吐槽，心愿，知乎
+        flags:[
+            {name:'我的',flag:1},
+            {name:'最新',flag:2},
+            {name:'最热',flag:3},
         ],
-        subType:'1',//我的，最新，新回复，最热
+        flag:1,//我的，最新，最热
         sendMsg:'',//用户发表的信息
-        page: 1,
         pageSize: 10,
-        anonychecked:false,
+        anonyChecked:false,
         nickName:'',
         list:[],
         comment:[],//评论
@@ -150,10 +148,10 @@ export default {
      getList(){
          let that=this;
          that.post("leaveMessage/getLeaveMessageList", 
-         { flag: that.subType, 
+         { flag: that.flag, 
            pageNumber:that.pageNumber,
            pageSzie: 5,
-           subType:that.toptype,
+           subType:that.subType,
            type:1,
            userId:that.userId,
          }, function(e) {
@@ -180,13 +178,15 @@ export default {
         );
      },
      //改变tab栏目的状态
-     changeTabStatus(type){
+     changeSubType(subType){
          let that=this;
-         that.toptype=type;
+         that.subType=subType;
+         that.getList();
+
      },
-     changeSubTabStatus(type){
+     changeFlags(flag){
          let that=this;
-         that.subType=type;
+         that.flag=flag;
          that.getList();
      },
      //删除本个
@@ -203,12 +203,14 @@ export default {
             return;
           }
           that.$dialog.toast({ mes: e.errMsg, icon: "success"});
+          //这个要注意一下
           that.getList();
         });
      },
      //发布说说
      publish(){
          let that=this;
+         let leaveMessageId='';
          if(that.sendMsg==''|| that.sendMsg==""){
              that.$dialog.toast({ mes: '请先输入你想说的话之后再发表哦', icon: "error" });
              return;
@@ -216,8 +218,8 @@ export default {
          that.post("leaveMessage/publish", 
          { 
            content: that.sendMsg, 
-           nickname:that.nickName==''?'匿名':that.nickName,
-           subType: that.sendValueSub,
+           nickname:that.anonychecked?'匿名':that.nickName,
+           subType: that.subTypeChage,
            type:1,
            userId:that.userId
          }, function(e) {
@@ -226,18 +228,20 @@ export default {
             return;
           }
           that.$dialog.toast({ mes: e.errMsg, icon: "success" });
-          // 
+          leaveMessageId = e.data;
           that.sendMsg='';//清空之前写的内容
+          //发布成功之后要把结果存在list之中
+          that.getList();
         });
      },
      //加载更多
      loadList(){
         let that=this;
          that.post("leaveMessage/getLeaveMessageList", 
-         { flag: that.subType, 
+         { flag: that.flag, 
            pageNumber:++that.pageNumber,
            pageSzie: 5,
-           subType:that.toptype,
+           subType:that.subType,
            type:1,
            userId:that.userId,
          }, function(e) {
