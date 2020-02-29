@@ -542,7 +542,7 @@ export default {
 
             const con = self.commentContent;
             if (self.info.comments == null) {
-              self.info.comments.comment = [];
+              self.info.comments = [];
             }
             self.info.comments.unshift({
               commentContent: con,

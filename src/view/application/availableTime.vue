@@ -42,24 +42,39 @@
                     <yd-list-item v-for="(item, index) in list" :key="index">
                         <yd-list-other slot="other">
                             <div class="wordMsg">
-                                <div class="close" @click="deleteThis(item.leaveMessageOutput.id)">X</div>
+                                <div class="close" @click="deleteThis(item.leaveMessageOutput.id)">x</div>
                                 <div class="MsgTop">{{item.leaveMessageOutput.nickname==''?'匿名':item.leaveMessageOutput.nickname}}|{{subTypeData[item.leaveMessageOutput.subType].name}}<p>{{item.leaveMessageOutput.createTime|totime}}</p></div>
                                 <div class="MsgCenter">{{item.leaveMessageOutput.content}}</div>
                                 <div class="MsgBottom">
+                                    <!-- 这个是用户的评论 开始-->
                                     <div class="actionBox flexs">
-                                       <div class="flexs w100 grey">
-                                         <div class="fmiddle flex" :class="{red:item.isFlag}">
-                                             <i class="iconfont2" v-if="!item.isFlag" >&#xe600;</i>
-                                             <i class="iconfont2 red"  v-if="item.isFlag" >&#xe600;</i>
-                                              <!-- {{item.likes ? item.likes : ''}} -->
-                                         </div>
-                                           <div class="flex fmiddle">
-                                             <i class="iconfont2">&#xe665;</i>
-                                               <!-- {{item.commentLens[i]?item.commentLens[i]:''}} -->
-                                           </div>
-                                         
-                                       </div>
-                                     </div>
+                                        <div class="flexs w100 grey">   
+                                            <!-- type, dynimicId, toId, toName, i, formUserName = "", commentId -->
+                                            <div class="fmiddle flex" :class="{red:item.isFlag}" @click="tapComment(0,item.leaveMessageOutput.id,'','',index)">
+                                                <i class="iconfont2" v-if="item.isFlag==0" >&#xe600;</i>
+                                                <i class="iconfont2 red"  v-if="item.isFlag==1" >&#xe600;</i>
+                                                {{item.likes ? item.likes : ''}}
+                                            </div>
+                                            <div class="flex fmiddle" @click="tapComment(1,item.leaveMessageOutput.id,userId,'',index,nickname,'')">
+                                                <i class="iconfont2">&#xe665;</i>
+                                                    <!-- 评论的长度 -->
+                                                    {{item.commentOutputs.length?item.commentOutputs.length : ''}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="li-comment">
+                                        <div class="c-i flexa"  v-for="(d2,i2) in item.commentOutputs" :key="i2" v-if="i2 < 5" @click="twoComment(d2,index,i2)">
+                                        <div class="flexa" v-if="d2.formUserId == d2.toUserId">
+                                            <p class="c-i-name fmiddle">{{d2.formUserName}}:</p>
+                                            <div class="c-i-body fmiddle">{{d2.commentContent}} </div>
+                                        </div>
+                                        <div class="flexa" v-else>
+                                            <p class="fmiddle"><span class="c-i-name">{{d2.formUserName}}</span>回复<span  class="c-i-name">{{d2.toUserName}}</span>:</p>
+                                            <div class="c-i-body fmiddle">{{d2.commentContent}} </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <!-- 这个是用户的评论 结束 -->
                                 </div>
                             </div>
                         </yd-list-other>
@@ -88,6 +103,22 @@
                 </yd-timeline> -->
             </div>
         </div>
+        <!-- 评论 输入框 开始 :class="{showComment:showComment}"-->
+        <div class="comment w100 flex" :class="{showComment:showComment}">
+            <div class="c-input flex">
+              <yd-textarea slot="right" v-model="commentContent" :placeholder="ydPlaceholder" maxlength="100"></yd-textarea>
+            </div>
+            <div class="c-send h100">
+              <div class="w100 flex" @click="sendComment()">
+                <div class="blue fmiddle bold">发送</div>
+              </div>
+              <div v-if="userId == commentInfo.formUserId && commentInfo.type==2" class="w100 flex" @click="delComment(commentInfo.formUserId,commentInfo.id,commentInfo.index,commentInfo.index2)">
+                <div class="red fmiddle bold">删除</div>
+              </div>
+            </div>
+            <div class="w100 c-close fmiddle grey" @click="closeComment"><i class="iconfont2">&#xe656;</i></div>
+        </div>
+        <!-- 评论 输入框 结束-->
     </div>
 </template>
 <script>
@@ -96,7 +127,7 @@ import { mapMutations, mapState, mapGetters } from "vuex";
 export default {
   components: {},
   computed: {
-    ...mapState(['userId'])
+    ...mapState(['userId','userName'])
   },
   data() {
     return {
@@ -130,6 +161,10 @@ export default {
         isFlag:'',//是否点赞
         pageNumber:1,//页面的页数
         more:true,//是否有更多数据
+        commentContent: "",
+        commentInfo: [],
+        showComment: false,
+        ydPlaceholder: "写评论"
     };
   },
   created(){
@@ -157,6 +192,7 @@ export default {
          }, function(e) {
           if (e.errCode != 200) {
             that.$dialog.toast({ mes: e.errMsg, icon: "error" });
+            that.list=[];
             return;
           }
          that.list=e.data;
@@ -180,12 +216,14 @@ export default {
      //改变tab栏目的状态
      changeSubType(subType){
          let that=this;
+         
          that.subType=subType;
          that.getList();
 
      },
      changeFlags(flag){
          let that=this;
+        
          that.flag=flag;
          that.getList();
      },
@@ -234,8 +272,200 @@ export default {
           that.getList();
         });
      },
-     //加载更多
-     loadList(){
+     tapComment(type, dynimicId, toId, toName, i, formUserName = "", commentId) {
+      const self = this;
+      // type= 0 表示点赞 type = 1 表示评论
+      if (type == 0) {
+        if (this.list[i].isFlag) {
+          this.cancelZan(this.userId, dynimicId);
+          this.list[i].isFlag = false;
+          this.list[i].likes = this.list[i].likes - 1;
+
+          this.list.sort();
+        } else {
+          this.post(
+            "comment/add",
+            {
+              correlationId: dynimicId,
+              formUserId: this.userId,
+              formUserName: this.nickName,
+              toUserId: toId,
+              toUserName: toName,
+              commentType: 0,
+              type: 4
+            },
+            function() {}
+          );
+          this.list[i].isFlag = true;
+          this.list[i].likes = this.list[i].likes + 1;
+          this.list.sort();
+        }
+      }
+    
+      if (type == 1) {
+        this.commentContent = "";
+        this.commentInfo["correlationId"] = dynimicId;
+        this.commentInfo["toUserId"] = toId;
+        this.commentInfo["toUserName"] = toName;
+        this.commentInfo["formUserName"] = formUserName;
+        this.commentInfo["index"] = i;
+        this.commentInfo["type"] = 1;
+        this.commentInfo["id"] = commentId;
+        this.ydPlaceholder = "评论:";
+
+        this.showComment = true;
+      }
+    },
+    twoComment(d, i, i2) {
+        debugger;
+      if (!d) location.reload();
+      this.commentContent = "";
+      this.commentInfo["correlationId"] = d.correlationId;
+      this.commentInfo["formUserId"] = d.formUserId;
+      this.commentInfo["formUserName"] = d.formUserName;
+      this.commentInfo["toUserId"] = d.toUserId;
+      this.commentInfo["toUserName"] = d.toUserName;
+      this.commentInfo["index"] = i;
+      this.commentInfo["index2"] = i2;
+      this.commentInfo["type"] = 2;
+      this.commentInfo["id"] = d.commentId;
+      this.ydPlaceholder = "回复" + d.formUserName + ":";
+      this.showComment = true;
+    },
+    cancelZan(userid, aid) {
+      this.post(
+        "comment/cancel/like",
+        { formUserId: userid, correlationId: aid, type: 1 },
+        function() {}
+      );
+    },
+    delComment(uid, id, index, i2) {
+      debugger;
+      const self = this;
+      this.post(
+        "comment/delete",
+        { formUserId: uid, id: id, type: 4 },
+        function(e) {
+          if (!e) return;
+          if (e.errCode != 200) {
+            self.$dialog.toast({ mes: e.errMsg });
+            return;
+          }
+          self.$dialog.toast({ mes: "删除成功" });
+          self.list[index].commentOutputs.splice(i2, 1);
+          self.showComment = false;
+        }
+      );
+    },
+    closeComment() {
+      this.showComment = false;
+    },
+    sendComment() {
+      const self = this;
+      if (!this.commentInfo) location.reload();
+
+      const c = this.commentInfo;
+
+      if (this.commentContent == "" || this.commentContent == '') {
+        self.$dialog.toast({ mes: "写点什么吧！" });
+        return;
+      }
+
+      if (c.type == 1) {
+        this.post(
+          "comment/add",
+          {
+            correlationId: c.correlationId,
+            formUserId: self.userId,
+            formUserName: self.userName,
+            toUserId: c.toUserId,
+            toUserName: c.toUserName,
+            commentType: 1,
+            type: 4,
+            commentContent: self.commentContent
+          },
+          function(e) {
+            if (!e) return;
+            if (e.errCode != 200) {
+              self.$dialog.toast({ mes: e.errMsg });
+              return;
+            }
+
+            const con = self.commentContent;
+            if (self.list[c["index"]].commentOutputs == null) {
+              self.list[c["index"]].commentOutputs = [];
+            }
+            self.list[c["index"]].commentOutputs.unshift({
+              commentContent: con,
+              formUserId: self.userId,
+              formUserName: self.userName,
+              correlationId: c.correlationId,
+              type: 4,
+              toUserId: c.toUserId,
+              toUserName: c.toUserName,
+              id: e.data,
+              commentId: e.data
+            });
+            // self.$set(
+            //   self.commentLens,
+            //   self.commentInfo["index"],
+            //   self.commentLens[self.commentInfo["index"]] + 1
+            // );
+            self.commentInfo = [];
+            self.showComment = false;
+          }
+        );
+      } else {
+        this.post(
+          "comment/add",
+          {
+            correlationId: c.correlationId,
+            formUserId: self.userId,
+            formUserName: self.userName,
+            toUserId: c.formUserId,
+            toUserName: c.formUserName,
+            commentType: 1,
+            type: 4,
+            commentContent: self.commentContent
+          },
+          function(e) {
+            if (!e) return;
+            if (e.errCode != 200) {
+              self.$dialog.toast({ mes: e.errMsg });
+              return;
+            }
+            // console.log(self.commentInfo);
+
+            const con = self.commentContent;
+            if (self.list[c["index"]].commentOutputs == null) {
+              self.list[c["index"]].commentOutputs = [];
+            }
+            // self.list[c['index']].comment.unshift({commentContent:con,formUserId:self.userId,formUserName:self.userName,correlationId:c.correlationId,type:0})
+            self.list[c["index"]].commentOutputs.unshift({
+              commentContent: con,
+              formUserId: self.userId,
+              formUserName: self.userName,
+              correlationId: c.correlationId,
+              type: 4,
+              toUserId: c.formUserId,
+              toUserName: c.formUserName,
+              id: e.data,
+              commentId: e.data
+            });
+
+            // self.$set(
+            //   self.commentLens,
+            //   self.commentInfo["index"],
+            //   self.commentLens[self.commentInfo["index"]] + 1
+            // );
+            self.commentInfo = [];
+            self.showComment = false;
+          }
+        );
+      }
+    },
+    //加载更多
+    loadList(){
         let that=this;
          that.post("leaveMessage/getLeaveMessageList", 
          { flag: that.flag, 
@@ -392,6 +622,47 @@ background-image: url('../../assets/images/appBg1.jpg');
         }
     }
 }
+.showComment {
+    transform: translateY(0) !important;
+  }
+  .c-send .w100 {
+    min-height: 60px;
+  }
+  .c-close {
+    position: absolute;
+    right: 2%;
+    top: 0;
+    width: 20px;
+  }
+  .c-input {
+    width: 70%;
+    padding: 0 10px;
+    background: #ffffff;
+  }
+  .c-send {
+    width: 20%;
+  }
+  .comment {
+    position: fixed;
+    bottom: 0;
+    background: #f5f5f5;
+    z-index: 9;
+    padding: 8px 0;
+    transform: translateY(150%);
+    transition: all 0.3s;
+  }
+  .c-i-name {
+    color: #0168c3;
+  }
+  .li-comment {
+    border-radius: 3px;
+    padding: 20px 10px;
+  }
+  .li-comment div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 <style lang="less">
 .availableContainer{
@@ -406,6 +677,8 @@ background-image: url('../../assets/images/appBg1.jpg');
         background-color: transparent !important;
     }
 }
+
+
    
 </style>
 
