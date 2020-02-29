@@ -18,7 +18,7 @@
                 <yd-input slot="right"  v-model="sendMsg" max="20" placeholder="说点什么呢~"></yd-input>
                 </div>
                 <div class="MsgBtn">
-                    <select style="width:40px" v-model="subTypeChage">
+                    <select  v-model="subTypeChage">
                         <option v-for="(item,index) in subTypeList" :value="item.subType" :key="index" :label="item.name" name="subTypeChage">
                         </option>
                    </select>
@@ -86,21 +86,8 @@
 
         <!-- 加载中提示，不指定，将显示默认加载中图标 -->
         <img v-show="more" slot="loadingTip" src="../../assets/images/timg.gif"/>
+        </yd-infinitescroll>
 
-    </yd-infinitescroll>
-                <!-- <yd-timeline>
-                     <yd-timeline-item>
-                         <div class="msgCard">
-
-                         </div>
-                     </yd-timeline-item>
-                     <yd-timeline-item>
-                         
-                     </yd-timeline-item>
-                     <yd-timeline-item>
-                        
-                     </yd-timeline-item>
-                </yd-timeline> -->
             </div>
         </div>
         <!-- 评论 输入框 开始 :class="{showComment:showComment}"-->
@@ -119,7 +106,9 @@
             <div class="w100 c-close fmiddle grey" @click="closeComment"><i class="iconfont2">&#xe656;</i></div>
         </div>
         <!-- 评论 输入框 结束-->
+        <footComponent></footComponent>
     </div>
+    
 </template>
 <script>
 import { mapMutations, mapState, mapGetters } from "vuex";
@@ -160,7 +149,7 @@ export default {
         comment:[],//评论
         isFlag:'',//是否点赞
         pageNumber:1,//页面的页数
-        more:true,//是否有更多数据
+        more:false,//是否有更多数据
         commentContent: "",
         commentInfo: [],
         showComment: false,
@@ -182,6 +171,7 @@ export default {
       //获取所有的列表信息
      getList(){
          let that=this;
+         that.more=true;
          that.post("leaveMessage/getLeaveMessageList", 
          { flag: that.flag, 
            pageNumber:that.pageNumber,
@@ -216,16 +206,16 @@ export default {
      //改变tab栏目的状态
      changeSubType(subType){
          let that=this;
-         
          that.subType=subType;
          that.getList();
-
+        
      },
      changeFlags(flag){
          let that=this;
         
          that.flag=flag;
          that.getList();
+        
      },
      //删除本个
      deleteThis(id){
@@ -467,6 +457,8 @@ export default {
     //加载更多
     loadList(){
         let that=this;
+        that.pageNumber=that.pageNumber++;
+        console.log("hhh",that.pageNumber);
          that.post("leaveMessage/getLeaveMessageList", 
          { flag: that.flag, 
            pageNumber:++that.pageNumber,
@@ -475,18 +467,21 @@ export default {
            type:1,
            userId:that.userId,
          }, function(e) {
+             console.log("hhh",e);
           if (e.errCode != 200) {
             that.$dialog.toast({ mes: e.errMsg, icon: "error" });
             return;
           }
-          if(e.data.length=0){
+          if(e.data.length==0){
               that.more=false;
               return;
           }
+         
         //  console.log("哈哈哈",that.list);
           for(let i=0;i<e.data.length;i++){
               that.list.push(e.data[i]);
           }
+        //   that.loadList(pageNum);
         });
      }
   }
@@ -495,11 +490,12 @@ export default {
 <style lang="less" scoped>
 .availableContainer{
   overflow: hidden;
-//   height: 100%;
+  min-height: 100%;
 //   width: 100%;
 background-image: url('../../assets/images/appBg1.jpg');
     background-repeat: no-repeat;   //不重复
     background-size: 100% 100%;     // 满屏
+    background-attachment:fixed
 //   background:url('../../assets/images/appBg1.jpg')  100% center no-repeat;
 }
 .mainTitle{
@@ -510,6 +506,8 @@ background-image: url('../../assets/images/appBg1.jpg');
    margin:0.3rem 0;
 }
 .mianContent{
+       min-height:10rem;
+
    margin:0.3rem 0.3rem;
    ul{
        height:0.7rem;
@@ -564,11 +562,28 @@ background-image: url('../../assets/images/appBg1.jpg');
            }
            .publishBtn{
                background-color: #3390D4;
-               border-radius: 0.1rem;
+               border-radius: 2px;
+               color:rgba(37, 33, 33, 0.795);
+               padding:0.1rem;
+               font-size:13px;
                width:0.8rem;
                height:0.6rem;
            }
+            input{
+                outline-style: none ;
+                border: 1px solid #ccc; 
+                height:0.5rem;
+            }
+            select{
+                 width:0.8rem;
+                 height:0.5rem;
+                 height: 100%;
+                 -webkit-appearance: none;   /* Safari 和 Chrome */
+                 -moz-appearance: none;   /* Firefox */
+                 background: transparent;
+            }
        }
+       
    }
    
    .tabContent{
@@ -656,12 +671,13 @@ background-image: url('../../assets/images/appBg1.jpg');
   }
   .li-comment {
     border-radius: 3px;
-    padding: 20px 10px;
+    margin: 10px;
   }
   .li-comment div {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin:2px;
   }
 </style>
 <style lang="less">
@@ -674,7 +690,7 @@ background-image: url('../../assets/images/appBg1.jpg');
         background-color:rgba(240,119,167,0.5);
     }
     .yd-list-theme4{
-        background-color: transparent !important;
+        background-color: #ebebeb !important;
     }
 }
 
