@@ -18,13 +18,13 @@
                 <yd-input slot="right"  v-model="sendMsg" max="20" placeholder="说点什么呢~"></yd-input>
                 </div>
                 <div class="MsgBtn">
-                    <select  v-model="subTypeChage">
+                    <select  v-model="subTypeChage" >
                         <option v-for="(item,index) in subTypeList" :value="item.subType" :key="index" :label="item.name" name="subTypeChage">
                         </option>
                    </select>
 
                    <input v-show="!anonyChecked" type="input" placeholder="请输入昵称" class="nickName" v-model="nickName"/>
-                   <input type="checkbox" name="checkbox" v-model="anonyChecked" /><span class="anonymous">匿名</span>
+                   <button type="button" class="publishBtn" @click="setAnonyChecked">匿名</button>
                    <button type="button" class="publishBtn" @click="publish">发布</button>
                  </div>
             </div>
@@ -142,7 +142,6 @@ export default {
         ],
         flag:1,//我的，最新，最热
         sendMsg:'',//用户发表的信息
-        pageSize: 10,
         anonyChecked:false,
         nickName:'',
         list:[],
@@ -157,25 +156,71 @@ export default {
     };
   },
   created(){
-    let that=this;
-    //获取列表
-    that.getList();
-  },
+    
+    },
   mounted() {
-      //获取用户信息
+    
+    const obj = this.$route.query;
+    console.log("obj=",obj);
+    if (obj && JSON.stringify(obj) != "{}") {
+      let errCode = obj.errCode;
+      if (errCode && (errCode==200 || errCode=='200') ) {
+        //微信登录成功
+        this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
+        this.$store.commit('setUserId',obj.userId);
+        // this.userId = obj.userId;
+
+        // 登录成功标识,设置tim登录
+        this.$store.commit('toggleIsSDKReady', true)
+      } else {
+        if (errCode == 400) {
+          this.$dialog.toast({
+            mes: "微信登录获取用户的信息失败",
+            icon: "error"
+          });
+          return
+        } else if (errCode == 401) {
+          this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+           return
+        } else if (errCode == 402) {
+          this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+           return
+        }
+      }
+    }
+
+
+    if (!this.userId) {
+      //this.$router.push("/");
+      //微信授权登录
+      this.getTicket();
+      console.log("微信授权登录");
+    } else {
+      console.log("获取数据");
       this.getUserInfo();
+      this.getList();
+      this.baseHint();
+
+    }
+
+    //获取列表
+    // self.getList();
+    //获取用户信息
+    // self.getUserInfo();
 
   },
   watch: {},
   methods: {
       //获取所有的列表信息
      getList(){
+         
          let that=this;
+         that.pageNumber = 1;
          that.more=true;
          that.post("leaveMessage/getLeaveMessageList", 
          { flag: that.flag, 
            pageNumber:that.pageNumber,
-           pageSzie: 5,
+           pageSzie: 10,
            subType:that.subType,
            type:1,
            userId:that.userId,
@@ -185,11 +230,42 @@ export default {
             that.list=[];
             return;
           }
-         that.list=e.data;
-        //   for(let i=0;i<e.data.length;i++){
-        //       that.list.push(e.data[i].leaveMessageOutput);
-        //   }
+
+         that.list = e.data;
+         
         });
+     },
+     getTicket() {
+      let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=3';
+      location.href = url;
+     },
+     baseHint() {
+      const self = this;
+      this.get(
+        "user/extendInfo/hint",
+        {
+          userId: this.userId
+        },
+        res => {
+          
+          if (res.errCode == 200) {
+            let status = res.data.substr(0, 2);
+            if (status == "01") {
+              let noAuth = res.data.substr(3);
+              self.$dialog.toast({
+                mes: noAuth,
+                timeout: 2000,
+                callback: () => {
+                    self.$router.push({
+                      path: "/personal/multiInfo",
+                      query: {  i: 1 }
+                  });
+                }
+              });
+            }
+          }
+        }
+      );
      },
      getUserInfo() {
         const self = this;
@@ -234,6 +310,9 @@ export default {
           //这个要注意一下
           that.getList();
         });
+     },
+     setAnonyChecked(){
+        this.anonyChecked = !this.anonyChecked;
      },
      //发布说说
      publish(){
@@ -307,7 +386,6 @@ export default {
       }
     },
     twoComment(d, i, i2) {
-        debugger;
       if (!d) location.reload();
       this.commentContent = "";
       this.commentInfo["correlationId"] = d.correlationId;
@@ -325,12 +403,11 @@ export default {
     cancelZan(userid, aid) {
       this.post(
         "comment/cancel/like",
-        { formUserId: userid, correlationId: aid, type: 1 },
+        { formUserId: userid, correlationId: aid, type: 4 },
         function() {}
       );
     },
     delComment(uid, id, index, i2) {
-      debugger;
       const self = this;
       this.post(
         "comment/delete",
@@ -462,12 +539,11 @@ export default {
          that.post("leaveMessage/getLeaveMessageList", 
          { flag: that.flag, 
            pageNumber:++that.pageNumber,
-           pageSzie: 5,
+           pageSzie: 10,
            subType:that.subType,
            type:1,
            userId:that.userId,
          }, function(e) {
-             console.log("hhh",e);
           if (e.errCode != 200) {
             that.$dialog.toast({ mes: e.errMsg, icon: "error" });
             return;
@@ -476,12 +552,10 @@ export default {
               that.more=false;
               return;
           }
-         
-        //  console.log("哈哈哈",that.list);
+        
           for(let i=0;i<e.data.length;i++){
               that.list.push(e.data[i]);
           }
-        //   that.loadList(pageNum);
         });
      }
   }
@@ -575,7 +649,7 @@ background-image: url('../../assets/images/appBg1.jpg');
                 height:0.5rem;
             }
             select{
-                 width:0.8rem;
+                 width:0.9rem;
                  height:0.5rem;
                  height: 100%;
                  -webkit-appearance: none;   /* Safari 和 Chrome */
@@ -695,6 +769,6 @@ background-image: url('../../assets/images/appBg1.jpg');
 }
 
 
-   
+
 </style>
 
