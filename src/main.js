@@ -6,7 +6,8 @@ import fastClick from 'fastclick'
 
 import store from './store'
 
- 
+import Mint from 'mint-ui'
+Vue.use(Mint);//引入mint-ui
 
 Vue.config.productionTip = false
 

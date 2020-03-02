@@ -18,11 +18,11 @@
                 <yd-input slot="right"  v-model="sendMsg" max="20" placeholder="说点什么呢~"></yd-input>
                 </div>
                 <div class="MsgBtn">
-                    <select  v-model="subTypeChage" >
+                    <!-- <select  v-model="subTypeChage" >
                         <option v-for="(item,index) in subTypeList" :value="item.subType" :key="index" :label="item.name" name="subTypeChage">
                         </option>
-                   </select>
-
+                   </select> -->
+                   <div id="typeSelect">类型选择</div>
                    <input v-show="!anonyChecked" type="input" placeholder="请输入昵称" class="nickName" v-model="nickName"/>
                    <button type="button" class="publishBtn" @click="setAnonyChecked">匿名</button>
                    <button type="button" class="publishBtn" @click="publish">发布</button>
@@ -112,6 +112,7 @@
 </template>
 <script>
 import { mapMutations, mapState, mapGetters } from "vuex";
+import MobileSelect from 'mobile-select'//引入select
 // import { testServer } from "@/servers/plaza";
 export default {
   components: {},
@@ -127,12 +128,12 @@ export default {
             {name:'心愿',subType:3},
             {name:'知乎',subType:4},
         ],
-        subTypeList:[
-          {name:'表白',subType:1},
-          {name:'吐槽',subType:2},
-          {name:'心愿',subType:3},
-          {name:'知乎',subType:4},
-        ],
+        // subTypeList:[
+        //   {name:'表白',subType:1},
+        //   {name:'吐槽',subType:2},
+        //   {name:'心愿',subType:3},
+        //   {name:'知乎',subType:4},
+        // ],
         subTypeChage:1,
         subType:0,//全部，表白，吐槽，心愿，知乎
         flags:[
@@ -159,7 +160,7 @@ export default {
     
     },
   mounted() {
-    
+    let that=this;
     const obj = this.$route.query;
     console.log("obj=",obj);
     if (obj && JSON.stringify(obj) != "{}") {
@@ -207,7 +208,27 @@ export default {
     // self.getList();
     //获取用户信息
     // self.getUserInfo();
-
+   //选择类型
+    var mobileSelect4 = new MobileSelect({
+        trigger: "#typeSelect",
+        title: "类型选择",
+        wheels: [
+            {data: ["表白","吐槽","心愿","知乎"]}
+        ],
+        callback:function(indexArr, data){
+           let selectValue=data.join("");
+           if(selectValue=="表白"){
+             that.subTypeChage=1;
+           }else if(selectValue=="吐槽"){
+             that.subTypeChage=2;
+           }else if(selectValue=="心愿"){
+             that.subTypeChage=3;
+           }else if(selectValue=="知乎"){
+             that.subTypeChage=4;
+           }
+        }
+    });
+        
   },
   watch: {},
   methods: {
@@ -599,7 +620,7 @@ background-image: url('../../assets/images/appBg1.jpg');
            width:20%;
            text-align: center;
            line-height:0.7rem;
-           
+           cursor: pointer;
        }
        .typeA{
            border-top:0.1rem solid #F077A7;
@@ -636,17 +657,23 @@ background-image: url('../../assets/images/appBg1.jpg');
            margin-top:0.2rem;
            .anonymous{
                color:#000;
-               font-size:12px;
+              //  font-size:12px;
            }
            .nickName{
                width:1.8rem;
+           }
+           #typeSelect{
+             display:inline-block;
+             border:1px solid #ccc;
+             padding:0 0.1rem 0.1rem 0.1rem;
+            //  margin-top:0.1rem;
            }
            .publishBtn{
                background-color: #3390D4;
                border-radius: 2px;
                color:rgba(37, 33, 33, 0.795);
                padding:0.1rem;
-               font-size:13px;
+               font-size:0.3rem;
                width:0.8rem;
                height:0.6rem;
            }
