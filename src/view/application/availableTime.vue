@@ -42,7 +42,7 @@
                     <yd-list-item v-for="(item, index) in list" :key="index">
                         <yd-list-other slot="other">
                             <div class="wordMsg">
-                                <div class="close" @click="deleteThis(item.leaveMessageOutput.id)">x</div>
+                                <div v-show="item.leaveMessageOutput.userId==userId" class="close" @click="deleteThis(item.leaveMessageOutput.id)">x</div>
                                 <div class="MsgTop">{{item.leaveMessageOutput.nickname==''?'匿名':item.leaveMessageOutput.nickname}}|{{subTypeData[item.leaveMessageOutput.subType].name}}<p>{{item.leaveMessageOutput.createTime|totime}}</p></div>
                                 <div class="MsgCenter">{{item.leaveMessageOutput.content}}</div>
                                 <div class="MsgBottom">
@@ -317,6 +317,13 @@ export default {
      //发布说说
      publish(){
          let that=this;
+
+         let nickNameTemp = '匿名';
+
+         if(!this.anonyChecked) {
+            nickNameTemp = that.nickName;
+         }
+
          let leaveMessageId='';
          if(that.sendMsg==''|| that.sendMsg==""){
              that.$dialog.toast({ mes: '请先输入你想说的话之后再发表哦', icon: "error" });
@@ -325,7 +332,7 @@ export default {
          that.post("leaveMessage/publish", 
          { 
            content: that.sendMsg, 
-           nickname:that.anonychecked?'匿名':that.nickName,
+           nickname:nickNameTemp,
            subType: that.subTypeChage,
            type:1,
            userId:that.userId
@@ -646,15 +653,11 @@ background-image: url('../../assets/images/appBg1.jpg');
             input{
                 outline-style: none ;
                 border: 1px solid #ccc; 
-                height:0.5rem;
+                height:0.6rem;
             }
             select{
                  width:0.9rem;
-                 height:0.5rem;
-                 height: 100%;
-                 -webkit-appearance: none;   /* Safari 和 Chrome */
-                 -moz-appearance: none;   /* Firefox */
-                 background: transparent;
+                 height:0.6rem;
             }
        }
        
