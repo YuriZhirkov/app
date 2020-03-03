@@ -105,7 +105,7 @@
                 <router-link to="/application/availableTime">
                     <div class="leftB">
                         <b class="iconfont iconyuanxingxuanzhong"></b>
-                        <span>匿名专送</span>
+                        <span>匿名传送</span>
                     </div>
                     <div class="rightB">
                         <!-- <span>详细信息</span> -->

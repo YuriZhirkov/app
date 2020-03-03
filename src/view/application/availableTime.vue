@@ -1,7 +1,6 @@
 <template>
     <div class="availableContainer">
-        <topComponent title='十点有空' :showLeft="true"></topComponent>
-        <div class="mainTitle">十点有空,我等你哦</div>
+        <topComponent title='匿名传送' :showLeft="true"></topComponent>
         <div class="mianContent">
             <ul>
                 <li v-for="(item,index) in subTypeData" :key="index" :class="{typeA:item.subType==subType}" @click="changeSubType(item.subType)">{{item.name}}</li>
@@ -661,12 +660,13 @@ background-image: url('../../assets/images/appBg1.jpg');
            }
            .nickName{
                width:1.8rem;
+               height:0.6rem;
+               margin-bottom: 0.1rem;
            }
            #typeSelect{
              display:inline-block;
              border:1px solid #ccc;
-             padding:0 0.1rem 0.1rem 0.1rem;
-            //  margin-top:0.1rem;
+             padding:0.1rem;
            }
            .publishBtn{
                background-color: #3390D4;
@@ -675,7 +675,7 @@ background-image: url('../../assets/images/appBg1.jpg');
                padding:0.1rem;
                font-size:0.3rem;
                width:0.8rem;
-               height:0.6rem;
+               height:0.7rem;
            }
             input{
                 outline-style: none ;
