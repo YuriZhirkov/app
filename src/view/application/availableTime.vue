@@ -674,7 +674,7 @@ background-image: url('../../assets/images/appBg1.jpg');
                color:rgba(37, 33, 33, 0.795);
                padding:0.1rem;
                font-size:0.3rem;
-               width:0.8rem;
+               width:1rem;
                height:0.7rem;
            }
             input{

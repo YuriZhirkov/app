@@ -748,8 +748,6 @@ export default {
    
     const self = this;
     //获取 http://www.ygtqzhang.cn:8090/plaza/dynamic?login=1&userId='+ this.userId 中用户id
-    console.log("self.$route.query=");
-    console.log(self.$route.query);
     let queryUserId = self.$route.query.userId;
     let errCode = self.$route.query.errCode;
     console.log("errCode=",errCode);
@@ -771,7 +769,7 @@ export default {
       this.getUserInfo();
       this.getDynamic();
       //这个认证放在一个对话框中
-      this.identityAuthenticationHint();
+      // this.identityAuthenticationHint();
       // this.baseHint();
       
     }
