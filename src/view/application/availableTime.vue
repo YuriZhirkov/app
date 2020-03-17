@@ -160,7 +160,6 @@ export default {
     },
   mounted() {
     let that=this;
-    that.loginByCache();
     const obj = this.$route.query;
     console.log("obj=",obj);
     if (obj && JSON.stringify(obj) != "{}") {
@@ -169,7 +168,6 @@ export default {
         //微信登录成功
         this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
         this.$store.commit('setUserId',obj.userId);
-        localStorage.setItem("userId",obj.userId)
         // this.userId = obj.userId;
 
         // 登录成功标识,设置tim登录
