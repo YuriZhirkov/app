@@ -105,6 +105,7 @@ export default {
   },
   created() {
     let self = this;
+    self.loginByCache();
     const obj = this.$route.query;
     if (obj && JSON.stringify(obj) != "{}") {
       let errCode = obj.errCode;
@@ -113,9 +114,10 @@ export default {
         this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
         this.setUserId(obj.userId);
 
+        localStorage.setItem("userId",obj.userId)
         // 登录成功标识,设置tim登录
         this.$store.commit('toggleIsSDKReady', true)
-        
+      
         //if(userInfo=='full') {
         self.$router.push("/plaza/dynamic?login=1");
         // } else {
@@ -195,6 +197,16 @@ export default {
     funcAsync : async function () {
       return await  axios.post(this.host + "user/baseInfo/register", { phone: this.phoneNum, role: 1, validateCode: this.verifyCode } )
     },
+    loginByCache(){
+      let userId = localStorage.getItem("userId")
+      if(userId){
+        this.setUserId(userId);
+        
+        // 登录成功标识,设置tim登录
+        this.$store.commit('toggleIsSDKReady', true)
+        this.$router.push("/plaza/dynamic?login=1");
+      }
+    },
     async loginTo() {
       const self = this;
       if (!/^1[3456789]\d{9}$/.test(this.phoneNum)) {
@@ -216,8 +228,9 @@ export default {
         self.$dialog.toast({ mes: e.data.errMsg, icon: "error" });
         return;
       }
-
       self.setUserId(e.data.data.userId);
+      
+      localStorage.setItem("userId",e.data.data.userId)
       self.$router.push("/plaza/dynamic?login=1");
       // return
       // // this.$store.dispatch('login', this.phoneNum)
