@@ -639,7 +639,8 @@ export default {
     console.log("userId= ");
     console.log(userId);
     if(userId != null && userId != undefined && userId != "") {
-       self.setUserId(userId);
+      //  self.setUserId(userId);
+       this.$store.commit('setUserId',userId);
        //this.userId = userId;
     }
 
