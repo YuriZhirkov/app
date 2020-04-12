@@ -33,6 +33,7 @@ export default {
     },
     goBack() {
       this.$router.back();
+      this.$emit("goBack");
     }
   }
 };

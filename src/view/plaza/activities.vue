@@ -100,6 +100,7 @@ export default {
     }
   },
   methods: {
+    
     del(uid, id, i) {
       if (confirm("是否删除活动")) {
         const self = this;

@@ -1,6 +1,6 @@
 <template>
    <div class="activityDetail">
-       <topComponent title='活动详情' :showLeft='true'></topComponent>
+       <topComponent title='活动详情' :showLeft='true' @goBack="goBack"></topComponent>
        <!-- 分页轮播 -->
             <div class="slides">
         <swiper ref="mySwiper"  :options="swiperOption">
@@ -187,6 +187,10 @@ export default {
         self.$dialog.toast({mes:'活动删除成功',icon:'success'})
         self.$router.go(-1)
       })
+    },
+    goBack(){
+      this.$router.push({path:'/plaza/activities'});
+
     },
     weiXinShare(aid){
      
