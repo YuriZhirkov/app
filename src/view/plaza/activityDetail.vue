@@ -1,6 +1,6 @@
 <template>
    <div class="activityDetail">
-       <topComponent title='活动详情' :showLeft='true' @goBack="goBack"></topComponent>
+       <topComponent title='活动详情' :showLeft='true'></topComponent>
        <!-- 分页轮播 -->
             <div class="slides">
         <swiper ref="mySwiper"  :options="swiperOption">
@@ -401,7 +401,9 @@ export default {
                             +'&returnUrl=http://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
                             + self.aid+"userId="
                             + self.userId;
-          location.href = url;
+          //location.href = url; 这个会保留历史记录
+          //这个不会保留历史记录
+          location.replace(url); 
         }
 
         
