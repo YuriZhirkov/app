@@ -105,7 +105,7 @@ export default {
   },
   created() {
     let self = this;
-    self.loginByCache();
+    //self.loginByCache();
     const obj = this.$route.query;
     if (obj && JSON.stringify(obj) != "{}") {
       let errCode = obj.errCode;
