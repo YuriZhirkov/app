@@ -181,7 +181,7 @@ export default {
       );
     },
     getTicket() {
-      let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=2';
+      let url = 'https://www.ygtqzhang.cn/weChat/authorize?returnUrl=2';
       location.href = url;
     },
     loginByCache(){
@@ -240,7 +240,7 @@ export default {
     } else {
       console.log("获取数据");
       this.getList();
-      this.baseHint();
+      //this.baseHint();
 
     }
 

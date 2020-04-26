@@ -353,7 +353,7 @@ export default {
     },
 
     getTicket() {
-      let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=1';
+      let url = 'https://www.ygtqzhang.cn/weChat/authorize?returnUrl=1';
       location.href = url;
     }
   }

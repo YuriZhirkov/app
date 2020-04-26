@@ -298,7 +298,7 @@ export default {
     this.getVip()
 
     //1. 如果用户没有认证提示要认证
-    this.identityAuthenticationHint();
+    // this.identityAuthenticationHint();
     // this.getActivity()
 
     // setTimeout(function(){

@@ -427,7 +427,7 @@ export default {
   },
   mounted() {
     this.getInfo();
-    this.educationBackgroundAuthenticationHint();
+    // this.educationBackgroundAuthenticationHint();
     this.getGender();
   },
   computed: { ...mapState(["userId"]) }

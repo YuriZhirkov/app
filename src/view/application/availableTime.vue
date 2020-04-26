@@ -191,15 +191,15 @@ export default {
 
 
     if (!this.userId) {
-      //this.$router.push("/");
+      this.$router.push("/");
       //微信授权登录
-      this.getTicket();
+      //this.getTicket();
       console.log("微信授权登录");
     } else {
       console.log("获取数据");
       this.getUserInfo();
       this.getList();
-      this.baseHint();
+      // this.baseHint();
 
     }
 
@@ -264,10 +264,10 @@ export default {
          
         });
      },
-     getTicket() {
-      let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=3';
-      location.href = url;
-     },
+    //  getTicket() {
+    //   let url = 'https://www.ygtqzhang.cn/weChat/authorize?returnUrl=3';
+    //   location.href = url;
+    //  },
      baseHint() {
       const self = this;
       this.get(

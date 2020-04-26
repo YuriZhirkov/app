@@ -433,10 +433,10 @@ export default {
       this.$router.back(-1)
     }
 
-    if(!this.userId){
-        let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=B'+touid;
-        location.href = url;
-    }
+    // if(!this.userId){
+    //     let url = 'https://www.ygtqzhang.cn/weChat/authorize?returnUrl=B'+touid;
+    //     location.href = url;
+    // }
     this.touid = touid
     this.getUserInfo(touid)
     this.getUserInfo2(touid)

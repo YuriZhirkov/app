@@ -664,11 +664,11 @@ export default {
             self.idFlag = dataRet.idFlag;
             //打印用户的信息
            
-            // if (dataRet.phone == undefined || dataRet.phone == "" || dataRet.phone == null) {
-            //     console.log("dataRet.phone=");
-            //     console.log(dataRet.phone);
-            //     self.isShowPhone = true;
-            // }
+            if (dataRet.phone == undefined || dataRet.phone == "" || dataRet.phone == null) {
+                // console.log("dataRet.phone=");
+                // console.log(dataRet.phone);
+                self.isShowPhone = true;
+            }
 
 
             //这是绑定微信的
@@ -677,7 +677,7 @@ export default {
                 let queryUserId = self.$route.query.userId;
                 if(queryUserId == null || queryUserId == undefined || queryUserId == "") {
                     console.log("self.userId=",self.userId);
-                    let url = 'http://www.ygtqzhang.cn/weChat/authorize?returnUrl=A'+self.userId;
+                    let url = 'https://www.ygtqzhang.cn/weChat/authorize?returnUrl=A'+self.userId;
                     location.href = url;
                 }
 

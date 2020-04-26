@@ -397,8 +397,8 @@ export default {
           console.log("订单id=");
           console.log(e.data);
           //将用户的id放在userId= self.userId,在后台解析
-          let url = 'http://www.ygtqzhang.cn/pay/create?orderId='+e.data
-                            +'&returnUrl=http://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
+          let url = 'https://www.ygtqzhang.cn/pay/create?orderId='+e.data
+                            +'&returnUrl=https://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
                             + self.aid+"userId="
                             + self.userId;
           //location.href = url; 这个会保留历史记录
