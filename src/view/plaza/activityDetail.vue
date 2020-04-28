@@ -401,9 +401,9 @@ export default {
                             +'&returnUrl=https://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
                             + self.aid+"userId="
                             + self.userId;
-          //location.href = url; 这个会保留历史记录
+          //location.href = url; //这个会保留历史记录
           //这个不会保留历史记录
-          location.replace(url); 
+          location.replace(url);
         }
 
         
