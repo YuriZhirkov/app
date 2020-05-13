@@ -387,6 +387,10 @@ export default {
         }
         return;
       }
+
+      // 1. 如果订单已经存在但是没有支付，支付失败了
+      // 2. 产生订单并且支付
+
       this.post('activity/join',{activityId:this.aid,userId:this.userId,activityCost:this.info.activity.activityCost},function(e){
         if(e.errCode != 200){
           self.$dialog.toast({mes:e.errMsg,icon:'error'})
