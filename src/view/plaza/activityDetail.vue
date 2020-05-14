@@ -167,6 +167,7 @@ export default {
       joinBeforeFlag:0,
       joinBeforeMsg:"",
       commentNum:0,
+      paidOrderId:"",
       commentContent: "",
       commentInfo: [],
       showComment: false,
@@ -357,6 +358,17 @@ export default {
         
       })
     },
+
+    // getOrderByUserIdAndActivity 通过活动id和用户id 获取未支付的订单 返回订单id
+    getOrderByUserIdAndActivity(){
+      const self = this
+      this.post('activity/getOrderByUserIdAndActivity',{userId:this.userId,activityId:this.aid},function(e){
+        if(e.errCode == 200){
+          self.paidOrderId = e.data;
+        }
+      })
+    },
+
     groupChat(){
       this.$dialog.toast({mes:'群聊开发中',icon:'success'});
     },
@@ -389,29 +401,38 @@ export default {
       }
 
       // 1. 如果订单已经存在但是没有支付，支付失败了
-      // 2. 产生订单并且支付
+      if(self.paidOrderId!="") {
+        //将用户的id放在userId= self.userId,在后台解析
+        let url = 'https://www.ygtqzhang.cn/pay/create?orderId='+self.paidOrderId
+                          +'&returnUrl=https://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
+                          + self.aid+"userId="
+                          + self.userId;
+        //location.href = url; //这个会保留历史记录
+        //这个不会保留历史记录
+        location.replace(url);
+      } else {
+          // 2. 产生订单并且支付
+          this.post('activity/join',{activityId:this.aid,userId:this.userId,activityCost:this.info.activity.activityCost},function(e){
+            if(e.errCode != 200){
+              self.$dialog.toast({mes:e.errMsg,icon:'error'})
+              return
+            } else {
+              //self.getActivityDetail(self.aid);
+              //产生订单之后就是支付，支付成功之后要回调到这个页面，需要带的参数有orderId returnUrl 用户id在订单详情里取
+              console.log("订单id=");
+              console.log(e.data);
+              //将用户的id放在userId= self.userId,在后台解析
+              let url = 'https://www.ygtqzhang.cn/pay/create?orderId='+e.data
+                                +'&returnUrl=https://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
+                                + self.aid+"userId="
+                                + self.userId;
+              //location.href = url; //这个会保留历史记录
+              //这个不会保留历史记录
+              location.replace(url);
+            }
+          })
+      }
 
-      this.post('activity/join',{activityId:this.aid,userId:this.userId,activityCost:this.info.activity.activityCost},function(e){
-        if(e.errCode != 200){
-          self.$dialog.toast({mes:e.errMsg,icon:'error'})
-          return
-        } else {
-          //self.getActivityDetail(self.aid);
-          //产生订单之后就是支付，支付成功之后要回调到这个页面，需要带的参数有orderId returnUrl 用户id在订单详情里取
-          console.log("订单id=");
-          console.log(e.data);
-          //将用户的id放在userId= self.userId,在后台解析
-          let url = 'https://www.ygtqzhang.cn/pay/create?orderId='+e.data
-                            +'&returnUrl=https://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
-                            + self.aid+"userId="
-                            + self.userId;
-          //location.href = url; //这个会保留历史记录
-          //这个不会保留历史记录
-          location.replace(url);
-        }
-
-        
-      })
     },
     getActivityDetail(aid){
       const self = this
@@ -658,6 +679,7 @@ export default {
     this.getUsers(aid)
     this.weiXinShare(aid)
     this.joinBefore()
+    this.getOrderByUserIdAndActivity()
   },
   watch: {},
 };
