@@ -110,6 +110,7 @@
                 </div>
             </div>
             <div class="rightBottom themeBg h100 flex bold fbig">
+                <div @click="join" class="w100 h100 flex" v-if="info.isJoin==0 && isEnable==1 && isPayment==0 ">未支付</div>
                 <div @click="join" class="w100 h100 flex" v-if="info.isJoin==0 && isEnable==1">马上预订</div>
                 <div @click="groupChat" class="w100 h100 flex" v-if="info.isJoin==1 && isEnable==1">群聊</div>
                 <div @click="finished" class="w100 h100 flex" v-if="isEnable==0">已结束</div>
@@ -168,6 +169,7 @@ export default {
       joinBeforeMsg:"",
       commentNum:0,
       paidOrderId:"",
+      isPayment:5,
       commentContent: "",
       commentInfo: [],
       showComment: false,
@@ -364,7 +366,8 @@ export default {
       const self = this
       this.post('activity/getOrderByUserIdAndActivity',{userId:this.userId,activityId:this.aid},function(e){
         if(e.errCode == 200){
-          self.paidOrderId = e.data;
+          self.paidOrderId = e.data.orderId;
+          self.isPayment = e.data.isPayment;
         }
       })
     },
@@ -401,7 +404,7 @@ export default {
       }
 
       // 1. 如果订单已经存在但是没有支付，支付失败了
-      if(self.paidOrderId!="") {
+      if(self.paidOrderId!="" && self.isPayment==0) {
         //将用户的id放在userId= self.userId,在后台解析
         let url = 'https://www.ygtqzhang.cn/pay/create?orderId='+self.paidOrderId
                           +'&returnUrl=https://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
