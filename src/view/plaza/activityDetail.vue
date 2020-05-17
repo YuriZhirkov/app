@@ -111,7 +111,7 @@
             </div>
             <div class="rightBottom themeBg h100 flex bold fbig">
                 <div @click="join" class="w100 h100 flex" v-if="info.isJoin==0 && isEnable==1 && isPayment==0 ">未支付</div>
-                <div @click="join" class="w100 h100 flex" v-if="info.isJoin==0 && isEnable==1">马上预订</div>
+                <div @click="join" class="w100 h100 flex" v-if="info.isJoin==0 && isEnable==1 && isPayment==5">马上预订</div>
                 <div @click="groupChat" class="w100 h100 flex" v-if="info.isJoin==1 && isEnable==1">群聊</div>
                 <div @click="finished" class="w100 h100 flex" v-if="isEnable==0">已结束</div>
                
