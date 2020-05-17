@@ -404,7 +404,7 @@ export default {
       }
 
       // 1. 如果订单已经存在但是没有支付，支付失败了
-      if(self.paidOrderId!="" && self.isPayment==0) {
+      if(self.paidOrderId!="" && self.isPayment==0 && info.isJoin==0) {
         //将用户的id放在userId= self.userId,在后台解析
         let url = 'https://www.ygtqzhang.cn/pay/create?orderId='+self.paidOrderId
                           +'&returnUrl=https://www.ygtqzhang.cn:8090/plaza/activity/activityDetail?aid='
