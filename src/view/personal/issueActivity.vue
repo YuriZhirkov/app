@@ -255,12 +255,14 @@ export default {
     submit(){
       const self = this
       if(!this.chooseData()) return
+      console.log("(this.info.activityStartTime = ",this.info.activityStartTime+':00');
+      console.log("(this.info.activityEndTime = ",this.info.activityEndTime+':00');
       const data = {
         userId:this.userId,
         // publishDate:new Date(),
         activityTheme:this.info.activityTheme,
-        activityStartTime:new Date(this.info.activityStartTime+':00'),
-        activityEndTime:new Date(this.info.activityEndTime+':00'),
+        activityStartTime:this.info.activityStartTime+':00',
+        activityEndTime:this.info.activityEndTime+':00',
         activityAddress:this.info.activityAddress+' '+(this.info.site ? this.info.site:''),
         publishAddress:this.info.publishAddress+' '+(this.info.site ? this.info.site:''),
         activityBriefIntroduction:this.info.activityBriefIntroduction,
