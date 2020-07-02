@@ -67,9 +67,9 @@
         </div>
         <footComponent></footComponent>
 
-        <router-link to='/personal/issueActivity' v-if="user.role != 1 && user.role != 5">
+        <!-- <router-link to='/personal/issueActivity' v-if="user.role != 1 && user.role != 5">
             <div class="publishBtn themeBg"><i class="iconfont icontianjia"></i></div>
-        </router-link>
+        </router-link> -->
 
     </div>
 </template>
