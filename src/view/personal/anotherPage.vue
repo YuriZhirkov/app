@@ -149,12 +149,15 @@ export default {
       //     return
       //   }
       //   self.getFans()
-      // })
-      this.post('im/friend/attention/addAndDel',{userId:this.userId,attentionId:this.touid},function(e){
-        self.isLike()
-        self.getFans()
-        // self.like= !self.like
-      })
+      // }) 
+      if(this.userId) {
+          this.post('im/friend/attention/addAndDel',{userId:this.userId,attentionId:this.touid},function(e){
+          self.isLike()
+          self.getFans()
+          // self.like= !self.like
+        })
+      }
+
     },
     isLike(){
       const self = this
@@ -399,34 +402,34 @@ export default {
 
     const obj = this.$route.query;
     const touid = obj.uid;
-    const userId = obj.userId;
-    const errCode = obj.errCode;
-    console.log("obj=",obj);
-    if(errCode) {
-        if (errCode==200 || errCode=='200') {
-          //微信登录成功
-          this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
-          this.$store.commit('setUserId',userId);
+    // const userId = obj.userId;
+    // const errCode = obj.errCode;
+    // console.log("obj=",obj);
+    // if(errCode) {
+    //     if (errCode==200 || errCode=='200') {
+    //       //微信登录成功
+    //       this.$dialog.toast({ mes: "微信登录成功", icon: "success" });
+    //       this.$store.commit('setUserId',userId);
 
-          // 登录成功标识,设置tim登录
-          this.$store.commit('toggleIsSDKReady', true)
-        } else {
-          if (errCode == 400) {
-            this.$dialog.toast({
-              mes: "微信登录获取用户的信息失败",
-              icon: "error"
-            });
-            this.$router.push("/");
-          } else if (errCode == 401) {
-            this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
-            this.$router.push("/");
-          } else if (errCode == 402) {
-            this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
-            this.$router.push("/");
-          }
-        }
+    //       // 登录成功标识,设置tim登录
+    //       this.$store.commit('toggleIsSDKReady', true)
+    //     } else {
+    //       if (errCode == 400) {
+    //         this.$dialog.toast({
+    //           mes: "微信登录获取用户的信息失败",
+    //           icon: "error"
+    //         });
+    //         this.$router.push("/");
+    //       } else if (errCode == 401) {
+    //         this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+    //         this.$router.push("/");
+    //       } else if (errCode == 402) {
+    //         this.$dialog.toast({ mes: "微信登录异常", icon: "error" });
+    //         this.$router.push("/");
+    //       }
+    //     }
          
-    } 
+    // } 
 
 
     if(!touid){
@@ -441,9 +444,13 @@ export default {
     this.getUserInfo(touid)
     this.getUserInfo2(touid)
     this.getDynamic(touid)
-    this.getFans()
-    this.isLike()
-    this.weiXinShare(touid)
+
+    if(this.userId){
+        this.getFans()
+        this.isLike()
+    }
+
+    //this.weiXinShare(touid)
 
 
   },
